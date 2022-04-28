@@ -1,0 +1,88 @@
+
+> ev-CRUD@0.0.1 test:api
+> jest --detectOpenHandles --config ./test/jest-e2e.json
+
+  console.log
+    using credientials:	 { service: 'rethink', db: '', host: '192.168.1.235', port: 28015 }
+
+      at init_rethink (../src/api/db/_rdb/_rdb.client.ts:228:13)
+
+  console.log
+    create a new db
+
+      at Object.<anonymous> (db.connect.api.e2e-spec.ts:28:21)
+
+  console.log
+    [ 'rethinkdb', 'test' ]
+
+      at ../src/api/db/_rdb/_rdb.client.ts:90:25
+
+  console.log
+    [ 'rethinkdb', 'test' ]
+
+      at ../src/api/db/_rdb/_rdb.client.ts:90:25
+
+  console.log
+    {
+      config_changes: [ { new_val: [Object], old_val: null } ],
+      dbs_created: 1
+    }
+
+      at ../src/api/db/_rdb/_rdb.client.ts:104:29
+
+  console.log
+    [ 'rethinkdb', 'test' ]
+
+      at Object.<anonymous> (db.connect.api.e2e-spec.ts:31:21)
+
+
+> ev-CRUD@0.0.1 test:api
+> jest --detectOpenHandles --config ./test/jest-e2e.json
+
+  console.log
+    using credientials:	 { service: 'rethink', db: '', host: '192.168.1.235', port: 28015 }
+
+      at init_rethink (../src/api/db/_rdb/_rdb.client.ts:232:13)
+
+  console.log
+    create a new db
+
+      at Object.<anonymous> (db.connect.api.e2e-spec.ts:28:21)
+
+  console.log
+    [ 'rethinkdb', 'test' ]
+
+      at ../src/api/db/_rdb/_rdb.client.ts:90:25
+
+  console.log
+    {
+      config_changes: [ { new_val: [Object], old_val: null } ],
+      dbs_created: 1
+    }
+
+      at ../src/api/db/_rdb/_rdb.client.ts:104:29
+
+  console.log
+    [ 'rethinkdb', 'test', 'test-db' ]
+
+      at ../src/api/db/_rdb/_rdb.client.ts:90:25
+
+  console.log
+    [ 'rethinkdb', 'test', 'test-db' ]
+
+      at Object.<anonymous> (db.connect.api.e2e-spec.ts:31:21)
+
+  console.log
+    delete the db
+
+      at Object.<anonymous> (db.connect.api.e2e-spec.ts:68:21)
+
+  console.log
+    [ 'rethinkdb', 'test', 'test-db' ]
+
+      at ../src/api/db/_rdb/_rdb.client.ts:90:25
+
+
+> ev-CRUD@0.0.1 test:api
+> jest --detectOpenHandles --config ./test/jest-e2e.json
+
