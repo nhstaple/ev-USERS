@@ -1,7 +1,6 @@
-import { IEntity } from "../entity.interface";
+import { IUser } from "../users/users.interface"
 
 // TODO 
-export interface ICreator extends IEntity {
+export interface ICreator extends IUser {
     name: string;
-    readonly id: string;
 }
