@@ -7,9 +7,9 @@ import { AppViewService } from './view.service';
 export class AppViewController {
     constructor(private viewService: AppViewService) {}
 
-    @Get('*')
-    static(@Req() req: Request, @Res() res: Response) {
-        const handle = this.viewService.getNextServer().getRequestHandler();
-        handle(req, res);
+    @Get()
+    @Render('index')
+    public index(@Res() res) {
+        res.render('', {});
     }
 }

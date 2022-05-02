@@ -21,6 +21,11 @@ export interface IDatabaseCredentials {
     readonly ssl?: number | r.ConnectionOptions;
 }
 
+export interface IDBMeta {
+    dbName: string
+    tableNames: string[]
+}
+
 export interface IDatabaseDevice {
     [x: string]: any;
     /** utility functions */
@@ -40,10 +45,12 @@ export interface IDatabaseDevice {
 
     createTable(dbName: string, tableName: string): Promise<boolean>;
 
+    deleteTable(dbName: string, tableName: string): Promise<boolean>;
+
     createUUID(key: string): Promise<string>;
 
     /** access functions */
-    query(dbName: string, table: string, filter: object): Promise<IEntity[] | IVocab[]>;
+    query(dbName: string, table: string, filter: object): Promise<IEntity[] | IVocab[] | ICollection[]>;
 
     getVocab(table: string, uuid: IEntity[] | IEntity): Promise<IVocab[]>;
 
@@ -55,4 +62,6 @@ export interface IDatabaseDevice {
     update(dbName:string, table:string, uuid: IEntity[] | IEntity, data: object | object[]): Promise<boolean>;
 
     deleteItem(dbName: string, table: string, uuid: IEntity[] | IEntity): Promise<boolean>;
+
+    prepare(databases: IDBMeta[]): Promise<boolean>;
 }

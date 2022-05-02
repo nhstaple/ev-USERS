@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  database:
+    image: rethinkdb:latest
+    container_name: DOCKER_DB_SERVICE
+    ports:  
+      - "3080:8080"
+      - "38015:28015"
+      - "39015:29015"
+  nodeApp:
+    image: node:latest    
+    container_name: DOCKER_NODE_SERVICE
+    volumes:
+      - ./:/eyevocab
+    working_dir: /eyevocab
+    command: npm run start 
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+
