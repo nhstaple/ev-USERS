@@ -15,6 +15,7 @@ div.database {
     width: 25%;
     display: flex;
     flex-direction: column;
+    padding: 0vh 2vw 0vh 2vw;
 }
 
 div.dbName {
@@ -23,7 +24,22 @@ div.dbName {
     color:grey
 }
 
-div.tableName {
+div.tableNameContainer {
     font-size: 1.05em;
+    display: flex;
 }
 
+div.tableName {
+    width: 50%;
+}
+
+div.deleteTableButtonContainer {
+    width: 50%;
+}
+
+button.deleteTableButton {
+    color: white;
+    background-color: red;
+    border: none;
+    font-size: 0.90em;
+}

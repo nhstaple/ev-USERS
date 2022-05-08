@@ -41,3 +41,7 @@ lerna-debug.log*
 # nextjs
 .next/*
 *.pack
+
+# etc
+*.old
+*.next/
