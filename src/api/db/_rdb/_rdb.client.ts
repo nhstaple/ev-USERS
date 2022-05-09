@@ -195,16 +195,28 @@ export class RethinkdDb implements IDatabaseDevice {
         throw new Error("Method not implemented.");
     }
     
-    async query(dbName: string, table: string, filter: object): Promise<IEntity[] | IVocab[] | ICollection[] | ICreator[]> {
+    async query(dbName: string, table: string, filter: IEntity[]): Promise<IEntity[] | IVocab[] | ICollection[] | ICreator[]> {
         this._validateConnection();
 
         if (JSON.stringify(filter) != '{}') {
-            const p = r.db(dbName).table(table).filter(filter).run(this.conn);
+            const p = r.db(dbName).table(table).run(this.conn);
             const data: IEntity[] | IVocab[] | ICollection[] = await p.then( (value: r.Cursor) => {
                 return value.toArray().then((results) => results);
             });
     
-            return data;
+            let filtered: IEntity[] | IVocab[] | ICollection[] = [];
+            console.log(filter);
+            for(let i = 0; i < data.length; i++) {
+                console.log(`? ${data[i].id}`);
+                for(let j = 0; j < filter.length; j++) {
+                    if(filter[j].id == data[i].id) {
+                        filtered.push(data[i] as any);
+                        // console.log(`found a thing! ${data[i].id}`);
+                    }
+                }
+            }
+
+            return filtered;
         } else {
             const p = r.db(dbName).table(table).run(this.conn);
             const data: IEntity[] | IVocab[] | ICollection[] | ICreator[] = await p.then( (value: r.Cursor) => {

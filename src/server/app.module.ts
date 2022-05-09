@@ -8,10 +8,11 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AppViewController } from './view/view.controller';
 import { AppViewService } from './view/view.service';
+
 import { DBModule } from './db/device/db.module';
 import { VocabModule } from './db/vocab/vocab.module';
+import { CollectionModule } from './db/collection/collection.module';
 import { UsersModule } from './db/users/users.module';
-// import { CollectionModule } from './db/collection/collection.module';
 
 
 const DIR = './src/client'
@@ -27,9 +28,11 @@ const options = {
       dev: process.env.NODE_ENV !== 'production',
       dir: DIR
     }), options),
-    VocabModule,
+    
     DBModule,
-    UsersModule
+    VocabModule,
+    UsersModule,
+    CollectionModule
   ],
   controllers: [AppController, AppViewController],
   providers: [AppService, AppViewService ],

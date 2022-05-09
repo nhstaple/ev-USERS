@@ -51,7 +51,7 @@ export interface IDatabaseDevice {
     createUUID(key: string): Promise<string>;
 
     /** access functions */
-    query(dbName: string, table: string, filter: object): Promise<IEntity[] | IVocab[] | ICollection[] | ICreator[]>;
+    query(dbName: string, table: string, filter: IEntity[]): Promise<IEntity[] | IVocab[] | ICollection[] | ICreator[]>;
 
     getVocab(table: string, uuid: IEntity[] | IEntity): Promise<IVocab[]>;
 

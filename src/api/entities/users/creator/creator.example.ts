@@ -53,7 +53,7 @@ export const CreatorExampleVocabs: IVocab[] = [
         pos: 'noun'
     },
     {
-        id: 'test-vocab-2-1',
+        id: 'test-vocab-2-2',
         value: 'el gatito',
         translation: 'the smol cat (masc.)',
         creator: { id: ID },
@@ -130,6 +130,8 @@ export const CreatorExample: ICreator = {
     email: EMAIL,
     collections: [
         { id: 'test-collection-1' },
-        { id: 'test-collection-2' }
+        { id: 'test-collection-2' },
+        { id: 'test-collection-3' },
+        { id: 'test-collection-4' }
     ]
 };

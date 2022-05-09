@@ -52,11 +52,13 @@ export const DBProvider = {
         const client: IDatabaseDevice = await init_rethink(credentials);
         try {
             await client.prepare([betaDeployment, test1, test2, test3, test4]);
-            
+
             await client.insert(betaDeployment.dbName, 'users', CreatorExample as ICreator);
+            
             CreatorExampleCollections.forEach(async (collection: ICollection) => {
                 await client.insert(betaDeployment.dbName, 'collections', collection);
             });
+            
             await client.insert(betaDeployment.dbName, 'vocab', CreatorExampleVocabs)
         } catch(err) {
             console.log(`the was an error setting up the betaDb`);

@@ -7,6 +7,8 @@ import { IVocab } from "../../../api/entities/vocab";
 import { test1, test2, test3, test4 } from "./db.provider";
 import { CreatorGet } from "../users/creator/creator.get";
 import { ICreator } from "../../../api/entities/users/creator";
+import { ICollection } from "../../../api/entities/collection";
+import { CollectionGet } from "../collection/collection.get";
 
 @Injectable()
 export class DBService {
@@ -104,26 +106,32 @@ export class DBService {
 
     async getAllVocab(dbName:string, tableName: string) {
         try {
-            const res = await this.client.query(dbName, tableName, {}) as IVocab[];
+            const res = await this.client.query(dbName, tableName, []) as IVocab[];
             return res;
         } catch(err) {
             console.log(`error getting all vocab items in ${dbName}.${tableName}!`);
         }
     }
 
-    async getVocab(dbName:string, tableName: string, ids: IEntity[]) {
+    async getVocab(dbName:string, ids: IEntity[]) {
         try {
-            const res = await this.client.query(dbName, tableName, { id: ids.values }) as IVocab[];
+            const res = await this.client.query(dbName, 'vocab', ids) as IVocab[];
             return res;
         } catch(err) {
-            console.log(`error getting vocab items in ${dbName}.${tableName}`);
+            console.log(`error getting vocab items in ${dbName}.vocab`);
         }
     }
 
     async getCreator(dbName: string, id: IEntity): Promise<CreatorGet> {
-        const result = (await this.client.query(dbName, 'users', id) as ICreator[])[0];
+        const result = (await this.client.query(dbName, 'users', [id]) as ICreator[])[0];
         let data: CreatorGet = result;
         return data;
+    }
+
+    async getCollection(collectionID: string): Promise<CollectionGet> {
+        console.log(`looking for ${collectionID}`);
+        const res = await this.client.query('betaDb', 'collections', [{id: collectionID}]) as ICollection[];
+        return res[0];
     }
 
 }

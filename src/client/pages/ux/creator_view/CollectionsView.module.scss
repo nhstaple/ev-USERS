@@ -1,0 +1,36 @@
+div.collectionContainer {
+    display: flex;
+    flex-direction: row;
+    font-size: 1.25em;
+    align-content: center;
+    align-items: center;
+    margin: 2vh 0 0 2vh;
+}
+
+div.collectionContainer > div > p {
+    margin: 0;
+}
+
+p.collectionID {
+    display: flex;
+    white-space: nowrap;
+}
+
+p.vocabCount {
+    font-size: 1.05em;
+}
+
+div.vocabContainer {
+    font-size: 1em;
+    align-content: center;
+    align-items: center;
+    display: flex;
+}
+
+p.vocabValue {
+    display: flex;
+    margin: 0 1vh 0 1vh;
+    padding: 0 1vh 0 1vh;
+    width: fit-content;
+    white-space: nowrap;
+}
