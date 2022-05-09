@@ -1,9 +1,8 @@
 import { ICollection } from "../../entities/collection";
 import { IEntity } from "../../entities/entity.interface";
 import { IVocab } from "../../entities/vocab/vocab.interface";
-import { IDatabaseDevice, IDatabaseCredentials } from "../db.interface";
+import { IDatabaseDevice, IDatabaseCredentials, IDBMeta } from "../db.interface";
 import * as r from "rethinkdb"
-import { timingSafeEqual } from "crypto";
 
 // TODO make a dev .env var
 const LOG = false;
@@ -193,19 +192,19 @@ export class RethinkdDb implements IDatabaseDevice {
         throw new Error("Method not implemented.");
     }
     
-    async query(dbName: string, table: string, filter: object): Promise<IEntity[] | IVocab[]> {
+    async query(dbName: string, table: string, filter: object): Promise<IEntity[] | IVocab[] | ICollection[]> {
         this._validateConnection();
 
         if (JSON.stringify(filter) != '{}') {
             const p = r.db(dbName).table(table).filter(filter).run(this.conn);
-            const data: IEntity[] | IVocab[] = await p.then( (value: r.Cursor) => {
+            const data: IEntity[] | IVocab[] | ICollection[] = await p.then( (value: r.Cursor) => {
                 return value.toArray().then((results) => results);
             });
     
             return data;
         } else {
             const p = r.db(dbName).table(table).run(this.conn);
-            const data: IEntity[] | IVocab[] = await p.then( (value: r.Cursor) => {
+            const data: IEntity[] | IVocab[] | ICollection[] = await p.then( (value: r.Cursor) => {
                 return value.toArray().then((results) => results);
             });
     
@@ -267,6 +266,27 @@ export class RethinkdDb implements IDatabaseDevice {
         });
         return false;
     }
+
+    async deleteTable(dbName: string, tableName: string): Promise<boolean> {
+        await r.db(dbName).tableDrop(tableName).run(this.conn as r.Connection, (err, res) => {
+            if(err) { 
+                // console.log(err);
+            }
+            else { 
+                // console.log(res);
+            }
+        });
+        return true
+    }
+
+    async prepare(databases: IDBMeta[]): Promise<boolean> {
+        try {
+            await prepare_rethink(databases);
+            return true;
+        } catch(err) {
+            return false;
+        }
+    }
 }
 
 var client: IDatabaseDevice;
@@ -279,40 +299,40 @@ export async function init_rethink(credentials: IDatabaseCredentials): Promise<I
     return client;
 }
 
-export interface IDbMeta {
-    dbName: string,
-    tables: string[]
-}
-
 const LOG_P = true;
 
-export async function prepare_rethink(databases: IDbMeta[]) {
+export async function prepare_rethink(databases: IDBMeta[]) {
     if(client) {
-
         if(LOG_P) { 
-            console.log("database\n", databases);
+            console.log("preparing\n", databases);
         }
 
         for(let i = 0; i < databases.length; i++) {
-            const dbName = databases[i].dbName;
-            const tables = databases[i].tables;
+            const meta = databases[i];
+            const dbName = meta.dbName;
+            const tables = meta.tableNames;
 
             if(LOG_P) {
                 console.log("dbName: ", dbName);
-                console.log("tables: ", tables);
             }
 
             // create the database
-            await client.createDb(dbName);
-            if(LOG_P) {
+            try {
+                await client.createDb(dbName);
                 console.log(`created ${dbName}`);
+            } catch(err) {
+                console.log(`db already exists! ${dbName}`);
             }
+
             // create the tables
+            console.log("tables: ", tables);
             for(let j = 0; j < tables.length; j++) {
                 const table = tables[j];
-                await client.createTable(dbName, table);
-                if(LOG_P) { 
+                try {
+                    await client.createTable(dbName, table);
                     console.log(`created ${dbName}.${table}`);
+                } catch(err) {
+                    console.log(`table already exists! ${dbName}.${table}`);
                 }
             }
         }

@@ -11,5 +11,5 @@
     "outDir": "./dist", 
     "jsx": "preserve" 
   },
-  "include": ["src/server/**/*.ts"],
+  "include": ["src/server/**/*.ts", "src/api/**/*.ts", "src/client/**/*.tsx"],
 }
