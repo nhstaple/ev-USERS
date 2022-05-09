@@ -1,6 +1,6 @@
 
 import { VocabExample } from '../vocab';
-import { CreatorExample } from '../creator/creator.example';
+import { CreatorExample } from '../users/creator/creator.example';
 import { ICollection } from './collection.interface';
 import { TLanguage } from '../vocab';
 

@@ -1,6 +1,7 @@
 import { IEntity } from "../entities/entity.interface";
 import { IVocab } from "../entities/vocab/vocab.interface";
 import { ICollection } from "../entities/collection/collection.interface";
+import { ICreator } from "../entities/users/creator";
 import * as r from 'rethinkdb';
 
 export enum EDatabaseService {
@@ -50,7 +51,7 @@ export interface IDatabaseDevice {
     createUUID(key: string): Promise<string>;
 
     /** access functions */
-    query(dbName: string, table: string, filter: object): Promise<IEntity[] | IVocab[] | ICollection[]>;
+    query(dbName: string, table: string, filter: object): Promise<IEntity[] | IVocab[] | ICollection[] | ICreator[]>;
 
     getVocab(table: string, uuid: IEntity[] | IEntity): Promise<IVocab[]>;
 

@@ -27,7 +27,7 @@ const BasicVocabView = ({ data }: VocabViewProps) => {
                 </div>
                 <div className={style.vocabCreator}>
                     <h1>Creator:</h1>
-                    <h2>{data.creator.name}</h2>
+                    <h2>{data.creator.id}</h2>
                 </div>
             </div>
             <div className={style.vocabMedia}>

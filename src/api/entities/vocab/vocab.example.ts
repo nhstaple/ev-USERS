@@ -1,5 +1,5 @@
 import { IVocab } from "./vocab.interface";
-import { CreatorExample } from "../creator/creator.example";
+import { CreatorExample } from "../users/creator/creator.example";
 export const VocabExample: IVocab = {
     value: 'la cuchara',
     translation: 'the spoon',

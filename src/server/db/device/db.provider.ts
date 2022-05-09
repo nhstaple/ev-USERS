@@ -2,6 +2,13 @@ import { init_rethink } from "../../../api"
 import { IDatabaseCredentials, IDatabaseDevice } from "../../../api/db/db.interface"
 import { prepare_rethink, IEntity } from "../../../api";
 import { IDBMeta } from "../../../api/db/db.interface";
+import { ICreator } from "../../../api/entities/users/creator";
+
+import { CreatorExample } from "../../../api/entities/users/creator/creator.example";
+import { CreatorExampleCollections } from "../../../api/entities/users/creator/creator.example";
+import { CreatorExampleVocabs } from "../../../api/entities/users/creator/creator.example";
+import { ICollection } from "../../../api/entities/collection";
+import { IVocab } from "../../../api/entities/vocab";
 
 const DB_HOST = 'DOCKER_DB_SERVICE';
 const DB_PORT = 28015;
@@ -44,9 +51,15 @@ export const DBProvider = {
         
         const client: IDatabaseDevice = await init_rethink(credentials);
         try {
-            await client.prepare([test1, test2, test3, test4]);
+            await client.prepare([betaDeployment, test1, test2, test3, test4]);
+            
+            await client.insert(betaDeployment.dbName, 'users', CreatorExample as ICreator);
+            CreatorExampleCollections.forEach(async (collection: ICollection) => {
+                await client.insert(betaDeployment.dbName, 'collections', collection);
+            });
+            await client.insert(betaDeployment.dbName, 'vocab', CreatorExampleVocabs)
         } catch(err) {
-
+            console.log(`the was an error setting up the betaDb`);
         }
         return client;
     }

@@ -1,5 +1,6 @@
+import { IEntity } from "../../../api";
 import { ICollection } from "../../../api/entities/collection"
-import { ICreator } from "../../../api/entities/creator"
+import { ICreator } from "../../../api/entities/users/creator";
 import { TLanguage, IVocab, TPartOfSpeech } from "../../../api/entities/vocab"
 
 export class VocabPut implements Partial<IVocab> {
@@ -15,7 +16,7 @@ export class VocabPut implements Partial<IVocab> {
     // where we store the resources (image, sound) as a root path
     storagekey?: string;
     // the person who made the vocab item
-    creator?: ICreator;
+    creator?: IEntity;
 
     // TODO
     // the image from the client

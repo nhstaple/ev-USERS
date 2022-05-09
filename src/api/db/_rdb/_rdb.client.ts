@@ -3,6 +3,7 @@ import { IEntity } from "../../entities/entity.interface";
 import { IVocab } from "../../entities/vocab/vocab.interface";
 import { IDatabaseDevice, IDatabaseCredentials, IDBMeta } from "../db.interface";
 import * as r from "rethinkdb"
+import { ICreator } from "../../entities/users/creator";
 
 // TODO make a dev .env var
 const LOG = false;
@@ -108,7 +109,9 @@ export class RethinkdDb implements IDatabaseDevice {
                 throw err;
             }
         } else {
-            console.log(`db with name "${dbName}" exists!`)
+            if(LOG) {
+                console.log(`db with name "${dbName}" exists!`);
+            }
         }
 
         return true;
@@ -192,7 +195,7 @@ export class RethinkdDb implements IDatabaseDevice {
         throw new Error("Method not implemented.");
     }
     
-    async query(dbName: string, table: string, filter: object): Promise<IEntity[] | IVocab[] | ICollection[]> {
+    async query(dbName: string, table: string, filter: object): Promise<IEntity[] | IVocab[] | ICollection[] | ICreator[]> {
         this._validateConnection();
 
         if (JSON.stringify(filter) != '{}') {
@@ -204,7 +207,7 @@ export class RethinkdDb implements IDatabaseDevice {
             return data;
         } else {
             const p = r.db(dbName).table(table).run(this.conn);
-            const data: IEntity[] | IVocab[] | ICollection[] = await p.then( (value: r.Cursor) => {
+            const data: IEntity[] | IVocab[] | ICollection[] | ICreator[] = await p.then( (value: r.Cursor) => {
                 return value.toArray().then((results) => results);
             });
     
@@ -299,7 +302,7 @@ export async function init_rethink(credentials: IDatabaseCredentials): Promise<I
     return client;
 }
 
-const LOG_P = true;
+const LOG_P = false;
 
 export async function prepare_rethink(databases: IDBMeta[]) {
     if(client) {
@@ -321,7 +324,7 @@ export async function prepare_rethink(databases: IDBMeta[]) {
                 await client.createDb(dbName);
                 console.log(`created ${dbName}`);
             } catch(err) {
-                console.log(`db already exists! ${dbName}`);
+                if(LOG) console.log(`db already exists! ${dbName}`);
             }
 
             // create the tables
@@ -332,7 +335,9 @@ export async function prepare_rethink(databases: IDBMeta[]) {
                     await client.createTable(dbName, table);
                     console.log(`created ${dbName}.${table}`);
                 } catch(err) {
-                    console.log(`table already exists! ${dbName}.${table}`);
+                    if(LOG) {
+                        console.log(`table already exists! ${dbName}.${table}`);
+                    }
                 }
             }
         }

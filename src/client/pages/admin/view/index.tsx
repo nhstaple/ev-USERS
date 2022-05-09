@@ -2,7 +2,6 @@ import React from 'react'
 import { NextPage } from 'next' 
 
 import { IVocab } from '../../../../api/entities/vocab';
-import { ICreator } from '../../../../api/entities/creator';
 
 import Axios, { AxiosError, AxiosResponse } from 'axios';
 import BasicVocabView from '../../../components/vocab/BasicView';

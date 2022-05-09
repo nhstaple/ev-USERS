@@ -1,4 +1,4 @@
-import { ICreator } from "../creator/creator.interface"
+
 import { IEntity } from "../entity.interface"
 
 // the supported langauges
@@ -37,7 +37,7 @@ export interface IVocab extends IEntity {
 
     // TODO
     // the person who made the vocav item
-    creator: ICreator;
+    creator: IEntity;
 
     // @deprecated from the original codebase
     idArbit?:string;

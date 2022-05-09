@@ -10,8 +10,9 @@ import { AppViewController } from './view/view.controller';
 import { AppViewService } from './view/view.service';
 import { DBModule } from './db/device/db.module';
 import { VocabModule } from './db/vocab/vocab.module';
-import { CollectionModule } from './db/collection/collection.module';
-import { resolve } from 'node:path';
+import { UsersModule } from './db/users/users.module';
+// import { CollectionModule } from './db/collection/collection.module';
+
 
 const DIR = './src/client'
 
@@ -27,7 +28,8 @@ const options = {
       dir: DIR
     }), options),
     VocabModule,
-    DBModule
+    DBModule,
+    UsersModule
   ],
   controllers: [AppController, AppViewController],
   providers: [AppService, AppViewService ],

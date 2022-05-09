@@ -5,6 +5,8 @@ import { prepare_rethink, IEntity } from "../../../api";
 import { IVocab } from "../../../api/entities/vocab";
 
 import { test1, test2, test3, test4 } from "./db.provider";
+import { CreatorGet } from "../users/creator/creator.get";
+import { ICreator } from "../../../api/entities/users/creator";
 
 @Injectable()
 export class DBService {
@@ -116,6 +118,12 @@ export class DBService {
         } catch(err) {
             console.log(`error getting vocab items in ${dbName}.${tableName}`);
         }
+    }
+
+    async getCreator(dbName: string, id: IEntity): Promise<CreatorGet> {
+        const result = (await this.client.query(dbName, 'users', id) as ICreator[])[0];
+        let data: CreatorGet = result;
+        return data;
     }
 
 }
