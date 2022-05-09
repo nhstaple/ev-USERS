@@ -4,7 +4,7 @@ import { IDatabaseDevice, IDBMeta } from "../../../api/db/db.interface";
 import { prepare_rethink, IEntity } from "../../../api";
 import { IVocab } from "../../../api/entities/vocab";
 
-import { testingDatabase } from "./db.provider";
+import { test1, test2, test3, test4 } from "./db.provider";
 
 @Injectable()
 export class DBService {
@@ -15,7 +15,7 @@ export class DBService {
     }
 
     async reset() {
-        this.client.prepare([testingDatabase]);
+        this.client.prepare([test1, test2, test3, test4]);
     }
 
     async getDbNames(): Promise<string[]> {
@@ -73,6 +73,14 @@ export class DBService {
             await this.client.deleteTable(dbName, tableName);
         } catch(err) {
             console.log(`failed to create tables for: ${dbName}`);
+        }
+    }
+
+    async deleteDb(dbName: string) {
+        try {
+            await this.client.deleteDb([dbName]);
+        } catch(err) {
+            console.log(`failed to delete db: ${dbName}`);
         }
     }
 

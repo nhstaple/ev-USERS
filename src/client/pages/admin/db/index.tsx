@@ -5,8 +5,8 @@ import DBView from '../../../components/admin/db';
 
 // TODO put into a dotenv
 const PORT = '3000';
-const HOST = 'localhost'; // 'DOCKER_NODE_SERVICE'; // 'localhost'
-const END_POINT = 'api/db'
+const HOST = 'DOCKER_NODE_SERVICE'; // 'localhost'
+const END_POINT = `http://${HOST}:${PORT}/api/db`
 
 interface IDBMeta {
     dbName: string,
@@ -22,10 +22,8 @@ export async function getServerSideProps() {
     let propsToSend: IDBMeta[] = [];
     let dbNames: string[] = [];
 
-    // eyevocab api
     try {
-        response = await Axios.get(`http://${HOST}:${PORT}/${END_POINT}/dbNames`);
-        console.log('API response', response.data);
+        response = await Axios.get(`${END_POINT}/dbNames`);
         if(response.data) {
             dbNames = response.data as string[];
         }
@@ -37,7 +35,8 @@ export async function getServerSideProps() {
         // console.log('finding tablenames for ', dbNames);
         for(let i = 0; i < dbNames.length; i++) {
             const dbName = dbNames[i];
-            const URL = `http://${HOST}:${PORT}/${END_POINT}/tableNames/${dbName}`;
+            const URL = `${END_POINT}/tableNames/${dbName}`;
+            // console.log(`pinging ${URL}`);
             response = await Axios.get(URL);
             const tablenames: string[] = response.data as string[];
             // console.log(URL, '\nfound tables: ', tablenames)
@@ -48,20 +47,8 @@ export async function getServerSideProps() {
             propsToSend.push(meta);
         }
     } catch(err) {
-        console.log(err);
+        console.log('failed to get the table names for all the databases');
     }
-
-    for(let i = 0; i < propsToSend.length; i++) {
-        // console.log(propsToSend[i])
-    }
-
-    // TODO
-    // db api
-    // try {} catch(err) {}
-
-    // client api
-    // TODO
-    // try{} catch(err) {}
 
     return {
         props: {

@@ -9,6 +9,7 @@ export class DBController {
     @Get('/reset')
     async reset() {
         await this.dbService.reset();
+        return 'reset the DB';
     }
 
     @Get()
@@ -25,6 +26,7 @@ export class DBController {
                 dbNames.push(res[i])
             }
         }
+        console.log(`sending ${dbNames} to front end`)
         return dbNames;
     }
 
@@ -69,4 +71,18 @@ export class DBController {
         }
         return `deleted ${dbName}.${tableName}`
     }
+
+    @Delete('delete/db/:dbName')
+    async deleteDb(@Param ('dbName') dbName) {
+        console.log(`DELETE ${dbName}`);
+        try {
+            await this.dbService.deleteDb(dbName);
+        } catch(err) {
+            const message = `failed to delete: ${dbName}}`;
+            console.log(message);
+            return message;
+        }
+        return `deleted ${dbName}`
+    }
+
 }

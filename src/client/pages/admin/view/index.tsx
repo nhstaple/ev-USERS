@@ -9,14 +9,14 @@ import BasicVocabView from '../../../components/vocab/BasicView';
 
 // TODO put into a dotenv
 const PORT = '3000';
-const HOST = 'http://localhost' // 'DOCKER_NODE_SERVICE'; 
-const END_POINT = 'api/examples/vocab'
+const HOST = 'DOCKER_NODE_SERVICE'; // 'http://localhost' // 'DOCKER_NODE_SERVICE'; 
+const END_POINT = `http://${HOST}:${PORT}/api/examples/vocab`
 
 export async function getStaticProps() {
     let response: AxiosResponse
     let exampleVocab: IVocab
     try {
-        response = await Axios.get(`http://${HOST}:${PORT}/${END_POINT}`);
+        response = await Axios.get(END_POINT);
         exampleVocab = response.data as IVocab;
     } catch (err) {
         console.log('there was an error getting static data');

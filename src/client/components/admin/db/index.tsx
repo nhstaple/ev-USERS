@@ -1,12 +1,9 @@
 import React, { MouseEventHandler } from 'react'
 import { useState } from "react";
-import Link from 'next/link';
 import { useRouter } from 'next/router';
-
 import style from './DBView.module.scss';
-import Button from 'next/link'
 import Axios from 'axios';
-import DevView from '../../../pages/admin/view';
+import { StreamableFile } from '@nestjs/common';
 
 
 interface IDBMeta {
@@ -18,15 +15,12 @@ interface DBViewProps {
     databases: IDBMeta[];
 }
 
-const HOST = 'http://localhost'; // 'DOCKER_NODE_SERVICE'; // 'http://localhost';
+const HOST = 'localhost'; // 'DOCKER_NODE_SERVICE'; // 'localhost';
 const PORT = 3000;
-const END_POINT = `${HOST}:${PORT}/api/db/delete/table/`
+const END_POINT = `http://${HOST}:${PORT}/api/db`
+const LOG_DEBUG = true;
 
-const ResetTestDB = () => {
-    
-}
-
-function removeElement(data: IDBMeta[], dbName, key: string) {
+function removeTable(data: IDBMeta[], dbName, key: string) {
     let idxa = -1;
     let idxb = -1;
     for(let i = 0; i < data.length; i++) {
@@ -45,25 +39,70 @@ function removeElement(data: IDBMeta[], dbName, key: string) {
         }
     }
 
-    console.log(data[idxa])
-    console.log(data[idxa].dbTables)
-    console.log(data[idxa].dbTables[idxb])
-    console.log(key)
-
     const n_0 = data[idxa].dbTables.length;
 
     if (idxb > -1 && idxb > -1) {
       data[idxa].dbTables.splice(idxb, 1);
-      console.log(data[idxa].dbTables);
     }
     
     const n_1 = data[idxa].dbTables.length;
-    console.log(`${n_0 - n_1} items deleted`);
+    console.log(`${n_0 - n_1} table(s) deleted`);
     return data;
 }
 
+async function deleteTable(dbName: string, tableName: string) {
+    const CALL = `${END_POINT}/delete/table/${dbName}/${tableName}`;
+    try {
+        const res = await Axios.delete(CALL, {});
+    } catch(err) {
+        console.log(`failed to request the server to delete ${dbName}.${tableName}`);
+    }
+
+    if(LOG_DEBUG) {
+        console.log(`BACKEND.RES: deleted table ${dbName}.${tableName}}`);
+    }
+}
+
+function removeDb(data: IDBMeta[], dbName): IDBMeta[] {
+    const n_0 = data.length;
+    let help: IDBMeta[] = [];
+
+    for(let i = 0; i < data.length; i++) {
+        if(data[i].dbName != dbName) {
+            help.push(data[i]);
+        }
+    }
+    const n_1 = help.length;
+    console.log(`${n_0 - n_1} db(s) deleted`);
+    return help;
+}
+
+async function deleteDb(dbName: string) {
+    const CALL = `${END_POINT}/delete/db/${dbName}`;
+    try {
+        const res = await Axios.delete(CALL, {});
+    } catch(err) {
+        console.log(`failed to request the server to delete db ${dbName}`);
+    }
+
+    if(LOG_DEBUG) {
+        console.log(`BACKEND.RES: deleted db ${dbName}}`);
+    }
+}
+
+async function resetDb() {
+    try {
+        const res = await Axios.get(`${END_POINT}/reset`) as string;
+    } catch(err) {
+        console.log(`failed reseting the database`);
+    }
+} 
+
 const DBView = ({ databases }: DBViewProps) => {
     const [ DATABASES, setDatabases] = useState(databases);
+    const [ popup, togglePopUp] = useState(false);
+    const [ popupDbName, setPopUpDbName] = useState('');
+
     const router = useRouter();
     return (
         <div id={style.root}>
@@ -72,41 +111,87 @@ const DBView = ({ databases }: DBViewProps) => {
                     return (
                         <div className={style.database} key={dbName}>
                             <div className={style.dbName}>{dbName}</div>
+                            { dbName &&
+                            <div className={style.deleteDbButtonContainer}>
+                                <button className={style.deleteDbButton} onClick={async (e) => {
+                                    // open the pop up
+                                    togglePopUp(!popup);
+                                    setPopUpDbName(dbName);
+                                    router.replace(router.asPath);
+                                }}>DROP</button>
+                            </div> }
                             <div className={style.table}>
                             { dbTables && dbTables.map((tableName: string) => {
                                 return <div className={style.tableNameContainer} key={tableName}>
                                     <div className={style.tableName}>{tableName}</div>
                                     <div className={style.deleteTableButtonContainer}>
                                         <button className={style.deleteTableButton} onClick={async (e) => {
-                                            // e.preventDefault();
+                                            e.preventDefault();
                                             // remove from the client
-                                            const result = removeElement(DATABASES, dbName, tableName);
+                                            const result = removeTable(DATABASES, dbName, tableName);
                                             setDatabases(result);
-                                            // remove from the server
-                                            const CALL = `${END_POINT}/${dbName}/${tableName}`
-                                            await Axios.delete(CALL, {});
+                                            // delete from server
+                                            deleteTable(dbName, tableName);
+                                            // "refresh" the react page
                                             router.replace(router.asPath);
-                                        }}>DELETE</button>
+                                        }}>❌</button>
                                     </div>
                                 </div>
                             })}
                             </div>
+
+                            { popup && popupDbName != '' && popupDbName != 'RESET' &&
+                                <div className={style.modal}>
+                                    <div className={style.modal_content}>
+                                        <p>Do you want to delete <strong>{popupDbName}</strong>?</p>
+                                        <button onClick={(e) => {
+                                            e.preventDefault();
+                                            // front end
+                                            const result = removeDb(DATABASES, popupDbName);
+                                            setDatabases(result);
+                                            togglePopUp(!popup);
+
+                                            // server 
+                                            deleteDb(popupDbName);
+                                            setPopUpDbName('');
+                                        }}>Confirm</button>
+                                        <button onClick={(e) => {
+                                            e.preventDefault();
+                                            togglePopUp(!popup);
+                                            setPopUpDbName('');
+                                        }}>Cancel</button>
+                                    </div>
+                                </div>
+                            }
                         </div>
                     );
                 })
             }
+            { !popup && <div id={style.resetFooter}>
+                <button onClick={ async (e) => {
+                    e.preventDefault()
+                    await resetDb();
+                    togglePopUp(!popup);
+                    setPopUpDbName('RESET');
+                    // "refresh" the react page
+                    setTimeout(() => {
+                        setPopUpDbName('');
+                        togglePopUp(!popup);
+                        window.location.reload();
+                    }, 5000);
+                }}
+                >Reset DB</button>
+            </div>
+            }
+            { popup && popupDbName == 'RESET' &&
+            <div className={style.modal}>
+                <div className={style.modal_content}>
+                    Reset in progress...
+                </div>
+            </div>
+            }
         </div>
     )
-    /*
-    { dbTables && dbTables.map(({tableName}: any) => {
-        return <div className="tableName" key={tableName}>{tableName}</div>
-    })}
-
-    <Button onClick={async (e) => {
-        const CALL = `${END_POINT}/${dbName}/${tableName}`;
-        await Axios.delete(CALL);
-    }}>X</Button>
-    */
 }
 
 export default DBView

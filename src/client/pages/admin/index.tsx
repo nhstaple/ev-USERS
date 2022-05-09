@@ -6,8 +6,8 @@ import { stat } from 'fs';
 
 // TODO put into a dotenv
 const PORT = '3000';
-const HOST ='http://localhost'; // 'DOCKER_NODE_SERVICE'; // 
-const END_POINT = `${HOST}:${PORT}/api`
+const HOST = 'DOCKER_NODE_SERVICE'; // 'http://localhost'; // 'DOCKER_NODE_SERVICE';
+const END_POINT = `http://${HOST}:${PORT}/api`
 
 interface AdminViewProps {
     apiStatus: string,
@@ -18,13 +18,13 @@ interface AdminViewProps {
 export async function getServerSideProps() {
     let response: AxiosResponse;
     let apiCall: string;
-    let dbCall: string = 'TODO ready'
+    let dbCall: string;
     let clientCall: string = 'TODO ready';
 
     // eyevocab api
     try {
         response = await Axios.get(END_POINT);
-        console.log('API status response', response);
+        // console.log('API status response', response);
         apiCall = response.data as string;
     } catch(err) {
     }
@@ -33,7 +33,7 @@ export async function getServerSideProps() {
     // db api
     try {
         response = await Axios.get(`${END_POINT}/db`);
-        console.log('DB status response', response);
+        // console.log('DB status response', response);
         dbCall = response.data as string;
     } catch(err) {
     }
