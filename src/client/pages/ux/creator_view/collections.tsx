@@ -21,7 +21,7 @@ const CollectionsView = ({ data, vocabs }: CollectionsViewProp) => {
     console.log('****');
     console.log(vocabs);
     return (
-        <div>
+        <div id={styles.CollectionsView}>
             { data && data.map((collection, i) => {
                 console.log(`collection ${collection.id} (${i})`);
                 const current = vocabs[i];

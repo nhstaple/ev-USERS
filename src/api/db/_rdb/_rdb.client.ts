@@ -198,7 +198,7 @@ export class RethinkdDb implements IDatabaseDevice {
     async query(dbName: string, table: string, filter: IEntity[]): Promise<IEntity[] | IVocab[] | ICollection[] | ICreator[]> {
         this._validateConnection();
 
-        if (JSON.stringify(filter) != '{}') {
+        if (filter.length > 0) {
             const p = r.db(dbName).table(table).run(this.conn);
             const data: IEntity[] | IVocab[] | ICollection[] = await p.then( (value: r.Cursor) => {
                 return value.toArray().then((results) => results);
@@ -207,7 +207,7 @@ export class RethinkdDb implements IDatabaseDevice {
             let filtered: IEntity[] | IVocab[] | ICollection[] = [];
             console.log(filter);
             for(let i = 0; i < data.length; i++) {
-                console.log(`? ${data[i].id}`);
+                // console.log(`? ${data[i].id}`);
                 for(let j = 0; j < filter.length; j++) {
                     if(filter[j].id == data[i].id) {
                         filtered.push(data[i] as any);

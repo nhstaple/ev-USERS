@@ -122,7 +122,8 @@ const CreatorView: NextPage = ({userData, collectionsData, vocabData}: ICreatorP
     let [ userName, setUsername ] = useState<string>(userData.name);
     let [ userEmail, setEmail ] = useState<string>(userData.email);
     let [ collectionsID, setCollectionsID] = useState<string[]>(getCollectionIDs(userData.collections));
-    let [ showCollections, toggleCollectionView ] = useState<boolean>(false);
+    let [ showCollections, setCollectionView ] = useState<boolean>(false);
+    let [ showCreationEditor, setCreationEditor ] = useState<boolean>(false);
     let [ collections, setCollections ]= useState<CollectionGet[]>(collectionsData);
     let [ vocabs, setVocabs ]= useState<Array<VocabGet[]>>(vocabData);
 
@@ -131,41 +132,42 @@ const CreatorView: NextPage = ({userData, collectionsData, vocabData}: ICreatorP
     return (
         <div style={CREATOR_VIEW_CONTAINER_STYLES}>
             ( {userData &&
-            <main id={styles.container}>
-                {!showCollections && <h1>Creator View</h1>}
-                {!showCollections && <p className={styles.userInfo}>Welcome, {userName}!</p>}
-                {!showCollections && <p className={styles.userInfo}>email: {userEmail}</p>}
-                {!showCollections && <p className={styles.userInfo}>id: {userID}</p>}
+            <div id={styles.CreatorView}>
+                {!showCollections && !showCreationEditor &&
+                <div id={styles.CreatorHeader}>
+                    <h1>Creator View</h1>
+                    <p className={styles.userInfo}>Welcome, {userName}!</p>
+                    <p className={styles.userInfo}>email: {userEmail}</p>
+                    <p className={styles.userInfo}>id: {userID}</p>
+                    <p className={styles.userInfo}>{collectionsID.length} collections</p>
+                </div>}
+
+                { showCollections && collections && vocabs &&
+                <CollectionsView data={collections} vocabs={vocabs}/>
+                }
                 <div id={styles.container}>
-                    <button className={styles.box} onClick={ (e) => {
+                    {!showCreationEditor &&
+                    <button className={styles.CreatorViewMenuButton} onClick={ (e) => {
                         e.preventDefault();
-                        toggleCollectionView(!showCollections);
+                        setCollectionView(!showCollections);
                         router.replace(router.asPath);
                     }}>
-                    {!showCollections && <h2>See Your Collections</h2>}
-                    {showCollections && <h2>Hide Collections</h2>}
-                </button>
+                        {!showCollections && <h2>See Your Collections</h2>}
+                        {showCollections && <h2>Hide Collections</h2>}
+                    </button>}
 
-                { showCollections &&
-                <div>
-                    { collections && vocabs && <div>
-                        <CollectionsView data={collections} vocabs={vocabs}></CollectionsView>
-                    </div>}
-                </div>
-                }
-
-                { !showCollections && 
-                <p className={styles.collectionCount}>{collectionsID.length} collections</p>
-                }
-
-                { !showCollections && 
-                <button className={styles.box} onClick={ (e) => {
-                }}>
-                    <h2>Create Collection</h2>
-                </button>
+                    { !showCollections && 
+                    <button className={styles.CreatorViewMenuButton} onClick={ (e) => {
+                        setCreationEditor(!showCreationEditor);
+                        setCollectionView(false);
+                        router.replace(router.asPath);
+                    }}>
+                        {!showCollections && !showCreationEditor && <h2>Create Collection</h2> }
+                        {!showCollections && showCreationEditor && <h2>Submit Collection</h2>}
+                    </button>
                 }
                 </div>
-            </main>
+            </div>
             })
         </div>
     );

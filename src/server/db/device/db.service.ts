@@ -129,7 +129,7 @@ export class DBService {
     }
 
     async getCollection(collectionID: string): Promise<CollectionGet> {
-        console.log(`looking for ${collectionID}`);
+        // console.log(`looking for ${collectionID}`);
         const res = await this.client.query('betaDb', 'collections', [{id: collectionID}]) as ICollection[];
         return res[0];
     }
