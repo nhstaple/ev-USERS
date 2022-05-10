@@ -10,7 +10,7 @@ import { CreatorExampleVocabs } from "../../../api/entities/users/creator/creato
 import { ICollection } from "../../../api/entities/collection";
 import { IVocab } from "../../../api/entities/vocab";
 
-const DB_HOST = 'DOCKER_DB_SERVICE';
+const DB_HOST = 'localhost'; // 'DOCKER_DB_SERVICE' for docker
 const DB_PORT = 28015;
 
 export const test1: IDBMeta = {
@@ -39,6 +39,14 @@ const betaDeployment: IDBMeta = {
     tableNames: [ 'vocab', 'collections', 's3', 'courses', 'users' ]
 }
 
+const PREPARE_DBS = [
+    betaDeployment,
+    test1,
+    // test2,
+    // test3,
+    // ... 
+]
+
 export const DBProvider = {
     provide: 'DBProvider',
     useFactory: async () => {
@@ -51,7 +59,7 @@ export const DBProvider = {
         
         const client: IDatabaseDevice = await init_rethink(credentials);
         try {
-            await client.prepare([betaDeployment, test1, test2, test3, test4]);
+            await client.prepare(PREPARE_DBS);
 
             await client.insert(betaDeployment.dbName, 'users', CreatorExample as ICreator);
             

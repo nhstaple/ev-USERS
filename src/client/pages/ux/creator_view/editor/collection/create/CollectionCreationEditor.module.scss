@@ -1,0 +1,83 @@
+#CollectionCreationEditor {
+    height: 100vh;
+    width: 100vh;
+    z-index: 1;
+    background-color: pink;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#CollectionCreationEditorHeader {
+    display: flex;
+    background-color: wheat;
+    border: 1px;
+    border-color: black;
+    border-radius: 100%;
+}
+
+div.formInputContainer {
+    display: flex;
+    justify-content: space-between;
+    margin: 1vh 0 1vh 0;
+
+    > p {
+        display: flex;
+        padding: 0 1vw 0 0;
+        width: 50%;
+        margin-block-start: 0;
+        margin-block-end: 0;
+    }
+
+    > input {
+        display: flex;
+        width: 50%;
+        height: 1.25em;
+        font-size: 1em;
+    }
+
+    > select {
+        font-size: 1em;
+    }
+}
+
+#CollectionMenu {
+    display: flex;
+    justify-content: left;
+    flex-direction: column;
+    > form {
+        display: flex;
+        flex-direction: column;
+        justify-content: left;  
+    }
+}
+
+#AddVocabContainer {
+    display: flex;
+    justify-content: center;
+
+    > button {
+        display: flex;
+        background-color: greenyellow;
+        > p {
+            color: black;
+        }
+    }
+}
+
+#VocabsViewContainer {
+    display: flex;
+
+    > p {
+        display: flex;
+        font-size: 1em;
+    }
+}
+
+div.VocabMetaContainer {
+    display: flex;
+    > p {
+        display: flex;
+        padding: 1vh 1vw 1vh 1vh;
+    }
+}

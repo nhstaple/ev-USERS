@@ -205,7 +205,7 @@ export class RethinkdDb implements IDatabaseDevice {
             });
     
             let filtered: IEntity[] | IVocab[] | ICollection[] = [];
-            console.log(filter);
+            // console.log(filter);
             for(let i = 0; i < data.length; i++) {
                 // console.log(`? ${data[i].id}`);
                 for(let j = 0; j < filter.length; j++) {

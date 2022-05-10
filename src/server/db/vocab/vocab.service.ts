@@ -21,8 +21,8 @@ export class VocabService {
         const collection = await this.dbService.getCollection(collectionID);
         const vocabs = await this.dbService.getVocab('betaDb', collection.items);
         let data: VocabGet[] = vocabs;
-        console.log(`${collection.id} should have `, collection.items);
-        console.log(`${collection.id} has `, data);
+        // console.log(`${collection.id} should have `, collection.items);
+        // console.log(`${collection.id} has `, data);
         return data;
     }
 }

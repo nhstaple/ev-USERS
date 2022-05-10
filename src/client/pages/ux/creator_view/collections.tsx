@@ -18,12 +18,10 @@ const END_POINT = `http://${HOST}:${PORT}/api/db`;
 
 const CollectionsView = ({ data, vocabs }: CollectionsViewProp) => {
     const router = useRouter();
-    console.log('****');
-    console.log(vocabs);
     return (
         <div id={styles.CollectionsView}>
             { data && data.map((collection, i) => {
-                console.log(`collection ${collection.id} (${i})`);
+                // console.log(`collection ${collection.id} (${i})`);
                 const current = vocabs[i];
                 return <div className={styles.collectionContainer} key={collection.id}>
                     <div style={{

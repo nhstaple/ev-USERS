@@ -5,7 +5,7 @@ import DBView from '../../../components/admin/db';
 
 // TODO put into a dotenv
 const PORT = '3000';
-const HOST = 'DOCKER_NODE_SERVICE'; // 'localhost'
+const HOST = 'localhost'; // 'DOCKER_NODE_SERVICE' for docker
 const END_POINT = `http://${HOST}:${PORT}/api/db`
 
 interface IDBMeta {

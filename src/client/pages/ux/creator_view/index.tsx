@@ -12,11 +12,13 @@ import { IVocab } from '../../../../api/entities/vocab';
 import { CollectionGet } from '../../../../server/db/collection/collection.get';
 import { VocabGet } from '../../../../server/db/vocab/vocab.get';
 
+import CollectionCreationEditor from './editor/collection/create'
+
 const CREATOR_ID = 'beta-creator';
 
 // TODO put into a dotenv
 const PORT = '3000';
-const HOST = 'DOCKER_NODE_SERVICE'; // 'http://localhost' // 'DOCKER_NODE_SERVICE'; 
+const HOST = 'localhost'; // 'DOCKER_NODE_SERVICE'; 
 const END_POINT = `http://${HOST}:${PORT}/api/db`
 
 interface ICreatorProp {
@@ -48,10 +50,10 @@ export async function getServerSideProps() {
         console.log('error getting collections data');
     }
 
-    console.log(collectionsData);
-    for(let i = 0; i < collectionsData.length; i++) {
-        console.log(collectionsData[i].items);
-    }
+    // console.log(collectionsData);
+    // for(let i = 0; i < collectionsData.length; i++) {
+    //     console.log(collectionsData[i].items);
+    // }
 
     // vocabs data
     try {
@@ -145,6 +147,11 @@ const CreatorView: NextPage = ({userData, collectionsData, vocabData}: ICreatorP
                 { showCollections && collections && vocabs &&
                 <CollectionsView data={collections} vocabs={vocabs}/>
                 }
+                
+                { !showCollections && showCreationEditor &&
+                <CollectionCreationEditor userID={userID} userEmail={userEmail} />
+                }
+
                 <div id={styles.container}>
                     {!showCreationEditor &&
                     <button className={styles.CreatorViewMenuButton} onClick={ (e) => {
@@ -163,7 +170,7 @@ const CreatorView: NextPage = ({userData, collectionsData, vocabData}: ICreatorP
                         router.replace(router.asPath);
                     }}>
                         {!showCollections && !showCreationEditor && <h2>Create Collection</h2> }
-                        {!showCollections && showCreationEditor && <h2>Submit Collection</h2>}
+                        {!showCollections && showCreationEditor && <h2>Close</h2>}
                     </button>
                 }
                 </div>

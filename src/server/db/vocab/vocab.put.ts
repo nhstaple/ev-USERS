@@ -16,7 +16,7 @@ export class VocabPut implements Partial<IVocab> {
     // where we store the resources (image, sound) as a root path
     storagekey?: string;
     // the person who made the vocab item
-    creator?: IEntity;
+    creator: IEntity;
 
     // TODO
     // the image from the client

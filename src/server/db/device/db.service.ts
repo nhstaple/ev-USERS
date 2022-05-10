@@ -9,6 +9,7 @@ import { CreatorGet } from "../users/creator/creator.get";
 import { ICreator } from "../../../api/entities/users/creator";
 import { ICollection } from "../../../api/entities/collection";
 import { CollectionGet } from "../collection/collection.get";
+import { exit } from "process";
 
 @Injectable()
 export class DBService {
@@ -119,6 +120,8 @@ export class DBService {
             return res;
         } catch(err) {
             console.log(`error getting vocab items in ${dbName}.vocab`);
+            console.log(err);
+            exit(-1);
         }
     }
 
