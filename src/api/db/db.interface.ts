@@ -65,4 +65,6 @@ export interface IDatabaseDevice {
     deleteItem(dbName: string, table: string, uuid: IEntity[] | IEntity): Promise<boolean>;
 
     prepare(databases: IDBMeta[]): Promise<boolean>;
+
+    getCollectionsFromUser(id: string): Promise<ICollection[]>;
 }

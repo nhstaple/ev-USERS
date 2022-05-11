@@ -40,8 +40,8 @@ const betaDeployment: IDBMeta = {
 }
 
 const PREPARE_DBS = [
-    betaDeployment,
-    test1,
+    betaDeployment
+    // test1,
     // test2,
     // test3,
     // ... 

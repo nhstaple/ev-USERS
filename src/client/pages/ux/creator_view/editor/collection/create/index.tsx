@@ -9,26 +9,47 @@ import { VocabPut } from '../../../../../../../server/db/vocab/vocab.put';
 import { exit } from 'process';
 import { TLanguage } from '../../../../../../../api/entities/vocab';
 import { CollectionPut } from '../../../../../../../server/db/collection/collection.put';
+import Axios, { AxiosResponse } from 'axios';
 
 const ENABLE_ALERTS = true;
 
-async function submitHandler(e: React.FormEvent<HTMLFormElement>, collection: CollectionPut, vocabs: VocabPut[]) {
+interface ICollectionValidation {
+    valid: boolean;
+    payload: CollectionPut;
+}
+
+async function submitHandler(e: React.FormEvent<HTMLFormElement>, collection: CollectionPut, vocabs: VocabPut[]): Promise<ICollectionValidation> {
     e.preventDefault();
     // verify / transform data
     if(vocabs.length == 0) {
         const HINTS = 'Press the green button to add a vocab item.';
         if(ENABLE_ALERTS) alert(`Error: the collection's items list cannot be empty. Hints: ${HINTS}`);
-        return false;
+        return {valid: false, payload: null};
     }
 
     if(collection.name == '') {
         if(ENABLE_ALERTS) alert(`Error: the collection's name cannot be empty.`);
-        return false;
+        return {valid: false, payload: null};
     }
-    console.log(collection);
+    
+    // update the vocab's info
+    let newID = '';
+    for(let i = 0; i < vocabs.length; i++) {
+        vocabs[i].lang = collection.lang;
+        vocabs[i].id = `${collection.name}-${i}`;
+        newID += `-${vocabs[i].value}`;
+    }
     console.log(vocabs);
+    // set the collection package
+    collection.items = vocabs;
+    collection.id = newID;
+    console.log(collection);
+    
     // end collection submit handler
-    return true;
+    return {
+        valid: true,
+        payload: collection
+    };
 }
 
 async function createVocabHandler(e: React.FormEvent<HTMLFormElement>) {
@@ -55,11 +76,21 @@ interface CollectionCreationEditorViewProp {
 const INITIAL_COLLECTION = {
     id:'',
     name:'',
-    language: 'english',
+    lang: 'english',
     description: '',
+    creator: {id: ''}
 } as CollectionPut;
 
 const INITIAL_NEW_VOCAB = {id:'', value:'', translation:''} as VocabPut;
+
+const HOST = 'localhost'; // TODO docker deploy (see parent nextpage)
+const PORT = `3000`;
+const END_POINT = `http://${HOST}:${PORT}/api/db/`
+
+async function sendCollectionToServer(payload: CollectionPut) {
+    console.log('sending the collection to the server!');
+    return await Axios.put(`${END_POINT}/collection`, payload);
+}
 
 const CollectionCreationEditor = ({userID, userEmail}: CollectionCreationEditorViewProp) => {
     let [ vocabData, updateVocabData ] = useState<VocabPut[]>([]);
@@ -83,14 +114,28 @@ const CollectionCreationEditor = ({userID, userEmail}: CollectionCreationEditorV
         
         <div id={styles.CollectionMenu}>
             {!showVocabCreationEditor && 
-            <form onSubmit={ async (e) => { submitHandler(e, collection, vocabData) }}>
+            <form onSubmit={ async (e) => { 
+                // e.preventDefault();
+                // validate
+                // tag user
+                collection.creator = {id: userID };
+                const {valid, payload} = await submitHandler(e, collection, vocabData);
+                if(!valid) { return; }
+                // send the payload to the server
+                await sendCollectionToServer(payload);
+                // cleanup
+                setCollection(INITIAL_COLLECTION); // reset collection
+                setNewVocab(INITIAL_NEW_VOCAB); // reset cache for vocab item
+                updateVocabData([]); // reset vocab data
+                router.replace(router.asPath);
+            }}>
                 <div className={styles.formInputContainer}>
                     <p>Name</p>
                     <input name="name" type="text" value={collection.name} onChange={(e) => {setCollection(prev => {return {...prev, name: e.target.value}})}}/>
                 </div>
                 <div className={styles.formInputContainer}>
                     <p>Language</p>
-                    <select name="language" onChange={(e) => {
+                    <select name="lang" onChange={(e) => {
                         let val: TLanguage;
                         switch(e.target.value) {
                             case 'Spanish':
@@ -100,7 +145,7 @@ const CollectionCreationEditor = ({userID, userEmail}: CollectionCreationEditorV
                             case 'Punjabi':
                                 val = 'punjabi' as TLanguage;
                         }
-                        setCollection(prev => {return {...prev, language: val}})
+                        setCollection(prev => {return {...prev, lang: val}})
                     }}>
                         <option>Spanish</option>
                         <option>Punjabi</option>

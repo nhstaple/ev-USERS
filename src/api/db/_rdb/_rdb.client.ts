@@ -302,6 +302,17 @@ export class RethinkdDb implements IDatabaseDevice {
             return false;
         }
     }
+
+    async getCollectionsFromUser(id: string): Promise<ICollection[]> {
+        const p = r.db('betaDb').table('collections').filter(function (collection) {
+            return collection('creator').eq({id: id});
+        }).run(this.conn);
+        
+        const data: ICollection[] = await p.then( (value: r.Cursor) => {
+            return value.toArray().then((results) => results);
+        });
+        return data
+    }
 }
 
 var client: IDatabaseDevice;

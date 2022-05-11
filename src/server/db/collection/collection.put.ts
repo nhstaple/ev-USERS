@@ -9,15 +9,15 @@ export class CollectionPut implements Partial<ICollection> {
     creator: IEntity
     // required data
     items: VocabPut[]
-    language: TLanguage
+    lang: TLanguage
     id: string
     description: string;
 
-    constructor(id: string, language: TLanguage, items: VocabPut[], name: string, creator: IEntity, description='') {
+    constructor(id: string, lang: TLanguage, items: VocabPut[], name: string, creator: IEntity, description='') {
         this.name = name;
         this.creator = creator;
         this.items = items;
-        this.language = language;
+        this.lang = lang;
         this.id = id;
         this.description = description;
     }

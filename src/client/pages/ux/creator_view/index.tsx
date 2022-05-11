@@ -44,7 +44,7 @@ export async function getServerSideProps() {
 
     // collections data
     try {
-        collectionsData = await getCollections(userData.collections);
+        collectionsData = await getCollections(userData);
         // console.log(`got ${collectionsData.length} collections`)
     } catch(err) {
         console.log('error getting collections data');
@@ -90,16 +90,12 @@ function getCollectionIDs(ids: IEntity[]): string[] {
     return res;
 }
 
-async function getCollections(items: IEntity[]): Promise<CollectionGet[]> {
+async function getCollections(user: IEntity): Promise<CollectionGet[]> {
     let result: CollectionGet[] = [];
-    for(let i = 0; i < items.length; i++) {
-        const ID = items[i].id;
-        try {
-            let res = (await Axios.get(`${END_POINT}/collection/${ID}`)).data as CollectionGet;
-            result.push(res);
-        } catch(e) {
-            console.log(`error getting ${ID}`)
-        }
+    try {
+        result = (await Axios.get(`${END_POINT}/collection/${user.id}`)).data as CollectionGet[];
+    } catch(e) {
+        console.log(`error getting ${user.id} collections`)
     }
 
     return result;
@@ -123,7 +119,7 @@ const CreatorView: NextPage = ({userData, collectionsData, vocabData}: ICreatorP
     let [ userID, setUser ] = useState<string>(userData.id);
     let [ userName, setUsername ] = useState<string>(userData.name);
     let [ userEmail, setEmail ] = useState<string>(userData.email);
-    let [ collectionsID, setCollectionsID] = useState<string[]>(getCollectionIDs(userData.collections));
+    let [ collectionsID, setCollectionsID] = useState<string[]>(getCollectionIDs(collectionsData));
     let [ showCollections, setCollectionView ] = useState<boolean>(false);
     let [ showCreationEditor, setCreationEditor ] = useState<boolean>(false);
     let [ collections, setCollections ]= useState<CollectionGet[]>(collectionsData);
@@ -147,9 +143,9 @@ const CreatorView: NextPage = ({userData, collectionsData, vocabData}: ICreatorP
                 { showCollections && collections && vocabs &&
                 <CollectionsView data={collections} vocabs={vocabs}/>
                 }
-                
+
                 { !showCollections && showCreationEditor &&
-                <CollectionCreationEditor userID={userID} userEmail={userEmail} />
+                <CollectionCreationEditor userID={userID} userEmail={userEmail}/>
                 }
 
                 <div id={styles.container}>

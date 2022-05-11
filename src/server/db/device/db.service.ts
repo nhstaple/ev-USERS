@@ -137,4 +137,8 @@ export class DBService {
         return res[0];
     }
 
+    async getCollectionsFromUser(userID: string): Promise<CollectionGet[]> {
+        return await this.client.getCollectionsFromUser(userID);
+    }
+
 }

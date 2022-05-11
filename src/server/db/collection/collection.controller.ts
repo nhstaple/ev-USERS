@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Param } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Put } from '@nestjs/common';
 import { CollectionService } from './collection.service';
 import { CollectionPut } from './collection.put';
 import { CollectionGet } from './collection.get';
@@ -8,16 +8,17 @@ import { CollectionGet } from './collection.get';
 export class CollectionController {
     constructor(private readonly collectionService: CollectionService) {}
 
-    @Get('/:collectionID')
-    async getCollection(@Param('collectionID') id): Promise<CollectionGet> {
-        return await this.collectionService.getCollection(id);
+    @Get('/:userID')
+    async getCollection(@Param('userID') id): Promise<CollectionGet[]> {
+        return await this.collectionService.getUserCollections(id);
     }
 
-    @Post()
-    async newMessage(@Body() data: CollectionPut): Promise<string> {
+    @Put()
+    async insertCollection(@Body() data: CollectionPut): Promise<string> {
         let result: string;
         try {
-            result = await this.collectionService.insertCollection(data);
+            await this.collectionService.insertCollection(data);
+            result = `logged ${data.id}`;
         } catch(err) {
             console.log(`error on api/db/collection PUT`);
         }
