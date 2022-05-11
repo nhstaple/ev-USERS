@@ -133,7 +133,7 @@ const CreatorView: NextPage = ({userData, collectionsData, vocabData}: ICreatorP
 
     return (
         <div style={CREATOR_VIEW_CONTAINER_STYLES}>
-            ( {userData &&
+            {userData &&
             <div id={styles.CreatorView}>
                 {!showCollections && !showCreationEditor &&
                 <div id={styles.CreatorHeader}>
@@ -175,7 +175,7 @@ const CreatorView: NextPage = ({userData, collectionsData, vocabData}: ICreatorP
                 }
                 </div>
             </div>
-            })
+            }
         </div>
     );
 }

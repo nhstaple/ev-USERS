@@ -8,22 +8,43 @@ import styles from './CollectionCreationEditor.module.scss'
 import { VocabPut } from '../../../../../../../server/db/vocab/vocab.put';
 import { exit } from 'process';
 import { TLanguage } from '../../../../../../../api/entities/vocab';
+import { CollectionPut } from '../../../../../../../server/db/collection/collection.put';
 
-async function submitHandler(e: React.FormEvent<HTMLFormElement>, vocabs: VocabPut[]) {
+const ENABLE_ALERTS = true;
+
+async function submitHandler(e: React.FormEvent<HTMLFormElement>, collection: CollectionPut, vocabs: VocabPut[]) {
     e.preventDefault();
-    const name = e.target[0].value;
-    const language = e.target[1].value;
-    console.log(`collection.name     =\t ${name}`);
-    console.log(`collection.language =\t ${language}`);
-    console.log(`collection.items n  =\t ${vocabs.length}`)
+    // verify / transform data
+    if(vocabs.length == 0) {
+        const HINTS = 'Press the green button to add a vocab item.';
+        if(ENABLE_ALERTS) alert(`Error: the collection's items list cannot be empty. Hints: ${HINTS}`);
+        return false;
+    }
+
+    if(collection.name == '') {
+        if(ENABLE_ALERTS) alert(`Error: the collection's name cannot be empty.`);
+        return false;
+    }
+    console.log(collection);
+    console.log(vocabs);
+    // end collection submit handler
+    return true;
 }
 
 async function createVocabHandler(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const value = e.target[0].value;
-    const translation = e.target[1].value;
+    const value = e.target[0].value as string;
+    const translation = e.target[1].value as string;
+    // validate vocab input form data
+    if(value.length == 0 || translation.length == 0) {
+        const HINTS = `The value and/or translation fields are empty.`
+        alert(`Please enter a valid vocabulary item. Hints: ${HINTS}`);
+        return false;
+    }
+    //
     console.log(`vocab.value       =\t ${value}`);
     console.log(`vocab.translation =\t ${translation}`);
+    return true;
 }
 
 interface CollectionCreationEditorViewProp {
@@ -31,14 +52,20 @@ interface CollectionCreationEditorViewProp {
     userEmail: string
 }
 
+const INITIAL_COLLECTION = {
+    id:'',
+    name:'',
+    language: 'english',
+    description: '',
+} as CollectionPut;
+
 const INITIAL_NEW_VOCAB = {id:'', value:'', translation:''} as VocabPut;
 
 const CollectionCreationEditor = ({userID, userEmail}: CollectionCreationEditorViewProp) => {
     let [ vocabData, updateVocabData ] = useState<VocabPut[]>([]);
-    let [ collectionName, setCollectionName ] = useState<string>('');
-    let [ collectionLanguage, setCollectionLanguage ] = useState<string>();
     let [ showVocabCreationEditor, setShowVocabCreator] = useState<boolean>(false);
     let [ newVocab, setNewVocab ] = useState<VocabPut>(INITIAL_NEW_VOCAB);
+    let [ collection, setCollection ] = useState<CollectionPut>(INITIAL_COLLECTION);
 
     const router = useRouter();
 
@@ -48,24 +75,47 @@ const CollectionCreationEditor = ({userID, userEmail}: CollectionCreationEditorV
         <div id={styles.CollectionCreationEditorHeader}>
             <h2>Collection Creator</h2>
         </div>}
+
+        {showVocabCreationEditor &&
+        <div id={styles.CollectionCreationEditorHeader}>
+            <h2>Vocab Creator</h2>
+        </div>}
         
         <div id={styles.CollectionMenu}>
             {!showVocabCreationEditor && 
-            <form onSubmit={ async (e) => { submitHandler(e, vocabData) }}>
+            <form onSubmit={ async (e) => { submitHandler(e, collection, vocabData) }}>
                 <div className={styles.formInputContainer}>
                     <p>Name</p>
-                    <input name="name" type="text" value={collectionName} onChange={(e) => {setCollectionName(e.target.value)}}/>
+                    <input name="name" type="text" value={collection.name} onChange={(e) => {setCollection(prev => {return {...prev, name: e.target.value}})}}/>
                 </div>
                 <div className={styles.formInputContainer}>
                     <p>Language</p>
-                    <select name="language" onChange={(e) => {setCollectionLanguage(e.target.value)}}>
+                    <select name="language" onChange={(e) => {
+                        let val: TLanguage;
+                        switch(e.target.value) {
+                            case 'Spanish':
+                                val = 'spanish' as TLanguage;
+                            case 'English':
+                                val = 'english' as TLanguage;
+                            case 'Punjabi':
+                                val = 'punjabi' as TLanguage;
+                        }
+                        setCollection(prev => {return {...prev, language: val}})
+                    }}>
                         <option>Spanish</option>
                         <option>Punjabi</option>
+                        <option>English</option>
                     </select>
                 </div>
                 <div className={styles.formInputContainer}>
-                    <input type="submit" value="Submit" />
+                    <p>Description</p>
+                    <textarea value={collection.description} onChange={(e) => {setCollection(prev => {return {...prev, description: e.target.value}})}} />
                 </div>
+                
+                {vocabData.length != 0 &&
+                <div className={styles.formInputContainer}>
+                    <input type="submit" value="Create Collection" />
+                </div>}
             </form>}
             <div id={styles.AddVocabContainer}>
                 {!showVocabCreationEditor &&
@@ -78,8 +128,9 @@ const CollectionCreationEditor = ({userID, userEmail}: CollectionCreationEditorV
         {showVocabCreationEditor && 
         <div id={styles.VocabMenu}>
             <form onSubmit={ async (e) => {
-                // process the form data
-                createVocabHandler(e);
+                // process and validate the form data
+                const valid = await createVocabHandler(e); 
+                if(!valid ) { return; }
                 // update the array on the client 
                 updateVocabData( prev => [...prev, newVocab ]);
                 // reset the cache for new vocab items
@@ -98,9 +149,20 @@ const CollectionCreationEditor = ({userID, userEmail}: CollectionCreationEditorV
                 <div className={styles.formInputContainer}>
                     <input type="submit" value="Submit" />
                 </div>
+                <div className={styles.formInputContainer}>
+                    <button id={styles.CancelNewVocabButton} onClick={(e) => {
+                        e.preventDefault();
+                        setNewVocab(INITIAL_NEW_VOCAB);
+                        setShowVocabCreator(!showVocabCreationEditor);
+                    }} >
+                        <p>Cancel</p>
+                    </button>
+                </div>
             </form>
+            
         </div>}
 
+        {!showVocabCreationEditor &&
         <div id={styles.VocabsViewContainer}>
             {vocabData.length == 0 &&
             <p>No vocab items. Click the green button above to populate the collection.</p>
@@ -110,7 +172,7 @@ const CollectionCreationEditor = ({userID, userEmail}: CollectionCreationEditorV
                 // the preview of items
                 return <div className={styles.VocabMetaContainer} key={vocab.value}><p>{vocab.value}</p></div>
             })}
-        </div>
+        </div>}
 
     </div>
     );
