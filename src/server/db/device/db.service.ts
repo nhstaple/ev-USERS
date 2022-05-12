@@ -4,7 +4,7 @@ import { IDatabaseDevice, IDBMeta } from "../../../api/db/db.interface";
 import { prepare_rethink, IEntity } from "../../../api";
 import { IVocab } from "../../../api/entities/vocab";
 
-import { test1, test2, test3, test4 } from "./db.provider";
+import { test1, test2, test3, test4 } from "./db.examples";
 import { CreatorGet } from "../users/creator/creator.get";
 import { ICreator } from "../../../api/entities/users/creator";
 import { ICollection } from "../../../api/entities/collection";

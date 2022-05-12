@@ -11,24 +11,29 @@ div.collectionContainer {
     display: flex;
     flex-direction: row;
     font-size: 1.25em;
-    /* align-content: center; */
-    /* align-items: center; */
     justify-content: space-between;
-    margin: 1vh 0 1vh 0;
+    margin: 1vh 1vw 1vh 1vw;
     padding: 1vh 1vw 1vh 1vw;
+    background-color: orange;
+}
+
+div.collectionMeta {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-right: 5vw;
 }
 
 div.collectionContainer > div > p {
     margin: 0;
 }
 
-p.collectionID {
-    display: flex;
+p.collectionName {
     white-space: nowrap;
 }
 
 p.vocabCount {
-    font-size: 1.05em;
+    font-size: 0.95em;
 }
 
 div.vocabContainer {
@@ -36,12 +41,70 @@ div.vocabContainer {
     align-content: center;
     align-items: center;
     display: flex;
+    width: 100%;
+    scrollbar-width: thin;
+    overflow: scroll;
+    overflow-y: hidden;
+}
+
+/* Scrollbar styles */
+div.vocabContainer::-webkit-scrollbar {
+    width: 12px;
+    height: 8px;
+}
+
+div.vocabContainer::-webkit-scrollbar-track {
+    border: 1px solid greenyellow;
+    border-radius: 10px;
+}
+
+div.vocabContainer::-webkit-scrollbar-thumb {
+    background: yellowgreen;  
+    border-radius: 10px;
+}
+
+div.vocabMeta {
+    display: flex;
+    flex-grow: 0;
+    flex-shrink: 0;
+    flex-direction: column;
+    justify-content: center;
+    border: 0.25px;
+    border-color: black;
+    border-style: solid;
+    width: 20%;
+    background-color: greenyellow;
+    margin: 0.5vh 0.25vw 1.5vh 0.25vw;
+    padding: 0.25vh 0.25vw 0.25vh 0.25vw;
+
+    > p {
+        margin-block-start: 0;
+        margin-block-end: 0;
+    }
 }
 
 p.vocabValue {
-    display: flex;
-    margin: 0 1vh 0 1vh;
-    padding: 0 1vh 0 1vh;
-    width: fit-content;
+    word-wrap: break-word;
+}
+
+p.vocabTranslation {
+    width: 75%;
+    text-overflow: ellipsis;
+    overflow: hidden;
     white-space: nowrap;
+}
+
+div.collectionMenu {
+    display: flex;
+    flex-direction: row;
+    margin: 0.25vh 0 0 0;
+}
+
+button.vocabViewButton, button.collectionEditButton, button.collectionDeleteButton, button.collectionDeleteButton {
+    font-size: 0.9em;
+    display: flex;
+}
+
+button.collectionDeleteButton {
+
 }

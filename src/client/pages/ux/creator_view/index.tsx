@@ -141,7 +141,7 @@ const CreatorView: NextPage = ({userData, collectionsData, vocabData}: ICreatorP
                 </div>}
 
                 { showCollections && collections && vocabs &&
-                <CollectionsView data={collections} vocabs={vocabs}/>
+                <CollectionsView data={collections} vocabs={vocabs} dataUpdate={setCollections}/>
                 }
 
                 { !showCollections && showCreationEditor &&

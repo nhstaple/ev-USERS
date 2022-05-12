@@ -2,7 +2,7 @@
 import { IEntity } from "../../../api";
 import { ICollection } from "../../../api/entities/collection";
 
-export class CollectionGet implements Partial<ICollection> {
+export class CollectionPost implements Partial<ICollection> {
     id: string;
     items: IEntity[];
     creator: IEntity;

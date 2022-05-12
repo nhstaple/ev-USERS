@@ -9,5 +9,7 @@ export const CollectionExample: ICollection = {
     creator: CreatorExample,
     items: [VocabExample, VocabExample, VocabExample],
     id: '[collection] a random stream of characters (TODO implement auto generation)',
-    language: 'english'
+    lang: 'english' as TLanguage,
+    description: '',
+    name: 'early early collection example'
 }

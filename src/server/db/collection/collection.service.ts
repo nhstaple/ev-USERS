@@ -16,8 +16,17 @@ export class CollectionService {
 
     async insertCollection(collection: CollectionPut) {
         console.log(collection);
-        await this.dbService.insert(DB_NAME, 'collections', [ collection ]);
-        await this.dbService.insert(DB_NAME, 'vocabs', [ collection.items ]);
+        try {
+            await this.dbService.insert(DB_NAME, 'collections', [ collection ]);
+        } catch(err) {
+            console.log(err);
+        }
+
+        try {
+            await this.dbService.insert(DB_NAME, 'vocab', collection.items);
+        } catch(err) {
+            console.log(err);
+        }
     }
 
     async getUserCollections(id: string): Promise<CollectionGet[]> {
