@@ -11,11 +11,13 @@ import { CollectionDelete } from "../../../../server/db/collection/collection.de
 import { VocabGet } from '../../../../server/db/vocab/vocab.get';
 import { VocabPost } from '../../../../server/db/vocab/vocab.post';
 import styles from './CollectionsView.module.scss'
+import { iif } from "rxjs";
 
 interface CollectionsViewProp {
     data: CollectionGet[];
     vocabs: Array<VocabGet[]>;
     dataUpdate: React.Dispatch<React.SetStateAction<CollectionGet[]>>;
+    vocabsUpdate: React.Dispatch<React.SetStateAction<VocabGet[][]>>;
 }
 
 const HOST = 'localhost';
@@ -49,10 +51,6 @@ async function deleteCollectionHandler(collection: CollectionDelete): Promise<bo
     }
 }
 
-async function updateCollectionHandler(e: React.FormEvent<HTMLFormElement>, collection: CollectionPost) {
-
-}
-
 function showDeleteVocabDeleteButtons(items: IEntity[], vocab: IEntity): boolean {
     for(let i = 0; i < items.length; i++) {
         if(items[i].id == vocab.id) {
@@ -62,12 +60,13 @@ function showDeleteVocabDeleteButtons(items: IEntity[], vocab: IEntity): boolean
     return false;
 }
 
-const CollectionsView = ({ data, vocabs, dataUpdate }: CollectionsViewProp) => {
+const CollectionsView = ({ data, vocabs, dataUpdate, vocabsUpdate }: CollectionsViewProp) => {
     let [ showVocabEditor, setShowVocab ] = useState<boolean>(false);
     let [ showCollectionEditor, setShowCollectionEditor] = useState<boolean>(false);
 
     let [ targetCollection, setTargetCollection ] = useState<ICollection>(INITIAL_COLLECTION);
     let [ targetVocab, setTargetVocab ] = useState<IVocab>(INITIAL_VOCAB);
+    let [ vocabsToDelete, setVocabToDelete ] = useState<VocabPost[]>([]);
 
     const router = useRouter();
     return (
@@ -99,10 +98,47 @@ const CollectionsView = ({ data, vocabs, dataUpdate }: CollectionsViewProp) => {
                                 Edit
                             </button>}
                             {showCollectionEditor &&
+                            targetCollection.id == collection.id &&
                             <button className={styles.collectionEditButton} onClick={(e) => {
+                                // restore the client state 
+                                if(vocabsToDelete.length > 0) {
+                                    let boop: VocabPost[] = [];
+                                    for(let i = 0; i < vocabsToDelete.length; i++) {
+                                        for(let j = 0; j < collection.items.length; j++) {
+                                            if(collection.items[j].id == vocabsToDelete[i].id) {
+                                                break;
+                                            }
+                                        }
+                                        boop.push(vocabsToDelete[i]);
+                                    }
+                                    
+                                    console.log('trying to restore\n', boop);
+                                    // reset the collections
+                                    dataUpdate((prev) => {
+                                        for(let i = 0; i < prev.length; i++) {
+                                            if(prev[i].id == targetCollection.id) {
+                                                prev[i].items = prev[i].items.concat(boop);
+                                                return prev;
+                                            }
+                                        }
+                                        return prev;
+                                    });
+                                    // reset the vocabs
+                                    vocabsUpdate((prev) => {
+                                        for(let i = 0; i < data.length; i++) {
+                                            if(data[i].id == targetCollection.id) {
+                                                prev[i] = prev[i].concat(vocabsToDelete as IVocab[]);
+                                                return prev;
+                                            }
+                                        }
+                                        return prev;
+                                    });
+                                }
+                                // reset editor
                                 setShowCollectionEditor(!showCollectionEditor);
                                 setTargetCollection(INITIAL_COLLECTION);
                                 setTargetVocab(INITIAL_VOCAB);
+                                setVocabToDelete([]);
                             }}>
                                 Cancel
                             </button>}
@@ -120,8 +156,10 @@ const CollectionsView = ({ data, vocabs, dataUpdate }: CollectionsViewProp) => {
                                 Delete
                             </button>}
                             {showCollectionEditor &&
+                            targetCollection.id == collection.id &&
                             <button className={styles.collectionDeleteButton} onClick={(e) => {
                                 e.preventDefault();
+                                setShowCollectionEditor(false);
                                 alert(`TODO send POST request to the server`);
                             }}>
                                 Finish
@@ -139,7 +177,37 @@ const CollectionsView = ({ data, vocabs, dataUpdate }: CollectionsViewProp) => {
                             </button>}
                             {targetCollection.id != '' &&
                             showDeleteVocabDeleteButtons(targetCollection.items, vocab) &&
-                            <button className={styles.collectionDeleteButton}>
+                            <button className={styles.collectionDeleteButton} onClick={ (e) => {
+                                e.preventDefault();
+                                // add to the items to delete from the server
+                                setVocabToDelete((prev) => { return [...prev, vocab]});
+                                // remove from client state
+                                dataUpdate((prev) => {
+                                    for(let i = 0; i < prev.length; i++) {
+                                        if(prev[i].id == collection.id) {
+                                            for(let j = 0; j < prev[i].items.length; j++) {
+                                                if(prev[i].items[j].id == vocab.id) {
+                                                    prev[i].items.splice(j, 1);
+                                                    return prev;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    return prev;
+                                });
+                                vocabsUpdate((prev) => {
+                                    for(let i = 0; i < prev.length; i++) {
+                                        for(let j = 0; j < prev[i].length; j++) {
+                                            if(prev[i][j].id == vocab.id) {
+                                                prev[i].splice(j, 1);
+                                                return prev;
+                                            }
+                                        }
+                                    }
+                                    return prev;
+                                });
+                                router.replace(router.asPath);
+                            }}>
                                 Delete
                             </button>
                             }

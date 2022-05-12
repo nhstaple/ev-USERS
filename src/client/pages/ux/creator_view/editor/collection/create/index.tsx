@@ -9,6 +9,7 @@ import { VocabPut } from '../../../../../../../server/db/vocab/vocab.put';
 import { exit } from 'process';
 import { TLanguage } from '../../../../../../../api/entities/vocab';
 import { CollectionPut } from '../../../../../../../server/db/collection/collection.put';
+import { CollectionGet } from '../../../../../../../server/db/collection/collection.get';
 import Axios, { AxiosResponse } from 'axios';
 
 const ENABLE_ALERTS = true;
@@ -128,6 +129,7 @@ const CollectionCreationEditor = ({userID, userEmail}: CollectionCreationEditorV
                 setNewVocab(INITIAL_NEW_VOCAB); // reset cache for vocab item
                 updateVocabData([]); // reset vocab data
                 router.replace(router.asPath);
+                window.location.reload();
             }}>
                 <div className={styles.formInputContainer}>
                     <p>Name</p>
@@ -145,7 +147,7 @@ const CollectionCreationEditor = ({userID, userEmail}: CollectionCreationEditorV
                             case 'Punjabi':
                                 val = 'punjabi' as TLanguage;
                         }
-                        setCollection(prev => {return {...prev, lang: val}})
+                        setCollection(prev => {return {...prev, lang: val}});
                     }}>
                         <option>Spanish</option>
                         <option>Punjabi</option>

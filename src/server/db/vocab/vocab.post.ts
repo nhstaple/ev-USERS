@@ -4,12 +4,12 @@ import { IVocab, TLanguage, TPartOfSpeech } from "../../../api/entities/vocab";
 
 export class VocabPost implements Partial<IVocab> {
     id: string;
-    value: string;
-    translation: string;
-    pos: TPartOfSpeech;
-    lang: TLanguage;
-    storagekey: string;
-    creator: IEntity;
+    value?: string;
+    translation?: string;
+    pos?: TPartOfSpeech;
+    lang?: TLanguage;
+    storagekey?: string;
+    creator?: IEntity;
 
     constructor(id: string, value: string, translation: string, pos: TPartOfSpeech, lang: TLanguage, storagekey: string, creator: IEntity) {
         this.id = id;

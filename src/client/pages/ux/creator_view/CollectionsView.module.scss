@@ -5,6 +5,11 @@
     align-content: center;
     height: inherit;
     width: inherit;
+    scrollbar-width: thin;
+    overflow: scroll;
+    overflow-x: hidden;
+    height: 100%;
+    padding-top: 20vh;
 }
 
 div.collectionContainer {
