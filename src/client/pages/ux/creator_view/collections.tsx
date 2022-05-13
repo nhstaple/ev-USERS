@@ -29,7 +29,8 @@ const INITIAL_COLLECTION = {
     name:'',
     lang: 'english' as TLanguage,
     description: '',
-    creator: {id: ''}
+    creator: {id: ''},
+    items: []
 } as ICollection;
 
 const INITIAL_VOCAB = {
@@ -61,19 +62,49 @@ function showDeleteVocabDeleteButtons(items: IEntity[], vocab: IEntity): boolean
 }
 
 const CollectionsView = ({ data, vocabs, dataUpdate, vocabsUpdate }: CollectionsViewProp) => {
-    let [ showVocabEditor, setShowVocab ] = useState<boolean>(false);
+    let [ showVocabEditor, setShowVocabEditor ] = useState<boolean>(false);
     let [ showCollectionEditor, setShowCollectionEditor] = useState<boolean>(false);
 
     let [ targetCollection, setTargetCollection ] = useState<ICollection>(INITIAL_COLLECTION);
     let [ targetVocab, setTargetVocab ] = useState<IVocab>(INITIAL_VOCAB);
     let [ vocabsToDelete, setVocabToDelete ] = useState<VocabPost[]>([]);
+    let [ collectionCache, setCollectionCache ] = useState<CollectionGet>(INITIAL_COLLECTION);
+    let [ vocabCache, setVocabCache ] = useState<VocabGet[]>([]);
 
     const router = useRouter();
     return (
         <div id={styles.CollectionsView}>
+            {showVocabEditor && 
+            <div id={styles.VocabEditor}>
+                <p className={styles.vocabValue}>{targetVocab.value}</p>
+                <p className={styles.vocabEditorTranslation}>{targetVocab.translation} ({targetVocab.subject})</p>
+                <p className={styles.vocabPOS}>{targetVocab.pos}</p>
+                <p className={styles.vocabID}>ID: {targetVocab.id}</p>
+                <button className={styles.closeVocabButton} onClick={(e) => {
+                    e.preventDefault();
+                    setTargetVocab({...INITIAL_VOCAB});
+                    setShowVocabEditor(false);
+                }}>
+                    Close
+                </button>
+            </div>
+            }
+            
             { data && data.map((collection, i) => {
-                // console.log(`collection ${collection.id} (${i})`);
-                const current = vocabs[i];
+                // get the correct index that corresponds that data and vocabs arrays
+                let vocabIndex = -1;
+                for(let a = 0; a < vocabs.length; a++) {
+                    for(let b = 0; b < vocabs[a].length; b++) {
+                        for(let j = 0; j < collection.items.length; j++) {
+                            if(vocabs[a][b].id == collection.items[j].id) {
+                                vocabIndex = a;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                const current = vocabs[vocabIndex];
                 return <div className={styles.collectionContainer} key={collection.id}>
                     <div className={styles.collectionMeta}>
                         <p className={styles.collectionName}>{collection.name}</p>
@@ -82,99 +113,113 @@ const CollectionsView = ({ data, vocabs, dataUpdate, vocabsUpdate }: Collections
                             {!showCollectionEditor &&
                             <button className={styles.collectionEditButton} onClick={(e) => {
                                 setShowCollectionEditor(!showCollectionEditor);
-                                setTargetCollection((prev) => {
-                                    for(let i = 0; i < data.length; i++) {
-                                        if(collection.id == data[i].id) {
-                                            console.log(data[i].items);
-                                            return {...prev,
-                                                id: collection.id,
-                                                items: data[i].items
-                                            }
-                                        }
+                                setTargetCollection(collection);
+                                let idx = -1;
+                                data.forEach((val, i) => {
+                                    if(val.id == collection.id) {
+                                        idx = i;
+                                        return;
                                     }
-                                    return prev
-                                });
+                                })
+                                setVocabCache([...vocabs[i]]);
+                                setCollectionCache({...collection});
                             }}>
                                 Edit
                             </button>}
+                            
                             {showCollectionEditor &&
                             targetCollection.id == collection.id &&
                             <button className={styles.collectionEditButton} onClick={(e) => {
-                                // restore the client state 
-                                if(vocabsToDelete.length > 0) {
-                                    let boop: VocabPost[] = [];
-                                    for(let i = 0; i < vocabsToDelete.length; i++) {
-                                        for(let j = 0; j < collection.items.length; j++) {
-                                            if(collection.items[j].id == vocabsToDelete[i].id) {
-                                                break;
-                                            }
-                                        }
-                                        boop.push(vocabsToDelete[i]);
+                                // rest the client
+                                let idx = -1;
+                                data.forEach((c, i) => {
+                                    if(c.id == collection.id) {
+                                        idx = i;
+                                        return;
                                     }
-                                    
-                                    console.log('trying to restore\n', boop);
-                                    // reset the collections
-                                    dataUpdate((prev) => {
-                                        for(let i = 0; i < prev.length; i++) {
-                                            if(prev[i].id == targetCollection.id) {
-                                                prev[i].items = prev[i].items.concat(boop);
-                                                return prev;
-                                            }
-                                        }
-                                        return prev;
-                                    });
-                                    // reset the vocabs
-                                    vocabsUpdate((prev) => {
-                                        for(let i = 0; i < data.length; i++) {
-                                            if(data[i].id == targetCollection.id) {
-                                                prev[i] = prev[i].concat(vocabsToDelete as IVocab[]);
-                                                return prev;
-                                            }
-                                        }
-                                        return prev;
-                                    });
-                                }
+                                });
+                                
+                                data[i] = {...collectionCache, items: vocabCache};
+                                dataUpdate(data);
+                                vocabs[i] = vocabCache;
+                                vocabsUpdate(vocabs);
+
                                 // reset editor
+                                setTargetCollection({...INITIAL_COLLECTION});
+                                setTargetVocab({...INITIAL_VOCAB});
+                                setCollectionCache({...INITIAL_COLLECTION});
                                 setShowCollectionEditor(!showCollectionEditor);
-                                setTargetCollection(INITIAL_COLLECTION);
-                                setTargetVocab(INITIAL_VOCAB);
+                                setVocabCache([])
                                 setVocabToDelete([]);
                             }}>
                                 Cancel
                             </button>}
+                            
                             {!showCollectionEditor &&
-                            <button className={styles.collectionDeleteButton} onClick={(e) => {
-                                const res = deleteCollectionHandler({id:collection.id, items:collection.items});
+                            <button className={styles.collectionDeleteButton} onClick={ async (e) => {
+                                // delete from the server
+                                const serverDeleteResponse = await deleteCollectionHandler({id:collection.id, items:collection.items});
+                                if(!serverDeleteResponse){ return; }
+
+                                // update the client
+                                // collections
+                                let idx = -1;
                                 data.forEach((val, i, data) => {
                                     if(val.id == collection.id) {
-                                        data.splice(i, 1);
-                                        dataUpdate(data);
-                                        router.replace(router.asPath);
+                                        idx = i;
+                                        return;
                                     }
                                 });
+                                data.splice(idx, 1);
+                                dataUpdate(data);
+                                // vocabs
+                                vocabs.slice(idx, 1);
+                                vocabsUpdate(vocabs);
+
+                                // reset editor
+                                // setShowCollectionEditor(!showCollectionEditor);
+                                setTargetCollection(INITIAL_COLLECTION);
+                                setTargetVocab(INITIAL_VOCAB);
+                                setVocabToDelete([]);
                             }}>
                                 Delete
                             </button>}
+                            
                             {showCollectionEditor &&
                             targetCollection.id == collection.id &&
                             <button className={styles.collectionDeleteButton} onClick={(e) => {
                                 e.preventDefault();
-                                setShowCollectionEditor(false);
-                                alert(`TODO send POST request to the server`);
+                                // setShowCollectionEditor(false);
+                                let message: string = `TODO send POST request to the server`;
+                                vocabsToDelete.forEach(v => message = `${message}\n${v.value}`)
+                                alert(message);
+                                // reset editor
+                                setTargetCollection({...INITIAL_COLLECTION});
+                                setTargetVocab({...INITIAL_VOCAB});
+                                setCollectionCache({...INITIAL_COLLECTION});
+                                setVocabCache([])
+                                setVocabToDelete([]);
+                                setShowCollectionEditor(!showCollectionEditor);
                             }}>
                                 Finish
                             </button>}
                         </div>
                     </div>
+
                     <div className={styles.vocabContainer}>
                     { current && current.map((vocab: VocabGet) => {
                         return <div className={styles.vocabMeta} key={vocab.id}>
                             <p className={styles.vocabValue}>{vocab.value}</p>
-                            <p className={styles.vocabTranslation}>{vocab.translation}</p>
-                            {!showCollectionEditor &&
-                            <button className={styles.vocabViewButton}>
+                            {/* <p className={styles.vocabTranslation}>{vocab.translation}</p> */}
+                            {!showCollectionEditor && !showVocabEditor &&
+                            <button className={styles.vocabViewButton} onClick={(e) => {
+                                e.preventDefault();
+                                setTargetVocab(vocab);
+                                setShowVocabEditor(true);
+                            }} >
                                 View
                             </button>}
+
                             {targetCollection.id != '' &&
                             showDeleteVocabDeleteButtons(targetCollection.items, vocab) &&
                             <button className={styles.collectionDeleteButton} onClick={ (e) => {
@@ -193,7 +238,7 @@ const CollectionsView = ({ data, vocabs, dataUpdate, vocabsUpdate }: Collections
                                             }
                                         }
                                     }
-                                    return prev;
+                                    return {...prev};
                                 });
                                 vocabsUpdate((prev) => {
                                     for(let i = 0; i < prev.length; i++) {
@@ -204,7 +249,7 @@ const CollectionsView = ({ data, vocabs, dataUpdate, vocabsUpdate }: Collections
                                             }
                                         }
                                     }
-                                    return prev;
+                                    return [...prev];
                                 });
                                 router.replace(router.asPath);
                             }}>

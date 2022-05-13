@@ -7,6 +7,7 @@ export const VocabExample: IVocab = {
     lang: 'spanish',
     storagekey: 'TODO add asset storage',
     creator: CreatorExample,
-    id: '[vocab] a random stream of characters (TODO implement auto generation)'
+    id: '[vocab] a random stream of characters (TODO implement auto generation)',
+    subject: 'feminine'
 };
 

@@ -1,7 +1,7 @@
 import { IEntity } from "../../../api";
 import { ICollection } from "../../../api/entities/collection"
 import { ICreator } from "../../../api/entities/users/creator";
-import { TLanguage, IVocab, TPartOfSpeech } from "../../../api/entities/vocab"
+import { TLanguage, IVocab, TPartOfSpeech, TVocabSubject } from "../../../api/entities/vocab"
 
 export class VocabPut implements Partial<IVocab> {
     id: string;
@@ -17,6 +17,8 @@ export class VocabPut implements Partial<IVocab> {
     storagekey?: string;
     // the person who made the vocab item
     creator: IEntity;
+    //
+    subject: TVocabSubject;
 
     // TODO
     // the image from the client

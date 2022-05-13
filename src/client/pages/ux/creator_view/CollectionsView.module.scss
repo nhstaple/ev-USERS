@@ -113,3 +113,20 @@ button.vocabViewButton, button.collectionEditButton, button.collectionDeleteButt
 button.collectionDeleteButton {
 
 }
+
+#VocabEditor {
+    display: flex;
+    flex-direction: column;
+    background-color: yellow;
+    z-index: 2;
+    font-size: 1em;
+    align-content: center;
+    align-items: center;
+    display: flex;
+    width: 50vw;
+    height: 50vh;
+    scrollbar-width: thin;
+    padding-left: 25vw;
+    padding-right: 25vw;
+    position: absolute;
+}

@@ -7,7 +7,7 @@ import { useRouter } from 'next/router';
 import styles from './CollectionCreationEditor.module.scss'
 import { VocabPut } from '../../../../../../../server/db/vocab/vocab.put';
 import { exit } from 'process';
-import { TLanguage } from '../../../../../../../api/entities/vocab';
+import { TLanguage, TPartOfSpeech, TVocabSubject } from '../../../../../../../api/entities/vocab';
 import { CollectionPut } from '../../../../../../../server/db/collection/collection.put';
 import { CollectionGet } from '../../../../../../../server/db/collection/collection.get';
 import Axios, { AxiosResponse } from 'axios';
@@ -82,7 +82,13 @@ const INITIAL_COLLECTION = {
     creator: {id: ''}
 } as CollectionPut;
 
-const INITIAL_NEW_VOCAB = {id:'', value:'', translation:''} as VocabPut;
+const INITIAL_NEW_VOCAB = {
+    id:'',
+    value:'',
+    translation:'',
+    pos: 'noun' as TPartOfSpeech,
+    subject: 'neutral' as TVocabSubject
+} as VocabPut;
 
 const HOST = 'localhost'; // TODO docker deploy (see parent nextpage)
 const PORT = `3000`;
@@ -189,13 +195,51 @@ const CollectionCreationEditor = ({userID, userEmail}: CollectionCreationEditorV
                     <p>Value</p>
                     <input name="value" type="text" value={newVocab.value} onChange={(e) => {setNewVocab(prev => { return {...prev, value: e.target.value }})}}/>
                 </div>
+
                 <div className={styles.formInputContainer}>
                     <p>Translation</p>
                     <input name="translation" type="text" value={newVocab.translation} onChange={(e) => {setNewVocab(prev => { return {...prev, translation: e.target.value }})}}/>
                 </div>
+
+                <div className={styles.formInputContainer}>
+                    <p>Part of Speech</p>
+                    <select name="lang" onChange={(e) => {
+                        // "noun" | "verb" | "participle" | "article" | "pronoun" | "preposition" | "adverb" | "conjunction"
+                        let val: TPartOfSpeech = e.target.value as TPartOfSpeech;
+                        setNewVocab(prev => {return {...prev, pos: val}});
+                    }}>
+                        <option>noun</option>
+                        <option>verb</option>
+                        <option>adjective</option>
+                        <option>particple</option>
+                        <option>article</option>
+                        <option>pronoun</option>
+                        <option>preposition</option>
+                        <option>adverb</option>
+                        <option>conjuction</option>
+                    </select>
+                </div>
+
+                <div className={styles.formInputContainer}>
+                    <p>Subject</p>
+                    <select name="lang" onChange={(e) => {
+                        // "neutral" | "masculine" | "feminine" | "neutral_plural" | "masculine_plural" | "feminine_plural"
+                        let val: TVocabSubject = e.target.value as TVocabSubject;
+                        setNewVocab(prev => {return {...prev, subject: val}});
+                    }}>
+                        <option>neutral</option>
+                        <option>masculine</option>
+                        <option>feminine</option>
+                        <option>neutral (plural)</option>
+                        <option>masculine (plural)</option>
+                        <option>feminine (plural)</option>
+                    </select>
+                </div>
+
                 <div className={styles.formInputContainer}>
                     <input type="submit" value="Submit" />
                 </div>
+
                 <div className={styles.formInputContainer}>
                     <button id={styles.CancelNewVocabButton} onClick={(e) => {
                         e.preventDefault();
