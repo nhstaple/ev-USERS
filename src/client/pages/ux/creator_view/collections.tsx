@@ -93,6 +93,9 @@ const CollectionsView = ({ data, vocabs, dataUpdate, vocabsUpdate }: Collections
     let [ editingVocabIndex, SetEditingVocabIndex ] = useState<number>(-1);
     let [ editingVocabsItemsIndex, SetEditingVocabsItemsIndex ] = useState<number>(-1);
 
+    let [ useLangFilter, SetUseLangFilter ] = useState<boolean>(false);
+    let [ langFilter, SetLangFilter ] = useState<TLanguage>(null); 
+
     const router = useRouter();
     return (
         <div id={styles.CollectionsView}>
@@ -215,12 +218,39 @@ const CollectionsView = ({ data, vocabs, dataUpdate, vocabsUpdate }: Collections
                 </div>
             </div>}
             
+            { !showCollectionEditor && !showVocabEditor &&
+            <button onClick={(e) => {
+                e.preventDefault();
+                SetUseLangFilter(!useLangFilter);
+                SetLangFilter('english');
+            }}>
+                { !useLangFilter && 'Use Filter' }
+                { useLangFilter && 'Turn Off Filter' }
+            </button>}
+            
+            {useLangFilter && langFilter &&
+            !showCollectionEditor && !showVocabEditor &&
+            <select value={langFilter} onChange={(e) => {
+                e.preventDefault();
+                let val = e.target.value.toLowerCase() as TLanguage;
+                alert(`using the ${val} filter`);
+                SetLangFilter(val);
+            }}>
+                <option>English</option>
+                <option>Spanish</option>
+                <option>Punjabi</option>
+            </select>}
+
             { !showVocabEditor && data &&
             data.map((collection, i) => {
                 if(showCollectionEditor && collection.id != targetCollection.id) {
                     return;
                 }
 
+                if(useLangFilter && collection.lang != langFilter) {
+                    return;
+                }
+                
                 // get the correct index that corresponds that data and vocabs arrays
                 let vocabIndex = -1;
                 for(let a = 0; a < vocabs.length; a++) {
@@ -315,8 +345,10 @@ const CollectionsView = ({ data, vocabs, dataUpdate, vocabsUpdate }: Collections
                             <button className={styles.collectionDeleteButton} onClick={(e) => {
                                 e.preventDefault();
                                 // SetshowCollectionEditor(false);
-                                let message: string = `TODO send POST request to the server`;
-                                vocabDeleteCache.forEach(v => message = `${message}\n${v.value}`)
+                                let message: string = `TODO send DELETE request to the server for vocabs`;
+                                vocabDeleteCache.forEach(v => message = `${message}\n${v.value}`);
+                                message += `\n\nTODO send PUT request to the server for vocabs`;
+                                vocabEditCache.forEach(v => message = `${message}\n${v.value}`);
                                 alert(message);
                                 // reset editor
                                 SetTargetCollection({...INITIAL_COLLECTION});
