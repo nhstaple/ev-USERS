@@ -152,3 +152,53 @@ button.collectionDeleteButton {
         }
     }
 }
+
+div.formInputContainer {
+    display: flex;
+    justify-content: space-between;
+    margin: 1vh 0 1vh 0;
+
+    > p {
+        display: flex;
+        padding: 0 1vw 0 0;
+        width: 50%;
+        margin-block-start: 0;
+        margin-block-end: 0;
+    }
+
+    > input {
+        display: flex;
+        width: 50%;
+        height: 1.25em;
+        font-size: 1em;
+    }
+
+    > select {
+        font-size: 1em;
+    }
+}
+
+div.VocabMetaContainer {
+    display: flex;
+    > p {
+        display: flex;
+        padding: 1vh 1vw 1vh 1vh;
+    }
+}
+
+#VocabMenu {
+    display: flex;
+    justify-content: center;
+
+    > button {
+        display: flex;
+        background-color: greenyellow;
+        > p {
+            color: black;
+        }
+    }
+}
+
+#VocabView {
+    display: flex;
+}

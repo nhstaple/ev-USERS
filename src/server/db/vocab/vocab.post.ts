@@ -1,6 +1,6 @@
 
 import { IEntity } from "../../../api";
-import { IVocab, TLanguage, TPartOfSpeech } from "../../../api/entities/vocab";
+import { IVocab, TLanguage, TPartOfSpeech, TVocabSubject } from "../../../api/entities/vocab";
 
 export class VocabPost implements Partial<IVocab> {
     id: string;
@@ -10,6 +10,7 @@ export class VocabPost implements Partial<IVocab> {
     lang?: TLanguage;
     storagekey?: string;
     creator?: IEntity;
+    subject?: TVocabSubject;
 
     constructor(id: string, value: string, translation: string, pos: TPartOfSpeech, lang: TLanguage, storagekey: string, creator: IEntity) {
         this.id = id;
