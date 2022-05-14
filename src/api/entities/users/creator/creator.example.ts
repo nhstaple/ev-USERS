@@ -57,7 +57,7 @@ const MakeCollection = (n: number, name: string, items: IVocab[], description: s
 
     let VocabIDs: IEntity[] = [];
     for(let i = 0; i < items.length; i++) {
-        const ID = VOCAB_ID(n, i);
+        const ID = VOCAB_ID(n, i + 1);
         VocabIDs.push({id: ID});
     }
     
@@ -79,4 +79,4 @@ export const CreatorExample: ICreator = {
     collections: CreatorExampleCollections as IEntity[]
 };
 
-export const ExampleVocabs: IVocab[] = Vegetables.concat(Fruits).concat(Animals);
+export const ExampleVocabs: IVocab[] = Vegetables.concat(Fruits, Animals);

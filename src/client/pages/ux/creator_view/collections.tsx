@@ -89,8 +89,30 @@ const CollectionsView = ({ data, vocabs, dataUpdate, vocabsUpdate }: Collections
                 </button>
             </div>
             }
+
+            {showCollectionEditor && targetCollection.id != '' &&
+            <div id={styles.CollectionEditor}>
+                <p>Collection Editor</p>
+                <div>
+                    <p>{targetCollection.name}</p>
+                    <p>{targetCollection.description}</p>
+                    <p>{targetCollection.lang}</p>
+                </div>
+                <button className={styles.CloseCollectionEditorButton} onClick={(e) => {
+                    e.preventDefault();
+                    setShowCollectionEditor(false);
+                    setTargetCollection(INITIAL_COLLECTION);
+                }}>
+                    Close
+                </button>
+            </div>
+            }
             
             { data && data.map((collection, i) => {
+                if(showCollectionEditor && collection.id != targetCollection.id) {
+                    return;
+                }
+
                 // get the correct index that corresponds that data and vocabs arrays
                 let vocabIndex = -1;
                 for(let a = 0; a < vocabs.length; a++) {

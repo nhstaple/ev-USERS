@@ -130,3 +130,25 @@ button.collectionDeleteButton {
     padding-right: 25vw;
     position: absolute;
 }
+
+#CollectionEditor {
+    display: flex;
+    width: 50vw;
+    height: 33vh;
+    flex-direction: column;
+    align-self: center;
+    background-color: orange;
+    text-align: center;
+
+    > div {
+        display: flex;
+        flex-direction: column;
+
+        > p {
+            margin-block-end: 0;
+            margin-block-start: 0;
+            display: flex;
+            flex: 0 0 auto;
+        }
+    }
+}

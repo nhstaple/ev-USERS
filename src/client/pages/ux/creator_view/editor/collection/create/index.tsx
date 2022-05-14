@@ -1,12 +1,10 @@
 // https://docs.nestjs.com/techniques/file-upload#multiple-files
 
 import React, { useState } from 'react';
-import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 
 import styles from './CollectionCreationEditor.module.scss'
 import { VocabPut } from '../../../../../../../server/db/vocab/vocab.put';
-import { exit } from 'process';
 import { TLanguage, TPartOfSpeech, TVocabSubject } from '../../../../../../../api/entities/vocab';
 import { CollectionPut } from '../../../../../../../server/db/collection/collection.put';
 import { CollectionGet } from '../../../../../../../server/db/collection/collection.get';
@@ -19,7 +17,7 @@ interface ICollectionValidation {
     payload: CollectionPut;
 }
 
-async function submitHandler(e: React.FormEvent<HTMLFormElement>, collection: CollectionPut, vocabs: VocabPut[]): Promise<ICollectionValidation> {
+async function SubmitHandler(e: React.FormEvent<HTMLFormElement>, collection: CollectionPut, vocabs: VocabPut[]): Promise<ICollectionValidation> {
     e.preventDefault();
     // verify / transform data
     if(vocabs.length == 0) {
@@ -53,7 +51,7 @@ async function submitHandler(e: React.FormEvent<HTMLFormElement>, collection: Co
     };
 }
 
-async function createVocabHandler(e: React.FormEvent<HTMLFormElement>) {
+async function CreateVocabHandler(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const value = e.target[0].value as string;
     const translation = e.target[1].value as string;
@@ -69,11 +67,12 @@ async function createVocabHandler(e: React.FormEvent<HTMLFormElement>) {
     return true;
 }
 
-interface CollectionCreationEditorViewProp {
+interface ICollectionEditorViewProp {
     userID: string,
     userEmail: string
 }
 
+// used to set / reset the collection being edited
 const INITIAL_COLLECTION = {
     id:'',
     name:'',
@@ -82,6 +81,7 @@ const INITIAL_COLLECTION = {
     creator: {id: ''}
 } as CollectionPut;
 
+// used to set / reset the vocab item(s) being edited
 const INITIAL_NEW_VOCAB = {
     id:'',
     value:'',
@@ -90,123 +90,167 @@ const INITIAL_NEW_VOCAB = {
     subject: 'neutral' as TVocabSubject
 } as VocabPut;
 
-const HOST = 'localhost'; // TODO docker deploy (see parent nextpage)
+const HOST = 'localhost'; // TODO docker deploy (see parent pages)
 const PORT = `3000`;
 const END_POINT = `http://${HOST}:${PORT}/api/db/`
 
-async function sendCollectionToServer(payload: CollectionPut) {
+async function SendCollectionToServer(payload: CollectionPut) {
     console.log('sending the collection to the server!');
+    console.log(payload);
+    console.log(`${payload.items.length} vocab items to insert in th DB`);
     return await Axios.put(`${END_POINT}/collection`, payload);
 }
 
-const CollectionCreationEditor = ({userID, userEmail}: CollectionCreationEditorViewProp) => {
-    let [ vocabData, updateVocabData ] = useState<VocabPut[]>([]);
-    let [ showVocabCreationEditor, setShowVocabCreator] = useState<boolean>(false);
-    let [ newVocab, setNewVocab ] = useState<VocabPut>(INITIAL_NEW_VOCAB);
-    let [ collection, setCollection ] = useState<CollectionPut>(INITIAL_COLLECTION);
+const CollectionCreationEditor = ({userID, userEmail}: ICollectionEditorViewProp) => {
+    // this flag contrals the pop-up to create a new vocab item
+    let [ showVocabCreator, SetShowVocabCreator] = useState<boolean>(false);
+
+    // this acache holds all the data for vocab cards for the current collection
+    let [ itemsCache, SetItemsCache ] = useState<VocabPut[]>([]);
+    // this cache variable keeps track of the vocab item currently being created / edited by the user
+    let [ newVocab, SetNewVocab ] = useState<VocabPut>(INITIAL_NEW_VOCAB);
+    // this cache variable
+    let [ newCollection, SetNewCollection ] = useState<CollectionPut>(INITIAL_COLLECTION);
+
+    let [ editingVocab, SetEditingVocab ] = useState<boolean>(false);
+    let [ editIndex, SetEditIndex ] = useState<number>(-1);
 
     const router = useRouter();
 
     return (
+    {/* the root of the collection creation editor */} &&
     <div id={styles.CollectionCreationEditor}>
-        {!showVocabCreationEditor &&
+        {/* the creation editor headers */}
+        {!showVocabCreator &&
         <div id={styles.CollectionCreationEditorHeader}>
             <h2>Collection Creator</h2>
         </div>}
 
-        {showVocabCreationEditor &&
+        {showVocabCreator &&
         <div id={styles.CollectionCreationEditorHeader}>
             <h2>Vocab Creator</h2>
         </div>}
         
+        {/* contains all the meta information for a new collection */}
         <div id={styles.CollectionMenu}>
-            {!showVocabCreationEditor && 
-            <form onSubmit={ async (e) => { 
+            {/* show the collection information if the user is not editing a vocab item */}
+            {!showVocabCreator && 
+            {/* this form defines the meta information of a collection
+                on submit, this form executes an HTTP.PUT request to the server
+            */} &&
+            <form onSubmit={ async (e) => {
                 // e.preventDefault();
-                // validate
                 // tag user
-                collection.creator = {id: userID };
-                const {valid, payload} = await submitHandler(e, collection, vocabData);
+                newCollection.creator = {id: userID };
+                // validate the collection and items
+                const {valid, payload} = await SubmitHandler(e, newCollection, itemsCache);
                 if(!valid) { return; }
                 // send the payload to the server
-                await sendCollectionToServer(payload);
-                // cleanup
-                setCollection(INITIAL_COLLECTION); // reset collection
-                setNewVocab(INITIAL_NEW_VOCAB); // reset cache for vocab item
-                updateVocabData([]); // reset vocab data
+                await SendCollectionToServer(payload);
+
+                // cleanup and reset the client
+                SetNewCollection(INITIAL_COLLECTION); // reset collection
+                SetNewVocab(INITIAL_NEW_VOCAB); // reset cache for vocab item
+                SetItemsCache([]); // reset vocab data
                 router.replace(router.asPath);
-                window.location.reload();
+                // window.location.reload();
             }}>
                 <div className={styles.formInputContainer}>
                     <p>Name</p>
-                    <input name="name" type="text" value={collection.name} onChange={(e) => {setCollection(prev => {return {...prev, name: e.target.value}})}}/>
+                    <input name="name" type="text" value={newCollection.name} onChange={(e) => {
+                        SetNewCollection(prev => {return {...prev, name: e.target.value}});
+                    }}/>
                 </div>
+                
                 <div className={styles.formInputContainer}>
                     <p>Language</p>
                     <select name="lang" onChange={(e) => {
-                        let val: TLanguage;
-                        switch(e.target.value) {
-                            case 'Spanish':
-                                val = 'spanish' as TLanguage;
-                            case 'English':
-                                val = 'english' as TLanguage;
-                            case 'Punjabi':
-                                val = 'punjabi' as TLanguage;
-                        }
-                        setCollection(prev => {return {...prev, lang: val}});
+                        let val: TLanguage = e.target.value.toLowerCase() as TLanguage;
+                        newCollection.lang = val;
+                        itemsCache.forEach((vocab) => {
+                            return {...vocab, lan: val}
+                        });
+                        SetItemsCache(itemsCache);
+                        SetNewCollection(newCollection);
+                        console.log(newCollection);
                     }}>
                         <option>Spanish</option>
                         <option>Punjabi</option>
                         <option>English</option>
+                        {/* TODO add more language support, see TLanguages */}
                     </select>
                 </div>
+                
                 <div className={styles.formInputContainer}>
                     <p>Description</p>
-                    <textarea value={collection.description} onChange={(e) => {setCollection(prev => {return {...prev, description: e.target.value}})}} />
+                    <textarea value={newCollection.description} onChange={(e) => {
+                        SetNewCollection(prev => {return {...prev, description: e.target.value}})
+                    }} />
                 </div>
                 
-                {vocabData.length != 0 &&
+                {itemsCache.length != 0 &&
                 <div className={styles.formInputContainer}>
                     <input type="submit" value="Create Collection" />
                 </div>}
             </form>}
+
+            {/* this holds the button that shows the vocab creation editor */}
             <div id={styles.AddVocabContainer}>
-                {!showVocabCreationEditor &&
-                <button onClick={(e) => {setShowVocabCreator(!showVocabCreationEditor);}}>
+                {!showVocabCreator &&
+                // this button opens the vocab creator
+                <button onClick={(e) => {
+                    // tag the vocab with the current language
+                    SetNewVocab({... INITIAL_NEW_VOCAB, lang: newCollection.lang});
+                    SetShowVocabCreator(!showVocabCreator);}
+                }>
                     <p>Add Vocab</p>
                 </button>}
             </div>
         </div>
 
-        {showVocabCreationEditor && 
+        {/* contains all the meta information for a new vocab item */}
+        {showVocabCreator && 
         <div id={styles.VocabMenu}>
+            {/* this forms holds all the information for a vocab item */}
+            {/* TODO add ALL required items, including images, sounds, description, etc. */}
             <form onSubmit={ async (e) => {
                 // process and validate the form data
-                const valid = await createVocabHandler(e); 
+                const valid = await CreateVocabHandler(e); 
                 if(!valid ) { return; }
-                // update the array on the client 
-                updateVocabData( prev => [...prev, newVocab ]);
+
+                if(!editingVocab) {
+                    // update the array on the client 
+                    SetItemsCache( prev => [...prev, newVocab ]);
+                } else {
+                    if(editIndex == -1) {
+                        alert('VOCAB EDIT ERROR!');
+                    }
+                    // update the items cache with the value
+                    itemsCache[editIndex] = newVocab;
+                }
                 // reset the cache for new vocab items
-                setNewVocab(INITIAL_NEW_VOCAB);
+                SetNewVocab(INITIAL_NEW_VOCAB);
                 // hide the UI
-                setShowVocabCreator(!showVocabCreationEditor);
+                SetShowVocabCreator(!showVocabCreator);
+                SetEditingVocab(false);
+                SetEditIndex(-1);
             }}>
                 <div className={styles.formInputContainer}>
                     <p>Value</p>
-                    <input name="value" type="text" value={newVocab.value} onChange={(e) => {setNewVocab(prev => { return {...prev, value: e.target.value }})}}/>
+                    <input name="value" type="text" value={newVocab.value} onChange={(e) => {SetNewVocab(prev => { return {...prev, value: e.target.value }})}}/>
                 </div>
 
                 <div className={styles.formInputContainer}>
                     <p>Translation</p>
-                    <input name="translation" type="text" value={newVocab.translation} onChange={(e) => {setNewVocab(prev => { return {...prev, translation: e.target.value }})}}/>
+                    <input name="translation" type="text" value={newVocab.translation} onChange={(e) => {SetNewVocab(prev => { return {...prev, translation: e.target.value }})}}/>
                 </div>
 
                 <div className={styles.formInputContainer}>
                     <p>Part of Speech</p>
-                    <select name="lang" onChange={(e) => {
+                    <select name="lang" value={newVocab.pos} onChange={(e) => {
                         // "noun" | "verb" | "participle" | "article" | "pronoun" | "preposition" | "adverb" | "conjunction"
                         let val: TPartOfSpeech = e.target.value as TPartOfSpeech;
-                        setNewVocab(prev => {return {...prev, pos: val}});
+                        SetNewVocab(prev => {return {...prev, pos: val}});
                     }}>
                         <option>noun</option>
                         <option>verb</option>
@@ -222,10 +266,10 @@ const CollectionCreationEditor = ({userID, userEmail}: CollectionCreationEditorV
 
                 <div className={styles.formInputContainer}>
                     <p>Subject</p>
-                    <select name="lang" onChange={(e) => {
+                    <select name="lang" value={newVocab.subject.split('_').join(' ')} onChange={(e) => {
                         // "neutral" | "masculine" | "feminine" | "neutral_plural" | "masculine_plural" | "feminine_plural"
                         let val: TVocabSubject = e.target.value as TVocabSubject;
-                        setNewVocab(prev => {return {...prev, subject: val}});
+                        SetNewVocab(prev => {return {...prev, subject: val}});
                     }}>
                         <option>neutral</option>
                         <option>masculine</option>
@@ -240,11 +284,13 @@ const CollectionCreationEditor = ({userID, userEmail}: CollectionCreationEditorV
                     <input type="submit" value="Submit" />
                 </div>
 
+                {/* this button cancels creating a new item (reset the cache, close vocab editor) */}
                 <div className={styles.formInputContainer}>
                     <button id={styles.CancelNewVocabButton} onClick={(e) => {
                         e.preventDefault();
-                        setNewVocab(INITIAL_NEW_VOCAB);
-                        setShowVocabCreator(!showVocabCreationEditor);
+                        SetNewVocab(INITIAL_NEW_VOCAB);
+                        SetShowVocabCreator(!showVocabCreator);
+                        SetEditingVocab(false);
                     }} >
                         <p>Cancel</p>
                     </button>
@@ -253,15 +299,47 @@ const CollectionCreationEditor = ({userID, userEmail}: CollectionCreationEditorV
             
         </div>}
 
-        {!showVocabCreationEditor &&
+        {/* this holds the vocab items that are being created */}
+        {!showVocabCreator &&
         <div id={styles.VocabsViewContainer}>
-            {vocabData.length == 0 &&
+            {/* show this message if the user has not created any items */}
+            {/* TODO add helpful information */}
+            {itemsCache.length == 0 &&
             <p>No vocab items. Click the green button above to populate the collection.</p>
             }
-            {vocabData.length > 0 &&
-            vocabData.map((vocab: VocabPut) => {
+
+            {/* if the user has added items show them the items */}
+            {itemsCache.length > 0 &&
+            itemsCache.map((vocab: VocabPut, i: number) => {
                 // the preview of items
-                return <div className={styles.VocabMetaContainer} key={vocab.value}><p>{vocab.value}</p></div>
+                // TODO set the div background to the image the user uploaded
+                return <div className={styles.VocabMetaContainer} key={vocab.value}>
+                    <p>{vocab.value}</p>
+                    {/* this button opens the creator seeded with this vocab's data converting it into an editor */}
+                    <button className={styles.EditVocabButton} onClick={(e) => {
+                        e.preventDefault();
+                        // seed the cache with the select item
+                        SetNewVocab(vocab);
+                        // open the creation editor
+                        SetShowVocabCreator(true);
+                        // set the flag to turn the creation editor into an editor
+                        SetEditingVocab(true);
+                        // set the index in the items cache to update
+                        SetEditIndex(i);
+                    }}>
+                        Edit
+                    </button>
+
+                    {/* this button deletes an item from the items cache */}
+                    <button className={styles.DeleteVocabButton} onClick={(e) => {
+                        e.preventDefault();
+                        itemsCache.splice(i, 1);
+                        SetItemsCache(itemsCache);
+                        router.replace(router.asPath);
+                    }} >
+                        Delete
+                    </button>
+                </div>
             })}
         </div>}
 
