@@ -12,7 +12,6 @@ import { VocabGet } from '../../../../server/db/vocab/vocab.get';
 import { VocabPost } from '../../../../server/db/vocab/vocab.post';
 import { VocabDelete } from '../../../../server/db/vocab/vocab.delete';
 import styles from './CollectionsView.module.scss'
-import { iif } from "rxjs";
 
 interface CollectionsViewProp {
     data: CollectionGet[];
@@ -217,29 +216,6 @@ const CollectionsView = ({ data, vocabs, dataUpdate, vocabsUpdate }: Collections
                     <p>{targetCollection.lang}</p>
                 </div>
             </div>}
-            
-            { !showCollectionEditor && !showVocabEditor &&
-            <button onClick={(e) => {
-                e.preventDefault();
-                SetUseLangFilter(!useLangFilter);
-                SetLangFilter('english');
-            }}>
-                { !useLangFilter && 'Use Filter' }
-                { useLangFilter && 'Turn Off Filter' }
-            </button>}
-            
-            {useLangFilter && langFilter &&
-            !showCollectionEditor && !showVocabEditor &&
-            <select value={langFilter} onChange={(e) => {
-                e.preventDefault();
-                let val = e.target.value.toLowerCase() as TLanguage;
-                alert(`using the ${val} filter`);
-                SetLangFilter(val);
-            }}>
-                <option>English</option>
-                <option>Spanish</option>
-                <option>Punjabi</option>
-            </select>}
 
             { !showVocabEditor && data &&
             data.map((collection, i) => {
@@ -434,6 +410,31 @@ const CollectionsView = ({ data, vocabs, dataUpdate, vocabsUpdate }: Collections
                     </div>
                 </div>
             })}
+
+            <div id={styles.FilterContainer}>
+                { !showCollectionEditor && !showVocabEditor &&
+                <button onClick={(e) => {
+                    e.preventDefault();
+                    SetUseLangFilter(!useLangFilter);
+                    SetLangFilter('english');
+                }}>
+                    { !useLangFilter && 'Enable Filter' }
+                    { useLangFilter && 'Disable Filter' }
+                </button>}
+
+                {useLangFilter && langFilter &&
+                !showCollectionEditor && !showVocabEditor &&
+                <select value={langFilter} onChange={(e) => {
+                    e.preventDefault();
+                    let val = e.target.value as TLanguage;
+                    SetLangFilter(val);
+                }}>
+                    <option>english</option>
+                    <option>spanish</option>
+                    <option>punjabi</option>
+                </select>}
+            </div>
+
         </div>)
   }
   

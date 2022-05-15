@@ -202,3 +202,15 @@ div.VocabMetaContainer {
 #VocabView {
     display: flex;
 }
+
+#FilterContainer {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: row;
+    margin: 1vh 1vw 1vh 1vw;
+
+    > select {
+        text-align: center;
+    }
+}
