@@ -256,8 +256,17 @@ export class RethinkdDb implements IDatabaseDevice {
     async update(dbName:string, table: string, uuid: IEntity | IEntity[], data: object | object[]): Promise<boolean> {
         this._validateConnection();
 
+        // const p = r.db('betaDb').table('collections').filter(function (collection) {
+        //     return collection('creator').eq({id: id});
+        // }).run(this.conn);
+        
+        // const data: ICollection[] = await p.then( (value: r.Cursor) => {
+        //     return value.toArray().then((results) => results);
+        // });
+        // return data
+
         // TODO make sure len(uuid) == len(data)
-        await r.db(dbName).table(table).filter(uuid).update(data).run(this.conn, (err, res) => {
+        await r.db(dbName).table(table).update(data).run(this.conn, (err, res) => {
             if(LOG) {
                 console.log(res);
             }
@@ -266,20 +275,33 @@ export class RethinkdDb implements IDatabaseDevice {
         return true;
     }
     
-    async deleteItem(dbName: string, table: string, uuid: IEntity | IEntity[]): Promise<boolean> {
+    async deleteItem(dbName: string, table: string, uuid: IEntity[]): Promise<boolean> {
         this._validateConnection();
+        let valid: boolean = null;
 
-        await r.db(dbName).table(table).filter(uuid).run(this.conn, (err, res) => {
+        // const p = r.db('betaDb').table('collections').filter(function (collection) {
+        //     return collection('creator').eq({id: id});
+        // }).run(this.conn);
+        
+        // const data: ICollection[] = await p.then( (value: r.Cursor) => {
+        //     return value.toArray().then((results) => results);
+        // });
+        // return data
+
+        let ids: string[] = [];
+        uuid.forEach((e) => {ids.push(e.id)});
+
+        await r.db(dbName).table(table).getAll(...ids).delete().run(this.conn, (err, res) => {
             if(err) {
                 console.log(err);
-                return false;
+                valid = false;
             }
             if(LOG) {
                 console.log(res);
             }
-            return true;
+            valid = true;
         });
-        return false;
+        return valid;
     }
 
     async deleteTable(dbName: string, tableName: string): Promise<boolean> {

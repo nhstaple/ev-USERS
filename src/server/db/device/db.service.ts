@@ -4,12 +4,13 @@ import { IDatabaseDevice, IDBMeta } from "../../../api/db/db.interface";
 import { prepare_rethink, IEntity } from "../../../api";
 import { IVocab } from "../../../api/entities/vocab";
 
-import { test1, test2, test3, test4 } from "./db.examples";
 import { CreatorGet } from "../users/creator/creator.get";
 import { ICreator } from "../../../api/entities/users/creator";
 import { ICollection } from "../../../api/entities/collection";
 import { CollectionGet } from "../collection/collection.get";
 import { exit } from "process";
+
+const DB_NAME = 'betaDb';
 
 @Injectable()
 export class DBService {
@@ -20,7 +21,8 @@ export class DBService {
     }
 
     async reset() {
-        this.client.prepare([test1, test2, test3, test4]);
+        // this.client.prepare();
+        console.log('TODO setup the betaDb reset in db.service.ts');
     }
 
     async getDbNames(): Promise<string[]> {
@@ -139,6 +141,15 @@ export class DBService {
 
     async getCollectionsFromUser(userID: string): Promise<CollectionGet[]> {
         return await this.client.getCollectionsFromUser(userID);
+    }
+
+    async deleteItems(tableName: string, ids: IEntity[]): Promise<boolean> {
+        try {
+            await this.client.deleteItem(DB_NAME, tableName, ids);
+        } catch(e) {
+            return false;
+        }
+        return true;
     }
 
 }

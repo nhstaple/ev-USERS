@@ -3,6 +3,7 @@ import { CollectionService } from './collection.service';
 import { CollectionPut } from './collection.put';
 import { CollectionGet } from './collection.get';
 import { CollectionDelete } from './collection.delete';
+import { VocabDelete } from '../vocab/vocab.delete';
 
 
 @Controller('api/db/collection')
@@ -30,16 +31,26 @@ export class CollectionController {
     async deleteCollection(@Body() collection: CollectionDelete): Promise<string> {
         let result: string;
         try {
-            // delete the children
-            collection.items.forEach((vocab) => {
-                console.log(`delete vocab.id\t=${vocab.id}`);
-            });
-            // delete this
-            console.log(`deleted collection.id\t=${collection.id}`);
-        } catch(err) {
+            // delete from the database 
+            console.log(await this.collectionService.deleteCollection(collection.id));
+            // update the creator's record
+            console.log(await this.collectionService.updateCreatorCollections(collection.creator.id, collection.id));
 
+            console.log(`deleted collection.id    \t ${collection.id}`);
+            console.log(`deleted collection.items \t ${collection.items}`);
+        } catch(err) {
+            return 'error!';
         }
         return `deleted collection.id\t=${collection.id}`
+    }
+
+    @Delete('/:collectionID')
+    async deleteItemsFromCollection(@Param('collectionID') id, @Body() data: VocabDelete[]): Promise<boolean> {
+        try {
+            return await this.collectionService.deleteItemsFromCollections(id, data);
+        } catch(err) {
+            return false;
+        }
     }
 
 }

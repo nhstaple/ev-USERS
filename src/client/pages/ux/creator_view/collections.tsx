@@ -12,6 +12,7 @@ import { VocabGet } from '../../../../server/db/vocab/vocab.get';
 import { VocabPost } from '../../../../server/db/vocab/vocab.post';
 import { VocabDelete } from '../../../../server/db/vocab/vocab.delete';
 import styles from './CollectionsView.module.scss'
+import { ICreator } from "../../../../api/entities/users/creator";
 
 interface CollectionsViewProp {
     data: CollectionGet[];
@@ -42,8 +43,9 @@ const INITIAL_VOCAB = {
 } as IVocab;
 
 async function DeleteCollectionHandler(collection: CollectionDelete): Promise<boolean> {
+    console.log('client wants to delete: ', collection);
     try{
-        const res = await Axios.delete(`${END_POINT}/collection/`, {data: collection});
+        const res = await Axios.delete(`${END_POINT}/collection`, {data: collection});
         console.log(res);
         return true;
     } catch(err) {
@@ -289,7 +291,7 @@ const CollectionsView = ({ data, vocabs, dataUpdate, vocabsUpdate }: Collections
                             {!showCollectionEditor &&
                             <button className={styles.collectionDeleteButton} onClick={ async (e) => {
                                 // delete from the server
-                                const serverDeleteResponse = await DeleteCollectionHandler({id:collection.id, items:collection.items});
+                                const serverDeleteResponse = await DeleteCollectionHandler(collection as ICollection);
                                 if(!serverDeleteResponse){ return; }
 
                                 // update the client

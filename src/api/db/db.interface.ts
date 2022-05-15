@@ -62,7 +62,7 @@ export interface IDatabaseDevice {
 
     update(dbName:string, table:string, uuid: IEntity[] | IEntity, data: object | object[]): Promise<boolean>;
 
-    deleteItem(dbName: string, table: string, uuid: IEntity[] | IEntity): Promise<boolean>;
+    deleteItem(dbName: string, table: string, uuid: IEntity[]): Promise<boolean>;
 
     prepare(databases: IDBMeta[]): Promise<boolean>;
 
