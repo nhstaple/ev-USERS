@@ -9,6 +9,7 @@ import { ICreator } from "../../../api/entities/users/creator";
 import { ICollection } from "../../../api/entities/collection";
 import { CollectionGet } from "../collection/collection.get";
 import { exit } from "process";
+import { VocabPut } from "../vocab/vocab.put";
 
 const DB_NAME = 'betaDb';
 
@@ -150,6 +151,14 @@ export class DBService {
             return false;
         }
         return true;
+    }
+
+    async updateItems(tableName: string, ids: IEntity[], data: object[]): Promise<boolean> {
+        try {
+            this.client.update(DB_NAME, tableName, ids, data);
+        } catch(e) {
+            return false;
+        }
     }
 
 }

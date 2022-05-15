@@ -320,14 +320,26 @@ const CollectionsView = ({ data, vocabs, dataUpdate, vocabsUpdate }: Collections
                             
                             {showCollectionEditor &&
                             targetCollection.id == collection.id &&
-                            <button className={styles.collectionDeleteButton} onClick={(e) => {
+                            <button className={styles.collectionDeleteButton} onClick={async (e) => {
                                 e.preventDefault();
                                 // SetshowCollectionEditor(false);
-                                let message: string = `TODO send DELETE request to the server for vocabs`;
+                                let message: string = `sendind DELETE request to the server for vocabs`;
                                 vocabDeleteCache.forEach(v => message = `${message}\n${v.value}`);
-                                message += `\n\nTODO send PUT request to the server for vocabs`;
+                                
+                                message += `\n\nsending PUT request to the server for vocabs`;
                                 vocabEditCache.forEach(v => message = `${message}\n${v.value}`);
-                                alert(message);
+                                console.log(message);
+
+                                // send edit requests
+                                if(vocabEditCache.length > 0) {
+                                    await Axios.put(`${END_POINT}/collection/${collection.id}`, {data: vocabEditCache});
+                                }
+                                
+                                // send delete requests
+                                if(vocabCache.length > 0) {
+                                    await Axios.delete(`${END_POINT}/collection/${collection.id}`, {data: vocabDeleteCache});
+                                }
+
                                 // reset editor
                                 SetTargetCollection({...INITIAL_COLLECTION});
                                 SetTargetVocab({...INITIAL_VOCAB});

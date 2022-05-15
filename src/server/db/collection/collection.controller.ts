@@ -4,6 +4,8 @@ import { CollectionPut } from './collection.put';
 import { CollectionGet } from './collection.get';
 import { CollectionDelete } from './collection.delete';
 import { VocabDelete } from '../vocab/vocab.delete';
+import { VocabPut } from '../vocab/vocab.put';
+import { IEntity } from '../../../api';
 
 
 @Controller('api/db/collection')
@@ -49,6 +51,24 @@ export class CollectionController {
         try {
             return await this.collectionService.deleteItemsFromCollections(id, data);
         } catch(err) {
+            return false;
+        }
+    }
+
+    // TODO move to the vocab controller
+    @Put('/:collectionID')
+    async updateItemsFromCollection(@Param('collectionID') id, @Body() data: VocabPut[]): Promise<boolean> {
+        console.log('got vocab edit request!');
+        console.log(data['data']);
+        let ids: IEntity[] = [];
+        for(let i = 0; i < data['data'].length; i++) {
+            ids.push(data['data'][i]);
+        }
+
+        try {
+            return this.collectionService.updateVocabItems(ids, data['data']);
+        } catch(e) {
+            console.log(e);
             return false;
         }
     }

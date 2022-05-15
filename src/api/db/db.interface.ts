@@ -60,7 +60,7 @@ export interface IDatabaseDevice {
     /** mutable functions */
     insert(dbName: string, table: string, data: object[] | object): Promise<boolean>;
 
-    update(dbName:string, table:string, uuid: IEntity[] | IEntity, data: object | object[]): Promise<boolean>;
+    update(dbName:string, table:string, uuid: IEntity[] , data: object[]): Promise<boolean>;
 
     deleteItem(dbName: string, table: string, uuid: IEntity[]): Promise<boolean>;
 

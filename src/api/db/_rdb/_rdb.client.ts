@@ -253,31 +253,35 @@ export class RethinkdDb implements IDatabaseDevice {
         return true;
     }
     
-    async update(dbName:string, table: string, uuid: IEntity | IEntity[], data: object | object[]): Promise<boolean> {
+    async update(dbName:string, table: string, uuid: IEntity[], data: object[]): Promise<boolean> {
         this._validateConnection();
+        if(uuid.length != data.length) {
+            console.log('input to update must be same length!');
+            console.log(uuid);
+            console.log(data);
+            console.log('****');
+            return;
+        }
 
-        // const p = r.db('betaDb').table('collections').filter(function (collection) {
-        //     return collection('creator').eq({id: id});
-        // }).run(this.conn);
-        
-        // const data: ICollection[] = await p.then( (value: r.Cursor) => {
-        //     return value.toArray().then((results) => results);
-        // });
-        // return data
-
-        // TODO make sure len(uuid) == len(data)
-        await r.db(dbName).table(table).update(data).run(this.conn, (err, res) => {
-            if(LOG) {
-                console.log(res);
-            }
-        })
-        
+        for(let i = 0; i < uuid.length; i++) {
+            console.log(`-.-.-.-.`);
+            console.log(uuid[i].id);
+            console.log(data[i]);
+            await r.db(dbName).table(table).get(uuid[i].id).update(data[i]).run(this.conn, (err, res) => {
+                if(true) {
+                    console.log(res);
+                }
+            })
+        }    
         return true;
     }
     
     async deleteItem(dbName: string, table: string, uuid: IEntity[]): Promise<boolean> {
         this._validateConnection();
         let valid: boolean = null;
+        if(uuid.length == 0) {
+            return;
+        }
 
         // const p = r.db('betaDb').table('collections').filter(function (collection) {
         //     return collection('creator').eq({id: id});
