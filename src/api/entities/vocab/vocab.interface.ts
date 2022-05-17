@@ -36,8 +36,12 @@ export type TVocabSubject = keyof typeof EVocabSubject;
 
 export interface IVocabMedia extends IEntity {
     image: File;
-    description: string;
     sound: File;
+}
+
+export interface IVocabMediaMulter extends IEntity {
+    image: Express.Multer.File;
+    sound: Express.Multer.File;
 }
 
 // "a vocab" contains all the information for one flashcard
@@ -57,7 +61,8 @@ export interface IVocab extends IEntity {
 
     // the images, description, sounds, etc.
     media?: IVocabMedia;
-
+    description?: string;
+        
     // TODO
     // the person who made the vocav item
     creator: IEntity;

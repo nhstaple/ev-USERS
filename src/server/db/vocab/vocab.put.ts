@@ -22,6 +22,7 @@ export class VocabPut implements Partial<IVocab> {
 
     // TODO
     media: IVocabMedia;
+    description: string;
 
     // TODO
     // @deprecated from the original codebase
@@ -31,12 +32,13 @@ export class VocabPut implements Partial<IVocab> {
     unitType?:string;
     wordType?:string;
 
-    constructor(id: string, value: string, translation: string, language: TLanguage, creator?: ICreator, media?: IVocabMedia) {
+    constructor(id: string, value: string, translation: string, language: TLanguage, description: string, creator?: ICreator, media?: IVocabMedia) {
         this.id = id;
         this.lang = language;
         this.creator = creator;
         this.value = value;
         this.translation = translation;
         this.media = media;
+        this.description = description
     }
 }

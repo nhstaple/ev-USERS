@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { IEntity } from "../../../../api";
 import { ICollection } from "../../../../api/entities/collection"
-import { IVocab, TLanguage, TPartOfSpeech, TVocabSubject } from "../../../../api/entities/vocab";
+import { IVocab, IVocabMediaMulter, TLanguage, TPartOfSpeech, TVocabSubject } from "../../../../api/entities/vocab";
 import { CollectionGet } from '../../../../server/db/collection/collection.get';
 import { CollectionPost } from '../../../../server/db/collection/collection.post';
 import { CollectionPut } from "../../../../server/db/collection/collection.put";
@@ -20,6 +20,8 @@ interface CollectionsViewProp {
     dataUpdate: React.Dispatch<React.SetStateAction<CollectionGet[]>>;
     vocabsUpdate: React.Dispatch<React.SetStateAction<VocabGet[][]>>;
 }
+
+
 
 const HOST = 'localhost';
 const PORT = '3000';
@@ -79,6 +81,29 @@ async function EditVocabHandler(e: React.FormEvent<HTMLFormElement>) {
     return true;
 }
 
+async function getVocabMedia(v: IVocab): Promise<IVocabMediaMulter> {
+    if(v.storagekey == null || v.storagekey == '') {
+        return null;
+    }
+    let res = await Axios.get(`${END_POINT}/collection/media/${v.storagekey}`);
+    console.log(res.data);
+    return res.data;
+}
+
+function multerToImageURL(data: Express.Multer.File) {
+    let buffer = Buffer.from(data.buffer);
+    let blob = new Blob([buffer], {type: 'image'})
+    let f = new File([blob], 'image');
+    return URL.createObjectURL(f);
+}
+
+function multerToAudioURL(data: Express.Multer.File) {
+    let buffer = Buffer.from(data.buffer);
+    let blob = new Blob([buffer], {type: 'audio'})
+    let f = new File([blob], 'audio');
+    return URL.createObjectURL(f);
+}
+
 const CollectionsView = ({ data, vocabs, dataUpdate, vocabsUpdate }: CollectionsViewProp) => {
     let [ showVocabView, SetShowVocabView ] = useState<boolean>(false);
     let [ showVocabEditor, SetShowVocabEditor ] = useState<boolean>(false);
@@ -97,6 +122,9 @@ const CollectionsView = ({ data, vocabs, dataUpdate, vocabsUpdate }: Collections
     let [ useLangFilter, SetUseLangFilter ] = useState<boolean>(false);
     let [ langFilter, SetLangFilter ] = useState<TLanguage>(null); 
 
+    let [ singleVocabMedia, SetSingleVocabMedia ] = useState<IVocabMediaMulter>(null);
+    let [ isPlayingAudio, SetIsPlayingAudio ] = useState<boolean>(false);
+    
     const router = useRouter();
     return (
         <div id={styles.CollectionsView}>
@@ -105,11 +133,29 @@ const CollectionsView = ({ data, vocabs, dataUpdate, vocabsUpdate }: Collections
                 <p className={styles.vocabValue}>{targetVocab.value}</p>
                 <p className={styles.vocabEditorTranslation}>{targetVocab.translation} ({targetVocab.subject})</p>
                 <p className={styles.vocabPOS}>{targetVocab.pos}</p>
+                {singleVocabMedia &&
+                <img style={{width: '10vw'}} src={multerToImageURL(singleVocabMedia.image)} /> &&
+                <button onClick={(e) => {
+                    e.preventDefault();
+                    if(!isPlayingAudio) {
+                        let sound = new Audio(multerToAudioURL(singleVocabMedia.sound));
+                        const dt = sound.duration * 1000;
+                        SetIsPlayingAudio(true);
+                        sound.play();
+                        setTimeout(() => {
+                            SetIsPlayingAudio(false);
+                        }, dt)
+                    }
+                }}>
+                    Play Sound
+                </button>
+                }
                 <p className={styles.vocabID}>ID: {targetVocab.id}</p>
                 <button onClick={(e) => {
                     e.preventDefault();
                     SetShowVocabView(false);
                     SetShowVocabEditor(false);
+                    SetSingleVocabMedia(null);
                 }}>
                     Close
                 </button>
@@ -359,8 +405,16 @@ const CollectionsView = ({ data, vocabs, dataUpdate, vocabsUpdate }: Collections
                             <p className={styles.vocabValue}>{vocab.value}</p>
                             {/* <p className={styles.vocabTranslation}>{vocab.translation}</p> */}
                             {!showCollectionEditor && !showVocabView &&
-                            <button className={styles.vocabViewButton} onClick={(e) => {
+                            <button className={styles.vocabViewButton} onClick={async (e) => {
                                 e.preventDefault();
+                                const media = await getVocabMedia(vocab);
+                                if(media) {
+                                    console.log(media[0]);
+                                    SetSingleVocabMedia(media[0]);
+                                } else {
+                                    SetSingleVocabMedia(null);
+                                }
+
                                 SetTargetVocab(vocab);
                                 SetShowVocabView(true);
                                 SetShowVocabEditor(false);

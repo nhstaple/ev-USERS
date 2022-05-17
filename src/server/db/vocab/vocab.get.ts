@@ -11,8 +11,9 @@ export class VocabGet implements Partial<IVocab> {
     storagekey: string;
     creator: IEntity;
     subject: TVocabSubject;
+    description?: string;
 
-    constructor(id: string, value: string, translation: string, pos: TPartOfSpeech, lang: TLanguage, storagekey: string, creator: IEntity) {
+    constructor(id: string, value: string, translation: string, pos: TPartOfSpeech, lang: TLanguage, storagekey: string, creator: IEntity, description: string) {
         this.id = id;
         this.value = value;
         this.translation = translation;
@@ -20,6 +21,7 @@ export class VocabGet implements Partial<IVocab> {
         this.lang = lang;
         this.storagekey = storagekey;
         this.creator = creator;
+        this.description = description;
     }
 
 }

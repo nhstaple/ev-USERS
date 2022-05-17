@@ -31,7 +31,7 @@ async function SubmitHandler(e: React.FormEvent<HTMLFormElement>, collection: Co
         if(ENABLE_ALERTS) alert(`Error: the collection's name cannot be empty.`);
         return {valid: false, payload: null};
     }
-    
+
     // update the vocab's info
     let newID = '';
     for(let i = 0; i < vocabs.length; i++) {
@@ -56,12 +56,14 @@ async function CreateVocabHandler(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const value = e.target[0].value as string;
     const translation = e.target[1].value as string;
+
     // validate vocab input form data
     if(value.length == 0 || translation.length == 0) {
         const HINTS = `The value and/or translation fields are empty.`
         alert(`Please enter a valid vocabulary item. Hints: ${HINTS}`);
         return false;
     }
+
     //
     console.log(`vocab.value       =\t ${value}`);
     console.log(`vocab.translation =\t ${translation}`);
@@ -89,7 +91,8 @@ const INITIAL_NEW_VOCAB = {
     translation:'',
     pos: 'noun' as TPartOfSpeech,
     subject: 'neutral' as TVocabSubject,
-    media: {image: null, description: null, sound: null}
+    media: {image: null, sound: null},
+    description: ''
 } as VocabPut;
 
 const HOST = 'localhost'; // TODO docker deploy (see parent pages)
@@ -100,7 +103,29 @@ async function SendCollectionToServer(payload: CollectionPut) {
     console.log('sending the collection to the server!');
     console.log(payload);
     console.log(`${payload.items.length} vocab items to insert in th DB`);
-    return await Axios.put(`${END_POINT}/collection`, payload);
+    let formData = new FormData();
+    let collectionData: CollectionPut = {...payload};
+    for(let i = 0; i < collectionData.items.length; i++) {
+        const data = collectionData.items[i].media;
+        collectionData.items[i].media = {id: null, image: null, sound: null};
+
+        const fn = `${collectionData.id}-${collectionData.items[i].id}`.split(' ').join();
+        const image = data.image;
+        const sound = data.sound;
+        formData.append('image', image, fn);
+        formData.append('sound', sound, fn);
+        collectionData.items[i].storagekey = fn;
+    }
+
+    // send the collection and vocabs to the server 
+    await Axios.put(`${END_POINT}/collection`, collectionData);
+    
+    // send the images to the server     
+    await Axios.put(`${END_POINT}/collection/media`, formData, {
+        headers: { "content-type": "multipart/form-data" }
+    })
+
+    return;
 }
 
 function isFileImage(file: File) {
@@ -173,7 +198,7 @@ const CollectionCreationEditor = ({userID, userEmail}: ICollectionEditorViewProp
             {/* this form defines the meta information of a collection
                 on submit, this form executes an HTTP.PUT request to the server
             */} &&
-            <form onSubmit={ async (e) => {
+            <form encType='multipart/form-data' method='POST' onSubmit={ async (e) => {
                 // e.preventDefault();
                 // tag user
                 newCollection.creator = {id: userID };
@@ -252,6 +277,10 @@ const CollectionCreationEditor = ({userID, userEmail}: ICollectionEditorViewProp
                 // process and validate the form data
                 const valid = await CreateVocabHandler(e); 
                 if(!valid ) { return; }
+                if(newVocab.media.image == null || newVocab.media.sound == null) {
+                    alert('please upload an image and sound!');
+                    return;
+                }
 
                 if(!editingVocab) {
                     // update the array on the client 
@@ -329,9 +358,8 @@ const CollectionCreationEditor = ({userID, userEmail}: ICollectionEditorViewProp
                         }});
                     }} />
                     <textarea defaultValue={'Image Description'} onChange={(e) => {
-                        SetNewVocab({...newVocab, media:
-                            {...newVocab.media, description: e.target.value
-                        }});
+                        SetNewVocab({...newVocab, description: e.target.value
+                        });
                     }} />
                 </div>
 
@@ -340,7 +368,7 @@ const CollectionCreationEditor = ({userID, userEmail}: ICollectionEditorViewProp
                     <input type="file" src={getFileName(newVocab.media)['sound']} onChange={(e) => {
                         const newSound = e.target.files[0];
                         if(!isFileSound(newSound)) {
-                            alert(`${newSound.type} is not a support image format.`);
+                            alert(`${newSound.type} is not a supported sound format.`);
                             return;
                         }
 
@@ -441,7 +469,7 @@ const CollectionCreationEditor = ({userID, userEmail}: ICollectionEditorViewProp
                     {vocab.media.image != null &&
                     <div>
                         <img style={{width: '10vw', height: '10vw'}} src={URL.createObjectURL(vocab.media.image)} />
-                        <p>{vocab.media.description}</p>
+                        <p>{vocab.description}</p>
                         {<button onClick={(e) => {
                             e.preventDefault();
                             if(currentSound == null) {

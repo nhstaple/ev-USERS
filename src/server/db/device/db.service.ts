@@ -2,7 +2,7 @@ import { Injectable, Inject } from "@nestjs/common";
 import { IDatabaseDevice, IDBMeta } from "../../../api/db/db.interface";
 
 import { prepare_rethink, IEntity } from "../../../api";
-import { IVocab } from "../../../api/entities/vocab";
+import { IVocab, IVocabMediaMulter } from "../../../api/entities/vocab";
 
 import { CreatorGet } from "../users/creator/creator.get";
 import { ICreator } from "../../../api/entities/users/creator";
@@ -102,6 +102,7 @@ export class DBService {
             await this.client.insert(dbName, tableName, data);
         } catch (err) {
             console.log('error on insert!');
+            console.log(err);
         }
         const message = `logged ${data.length} items into ${dbName}.${tableName}`;
         console.log(message);
@@ -159,6 +160,10 @@ export class DBService {
         } catch(e) {
             return false;
         }
+    }
+
+    async getMedia(key: string): Promise<IVocabMediaMulter[]> {
+        return this.client.query(DB_NAME, 's3', [{ id: key }]) as unknown as IVocabMediaMulter[];
     }
 
 }

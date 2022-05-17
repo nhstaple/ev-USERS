@@ -1,5 +1,5 @@
 import { IEntity } from "../entities/entity.interface";
-import { IVocab } from "../entities/vocab/vocab.interface";
+import { IVocab, IVocabMediaMulter } from "../entities/vocab/vocab.interface";
 import { ICollection } from "../entities/collection/collection.interface";
 import { ICreator } from "../entities/users/creator";
 import * as r from 'rethinkdb';
@@ -51,7 +51,7 @@ export interface IDatabaseDevice {
     createUUID(key: string): Promise<string>;
 
     /** access functions */
-    query(dbName: string, table: string, filter: IEntity[]): Promise<IEntity[] | IVocab[] | ICollection[] | ICreator[]>;
+    query(dbName: string, table: string, filter: IEntity[]): Promise<IEntity[] | IVocab[] | ICollection[] | ICreator[]| IVocabMediaMulter[]>;
 
     getVocab(table: string, uuid: IEntity[] | IEntity): Promise<IVocab[]>;
 

@@ -1,6 +1,7 @@
 import { Injectable, Inject } from "@nestjs/common";
 import { IEntity } from "../../../api";
 import { ICollection } from "../../../api/entities/collection";
+import { IVocabMediaMulter } from "../../../api/entities/vocab";
 import { DBService } from "../device/db.service";
 import { VocabDelete } from "../vocab/vocab.delete";
 import { VocabPut } from "../vocab/vocab.put";
@@ -23,6 +24,9 @@ export class CollectionService {
         for(let i = 0; i < collection.items.length; i++) {
             collection.items[i].creator = collection.creator;
             collection.items[i].lang = collection.lang;
+            if(collection.items[i].media) {
+                delete collection.items[i].media;
+            }
         }
 
         try {
@@ -38,6 +42,19 @@ export class CollectionService {
         }
     }
 
+    async insertCollectionMedia(images: Express.Multer.File[], sounds: Express.Multer.File[]) {
+        let media: IVocabMediaMulter[] = [];
+        for(let i = 0; i < images.length; i++) {
+            let m: IVocabMediaMulter = {
+                image: images[i],
+                sound: sounds[i],
+                id: images[i].originalname
+            };
+            media.push(m);
+        }
+        await this.dbService.insert(DB_NAME, 's3', media);
+    }
+    
     async getUserCollections(id: string): Promise<CollectionGet[]> {
         return this.dbService.getCollectionsFromUser(id);
     }
@@ -111,6 +128,10 @@ export class CollectionService {
         } catch(e) {
             return false;
         }
+    }
+
+    async getMedia(key: string): Promise<IVocabMediaMulter[]> {
+        return this.dbService.getMedia(key);
     }
 
 }
