@@ -1,7 +1,7 @@
 import { IEntity } from "../../../api";
 import { ICollection } from "../../../api/entities/collection"
 import { ICreator } from "../../../api/entities/users/creator";
-import { TLanguage, IVocab, TPartOfSpeech, TVocabSubject } from "../../../api/entities/vocab"
+import { TLanguage, IVocab, IVocabMedia, TPartOfSpeech, TVocabSubject } from "../../../api/entities/vocab"
 
 export class VocabPut implements Partial<IVocab> {
     id: string;
@@ -21,8 +21,7 @@ export class VocabPut implements Partial<IVocab> {
     subject: TVocabSubject;
 
     // TODO
-    // the image from the client
-    // the sound sound from the client
+    media: IVocabMedia;
 
     // TODO
     // @deprecated from the original codebase
@@ -32,11 +31,12 @@ export class VocabPut implements Partial<IVocab> {
     unitType?:string;
     wordType?:string;
 
-    constructor(id: string, value: string, translation: string, language: TLanguage, creator?: ICreator) {
+    constructor(id: string, value: string, translation: string, language: TLanguage, creator?: ICreator, media?: IVocabMedia) {
         this.id = id;
         this.lang = language;
         this.creator = creator;
         this.value = value;
         this.translation = translation;
+        this.media = media;
     }
 }

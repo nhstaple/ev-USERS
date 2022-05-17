@@ -34,6 +34,12 @@ export enum EVocabSubject {
 }
 export type TVocabSubject = keyof typeof EVocabSubject;
 
+export interface IVocabMedia extends IEntity {
+    image: File;
+    description: string;
+    sound: File;
+}
+
 // "a vocab" contains all the information for one flashcard
 export interface IVocab extends IEntity {
     // the native language (el gato)
@@ -48,6 +54,9 @@ export interface IVocab extends IEntity {
     storagekey: string;
     // the gedner of the word
     subject: TVocabSubject;
+
+    // the images, description, sounds, etc.
+    media?: IVocabMedia;
 
     // TODO
     // the person who made the vocav item

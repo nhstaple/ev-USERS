@@ -5,6 +5,7 @@ import { useRouter } from 'next/router';
 
 import styles from './CollectionCreationEditor.module.scss'
 import { VocabPut } from '../../../../../../../server/db/vocab/vocab.put';
+import { IVocabMedia } from '../../../../../../../api/entities/vocab';
 import { TLanguage, TPartOfSpeech, TVocabSubject } from '../../../../../../../api/entities/vocab';
 import { CollectionPut } from '../../../../../../../server/db/collection/collection.put';
 import { CollectionGet } from '../../../../../../../server/db/collection/collection.get';
@@ -87,7 +88,8 @@ const INITIAL_NEW_VOCAB = {
     value:'',
     translation:'',
     pos: 'noun' as TPartOfSpeech,
-    subject: 'neutral' as TVocabSubject
+    subject: 'neutral' as TVocabSubject,
+    media: {image: null, description: null, sound: null}
 } as VocabPut;
 
 const HOST = 'localhost'; // TODO docker deploy (see parent pages)
@@ -99,6 +101,36 @@ async function SendCollectionToServer(payload: CollectionPut) {
     console.log(payload);
     console.log(`${payload.items.length} vocab items to insert in th DB`);
     return await Axios.put(`${END_POINT}/collection`, payload);
+}
+
+function isFileImage(file: File) {
+    // SUPPORT IMAGE FORMATS
+    const acceptedImageTypes = ['image/gif', 'image/jpeg', 'image/png'];
+    return file && acceptedImageTypes.includes(file['type'])
+}
+
+function isFileSound(file: File) {
+    // SUPPORTED AUDIO FORMATS
+    const acceptedImageTypes = ['audio/mpeg'];
+    return file && acceptedImageTypes.includes(file['type'])
+}
+
+async function getFileName(file: IVocabMedia) {
+    const image = file.image != null ? URL.createObjectURL(file.image) : null;
+    const sound = file.sound != null ? URL.createObjectURL(file.sound) : null;
+    return {'image': image, 'sound': sound}
+}
+
+interface IAudioPreview {
+    sound: HTMLAudioElement
+    isPlaying: boolean
+}
+
+function newAudioPreview(sound: File): IAudioPreview {
+    const encoding = URL.createObjectURL(sound);
+    const data: HTMLAudioElement = new Audio(encoding);
+
+    return { sound: data, isPlaying: false }
 }
 
 const CollectionCreationEditor = ({userID, userEmail}: ICollectionEditorViewProp) => {
@@ -114,6 +146,9 @@ const CollectionCreationEditor = ({userID, userEmail}: ICollectionEditorViewProp
 
     let [ editingVocab, SetEditingVocab ] = useState<boolean>(false);
     let [ editIndex, SetEditIndex ] = useState<number>(-1);
+
+    // the audio file being played
+    let [ currentSound, SetCurrentSound ] = useState<IAudioPreview>(null);
 
     const router = useRouter();
 
@@ -234,6 +269,7 @@ const CollectionCreationEditor = ({userID, userEmail}: ICollectionEditorViewProp
                 SetShowVocabCreator(!showVocabCreator);
                 SetEditingVocab(false);
                 SetEditIndex(-1);
+                SetCurrentSound(null);
             }}>
                 <div className={styles.formInputContainer}>
                     <p>Value</p>
@@ -281,6 +317,42 @@ const CollectionCreationEditor = ({userID, userEmail}: ICollectionEditorViewProp
                 </div>
 
                 <div className={styles.formInputContainer}>
+                    <p>Image</p>
+                    <input type="file" src={getFileName(newVocab.media)['image']} onChange={(e) => {
+                        const newImage = e.target.files[0];
+                        if(!isFileImage(newImage)) {
+                            alert(`${newImage.type} is not a support image format.`);
+                            return;
+                        }
+                        SetNewVocab({...newVocab, media:
+                            {...newVocab.media, image: newImage
+                        }});
+                    }} />
+                    <textarea defaultValue={'Image Description'} onChange={(e) => {
+                        SetNewVocab({...newVocab, media:
+                            {...newVocab.media, description: e.target.value
+                        }});
+                    }} />
+                </div>
+
+                <div className={styles.formInputContainer}>
+                    <p>Sound</p>
+                    <input type="file" src={getFileName(newVocab.media)['sound']} onChange={(e) => {
+                        const newSound = e.target.files[0];
+                        if(!isFileSound(newSound)) {
+                            alert(`${newSound.type} is not a support image format.`);
+                            return;
+                        }
+
+                        SetCurrentSound(newAudioPreview(newSound));
+
+                        SetNewVocab({...newVocab, media:
+                            {...newVocab.media, sound: e.target.files[0]
+                        }});
+                    }} />
+                </div>
+
+                <div className={styles.formInputContainer}>
                     <input type="submit" value="Submit" />
                 </div>
 
@@ -291,12 +363,33 @@ const CollectionCreationEditor = ({userID, userEmail}: ICollectionEditorViewProp
                         SetNewVocab(INITIAL_NEW_VOCAB);
                         SetShowVocabCreator(!showVocabCreator);
                         SetEditingVocab(false);
+                        SetCurrentSound(null);
                     }} >
                         <p>Cancel</p>
                     </button>
                 </div>
+                
+                {/* displays the image the user wants to upload */}
+                {newVocab.media.image != null &&
+                <div className={styles.VocabImagePreview}>
+                    <img style={{width: '10vw'}} src={URL.createObjectURL(newVocab.media.image)} />
+                </div>}
             </form>
-            
+            {currentSound != null &&
+            <button onClick={(e) => {
+                if(!currentSound.isPlaying) {
+                    SetCurrentSound((prev) => {return {...prev, isPlaying: !prev.isPlaying}});
+                    const dt = currentSound.sound.duration * 1000;
+                    currentSound.sound.play();
+                    setTimeout(()=>{
+                        SetCurrentSound((prev) => {return {...prev, isPlaying: !prev.isPlaying}});
+                    }, dt);
+                }
+            }} >
+                {currentSound.isPlaying && 'Playing...'}
+                {!currentSound.isPlaying && 'Play'}
+            </button>
+            }
         </div>}
 
         {/* this holds the vocab items that are being created */}
@@ -314,31 +407,62 @@ const CollectionCreationEditor = ({userID, userEmail}: ICollectionEditorViewProp
                 // the preview of items
                 // TODO set the div background to the image the user uploaded
                 return <div className={styles.VocabMetaContainer} key={vocab.value}>
-                    <p>{vocab.value}</p>
-                    {/* this button opens the creator seeded with this vocab's data converting it into an editor */}
-                    <button className={styles.EditVocabButton} onClick={(e) => {
-                        e.preventDefault();
-                        // seed the cache with the select item
-                        SetNewVocab(vocab);
-                        // open the creation editor
-                        SetShowVocabCreator(true);
-                        // set the flag to turn the creation editor into an editor
-                        SetEditingVocab(true);
-                        // set the index in the items cache to update
-                        SetEditIndex(i);
-                    }}>
-                        Edit
-                    </button>
+                    <div className={styles.VocabMetaView}>
+                        <p>{vocab.value}</p>
 
-                    {/* this button deletes an item from the items cache */}
-                    <button className={styles.DeleteVocabButton} onClick={(e) => {
-                        e.preventDefault();
-                        itemsCache.splice(i, 1);
-                        SetItemsCache(itemsCache);
-                        router.replace(router.asPath);
-                    }} >
-                        Delete
-                    </button>
+                        {/* this button opens the creator seeded with this vocab's data converting it into an editor */}
+                        <button className={styles.EditVocabButton} onClick={(e) => {
+                            e.preventDefault();
+                            // seed the cache with the select item
+                            SetNewVocab(vocab);
+                            // open the creation editor
+                            SetShowVocabCreator(true);
+                            // set the flag to turn the creation editor into an editor
+                            SetEditingVocab(true);
+                            // set the index in the items cache to update
+                            SetEditIndex(i);
+                            // set the current sound
+                            SetCurrentSound(newAudioPreview(vocab.media.sound));
+                        }}>
+                            Edit
+                        </button>
+
+                        {/* this button deletes an item from the items cache */}
+                        <button className={styles.DeleteVocabButton} onClick={(e) => {
+                            e.preventDefault();
+                            itemsCache.splice(i, 1);
+                            SetItemsCache(itemsCache);
+                            router.replace(router.asPath);
+                        }} >
+                            Delete
+                        </button>
+                    </div>
+                    {/* shows the image and sound */}
+                    {vocab.media.image != null &&
+                    <div>
+                        <img style={{width: '10vw', height: '10vw'}} src={URL.createObjectURL(vocab.media.image)} />
+                        <p>{vocab.media.description}</p>
+                        {<button onClick={(e) => {
+                            e.preventDefault();
+                            if(currentSound == null) {
+                                const preview = newAudioPreview(vocab.media.sound);
+                                SetCurrentSound((prev) => { return preview });
+                            }
+                            if(currentSound != null) {
+                                const dt = currentSound.sound.duration * 1000;
+                                SetCurrentSound((prev) => {return {...prev, isPlaying: true}});
+                                currentSound.sound.play();
+                                setTimeout(() => {
+                                    SetCurrentSound(null);
+                                }, dt);
+                            }
+                        }}>
+                            {currentSound == null && `Load`}
+                            {currentSound != null && !currentSound.isPlaying && `Play`}
+                            {currentSound != null && currentSound.isPlaying && `Playing`}
+                        </button>}
+                    </div>
+                    }
                 </div>
             })}
         </div>}
