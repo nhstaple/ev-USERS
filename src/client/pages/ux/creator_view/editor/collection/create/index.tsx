@@ -10,6 +10,7 @@ import { TLanguage, TPartOfSpeech, TVocabSubject } from '../../../../../../../ap
 import { CollectionPut } from '../../../../../../../server/db/collection/collection.put';
 import { CollectionGet } from '../../../../../../../server/db/collection/collection.get';
 import Axios, { AxiosResponse } from 'axios';
+import { IEntity } from '../../../../../../../api';
 
 const ENABLE_ALERTS = true;
 
@@ -50,6 +51,16 @@ async function SubmitHandler(e: React.FormEvent<HTMLFormElement>, collection: Co
         valid: true,
         payload: collection
     };
+}
+
+function makeid(length) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+   }
+   return result;
 }
 
 async function CreateVocabHandler(e: React.FormEvent<HTMLFormElement>) {
@@ -149,13 +160,14 @@ async function getFileName(file: IVocabMedia) {
 interface IAudioPreview {
     sound: HTMLAudioElement
     isPlaying: boolean
+    parent: IEntity
 }
 
-function newAudioPreview(sound: File): IAudioPreview {
+function newAudioPreview(sound: File, parent: IEntity): IAudioPreview {
     const encoding = URL.createObjectURL(sound);
     const data: HTMLAudioElement = new Audio(encoding);
 
-    return { sound: data, isPlaying: false }
+    return { sound: data, isPlaying: false, parent: parent }
 }
 
 const CollectionCreationEditor = ({userID, userEmail}: ICollectionEditorViewProp) => {
@@ -282,6 +294,9 @@ const CollectionCreationEditor = ({userID, userEmail}: ICollectionEditorViewProp
                     return;
                 }
 
+                // set a temporary ID
+                newVocab.id = makeid(8);
+
                 if(!editingVocab) {
                     // update the array on the client 
                     SetItemsCache( prev => [...prev, newVocab ]);
@@ -372,7 +387,7 @@ const CollectionCreationEditor = ({userID, userEmail}: ICollectionEditorViewProp
                             return;
                         }
 
-                        SetCurrentSound(newAudioPreview(newSound));
+                        SetCurrentSound(newAudioPreview(newSound, newVocab));
 
                         SetNewVocab({...newVocab, media:
                             {...newVocab.media, sound: e.target.files[0]
@@ -450,7 +465,7 @@ const CollectionCreationEditor = ({userID, userEmail}: ICollectionEditorViewProp
                             // set the index in the items cache to update
                             SetEditIndex(i);
                             // set the current sound
-                            SetCurrentSound(newAudioPreview(vocab.media.sound));
+                            SetCurrentSound(newAudioPreview(vocab.media.sound, vocab));
                         }}>
                             Edit
                         </button>
@@ -466,17 +481,28 @@ const CollectionCreationEditor = ({userID, userEmail}: ICollectionEditorViewProp
                         </button>
                     </div>
                     {/* shows the image and sound */}
-                    {vocab.media.image != null &&
+                    {vocab.media.image != null && vocab.media.sound != null &&
                     <div>
                         <img style={{width: '10vw', height: '10vw'}} src={URL.createObjectURL(vocab.media.image)} />
                         <p>{vocab.description}</p>
-                        {<button onClick={(e) => {
+
+                        {currentSound == null &&
+                        <button onClick={(e) => {
                             e.preventDefault();
                             if(currentSound == null) {
-                                const preview = newAudioPreview(vocab.media.sound);
-                                SetCurrentSound((prev) => { return preview });
+                                const preview = newAudioPreview(vocab.media.sound, vocab);
+                                SetCurrentSound(preview);
                             }
-                            if(currentSound != null) {
+                        }}>
+                            {currentSound == null && `Load`}
+                        </button>}
+
+                        {currentSound != null && currentSound.parent.id == vocab.id &&
+                        <button onClick={(e) => {
+                            e.preventDefault();
+                            console.log(currentSound.parent.id);
+                            console.log(vocab.id);
+                            if(currentSound != null && !currentSound.isPlaying) {
                                 const dt = currentSound.sound.duration * 1000;
                                 SetCurrentSound((prev) => {return {...prev, isPlaying: true}});
                                 currentSound.sound.play();
@@ -485,9 +511,8 @@ const CollectionCreationEditor = ({userID, userEmail}: ICollectionEditorViewProp
                                 }, dt);
                             }
                         }}>
-                            {currentSound == null && `Load`}
-                            {currentSound != null && !currentSound.isPlaying && `Play`}
-                            {currentSound != null && currentSound.isPlaying && `Playing`}
+                            {!currentSound.isPlaying && `Play`}
+                            {currentSound.isPlaying && `Playing`}
                         </button>}
                     </div>
                     }

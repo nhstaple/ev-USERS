@@ -130,11 +130,15 @@ const CollectionsView = ({ data, vocabs, dataUpdate, vocabsUpdate }: Collections
         <div id={styles.CollectionsView}>
             {showVocabView && !showVocabEditor &&
             <div id={styles.VocabEditor}>
-                <p className={styles.vocabValue}>{targetVocab.value}</p>
-                <p className={styles.vocabEditorTranslation}>{targetVocab.translation} ({targetVocab.subject})</p>
+                <p className={styles.vocabValue}>Root: {targetVocab.value}</p>
+                <p className={styles.vocabEditorTranslation}>Translation: {targetVocab.translation} ({targetVocab.subject})</p>
                 <p className={styles.vocabPOS}>{targetVocab.pos}</p>
                 {singleVocabMedia &&
-                <img style={{width: '10vw'}} src={multerToImageURL(singleVocabMedia.image)} /> &&
+                <img style={{width: '50%'}} src={multerToImageURL(singleVocabMedia.image)} alt={targetVocab.description} /> &&
+                `${targetVocab.description}`
+                }
+
+                {singleVocabMedia &&
                 <button onClick={(e) => {
                     e.preventDefault();
                     if(!isPlayingAudio) {
@@ -408,6 +412,8 @@ const CollectionsView = ({ data, vocabs, dataUpdate, vocabsUpdate }: Collections
                             <button className={styles.vocabViewButton} onClick={async (e) => {
                                 e.preventDefault();
                                 const media = await getVocabMedia(vocab);
+                                console.log('HELP!!!!!!!!!!!');
+                                console.log(media);
                                 if(media) {
                                     console.log(media[0]);
                                     SetSingleVocabMedia(media[0]);
