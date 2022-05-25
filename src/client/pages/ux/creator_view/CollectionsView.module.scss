@@ -1,0 +1,220 @@
+#CollectionsView {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-content: center;
+    height: inherit;
+    width: inherit;
+    scrollbar-width: thin;
+    overflow: scroll;
+    overflow-x: hidden;
+    height: 100%;
+    padding-top: 20vh;
+}
+
+div.collectionContainer {
+    display: flex;
+    flex-direction: row;
+    font-size: 1.25em;
+    justify-content: space-between;
+    margin: 1vh 1vw 1vh 1vw;
+    padding: 1vh 1vw 1vh 1vw;
+    background-color: orange;
+}
+
+div.collectionMeta {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-right: 5vw;
+}
+
+div.collectionContainer > div > p {
+    margin: 0;
+}
+
+p.collectionName {
+    white-space: nowrap;
+}
+
+p.vocabCount {
+    font-size: 0.95em;
+}
+
+div.vocabContainer {
+    font-size: 1em;
+    align-content: center;
+    align-items: center;
+    display: flex;
+    width: 100%;
+    scrollbar-width: thin;
+    overflow: scroll;
+    overflow-y: hidden;
+}
+
+/* Scrollbar styles */
+div.vocabContainer::-webkit-scrollbar {
+    width: 12px;
+    height: 8px;
+}
+
+div.vocabContainer::-webkit-scrollbar-track {
+    border: 1px solid greenyellow;
+    border-radius: 10px;
+}
+
+div.vocabContainer::-webkit-scrollbar-thumb {
+    background: yellowgreen;  
+    border-radius: 10px;
+}
+
+div.vocabMeta {
+    display: flex;
+    flex-grow: 0;
+    flex-shrink: 0;
+    flex-direction: column;
+    justify-content: center;
+    border: 0.25px;
+    border-color: black;
+    border-style: solid;
+    width: 20%;
+    background-color: greenyellow;
+    margin: 0.5vh 0.25vw 1.5vh 0.25vw;
+    padding: 0.25vh 0.25vw 0.25vh 0.25vw;
+
+    > p {
+        margin-block-start: 0;
+        margin-block-end: 0;
+    }
+}
+
+p.vocabValue {
+    word-wrap: break-word;
+}
+
+p.vocabTranslation {
+    width: 75%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+div.collectionMenu {
+    display: flex;
+    flex-direction: row;
+    margin: 0.25vh 0 0 0;
+}
+
+button.vocabViewButton, button.collectionEditButton, button.collectionDeleteButton, button.collectionDeleteButton {
+    font-size: 0.9em;
+    display: flex;
+}
+
+button.collectionDeleteButton {
+
+}
+
+#VocabEditor {
+    display: flex;
+    flex-direction: column;
+    background-color: yellow;
+    z-index: 2;
+    font-size: 1em;
+    align-content: center;
+    align-items: center;
+    display: flex;
+    width: 50vw;
+    height: 50vh;
+    scrollbar-width: thin;
+    padding-left: 25vw;
+    padding-right: 25vw;
+    position: absolute;
+    > p {
+        margin-block-start: 0;
+        scroll-margin-block-end: 0;
+    }
+}
+
+#CollectionEditor {
+    display: flex;
+    width: 50vw;
+    height: 33vh;
+    flex-direction: column;
+    align-self: center;
+    background-color: orange;
+    text-align: center;
+
+    > div {
+        display: flex;
+        flex-direction: column;
+
+        > p {
+            margin-block-end: 0;
+            margin-block-start: 0;
+            display: flex;
+            flex: 0 0 auto;
+        }
+    }
+}
+
+div.formInputContainer {
+    display: flex;
+    justify-content: space-between;
+    margin: 1vh 0 1vh 0;
+
+    > p {
+        display: flex;
+        padding: 0 1vw 0 0;
+        width: 50%;
+        margin-block-start: 0;
+        margin-block-end: 0;
+    }
+
+    > input {
+        display: flex;
+        width: 50%;
+        height: 1.25em;
+        font-size: 1em;
+    }
+
+    > select {
+        font-size: 1em;
+    }
+}
+
+div.VocabMetaContainer {
+    display: flex;
+    > p {
+        display: flex;
+        padding: 1vh 1vw 1vh 1vh;
+    }
+}
+
+#VocabMenu {
+    display: flex;
+    justify-content: center;
+
+    > button {
+        display: flex;
+        background-color: greenyellow;
+        > p {
+            color: black;
+        }
+    }
+}
+
+#VocabView {
+    display: flex;
+}
+
+#FilterContainer {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: row;
+    margin: 1vh 1vw 1vh 1vw;
+
+    > select {
+        text-align: center;
+    }
+}

@@ -1,22 +1,24 @@
 import { IEntity } from "../../../api"
 import { ICollection } from "../../../api/entities/collection"
-import { ICreator } from "../../../api/entities/creator"
 import { TLanguage, IVocab } from "../../../api/entities/vocab"
+import { VocabPut } from "../vocab/vocab.put"
 
 export class CollectionPut implements Partial<ICollection> {
     // optional data
-    message?: string
-    creator?: ICreator
+    name: string
+    creator: IEntity
     // required data
-    items: IVocab[]
-    language: TLanguage
+    items: VocabPut[]
+    lang: TLanguage
     id: string
+    description: string;
 
-    constructor(id: string, language: TLanguage, items: IVocab[], message?: string, creator?: ICreator) {
-        this.message = message;
+    constructor(id: string, lang: TLanguage, items: VocabPut[], name: string, creator: IEntity, description='') {
+        this.name = name;
         this.creator = creator;
         this.items = items;
-        this.language = language;
+        this.lang = lang;
         this.id = id;
+        this.description = description;
     }
 }

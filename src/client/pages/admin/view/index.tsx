@@ -2,14 +2,13 @@ import React from 'react'
 import { NextPage } from 'next' 
 
 import { IVocab } from '../../../../api/entities/vocab';
-import { ICreator } from '../../../../api/entities/creator';
 
 import Axios, { AxiosError, AxiosResponse } from 'axios';
 import BasicVocabView from '../../../components/vocab/BasicView';
 
 // TODO put into a dotenv
 const PORT = '3000';
-const HOST = 'DOCKER_NODE_SERVICE'; // 'http://localhost' // 'DOCKER_NODE_SERVICE'; 
+const HOST = 'localhost'; // 'DOCKER_NODE_SERVICE' for docker
 const END_POINT = `http://${HOST}:${PORT}/api/examples/vocab`
 
 export async function getStaticProps() {

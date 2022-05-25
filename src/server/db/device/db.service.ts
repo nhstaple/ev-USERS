@@ -2,9 +2,16 @@ import { Injectable, Inject } from "@nestjs/common";
 import { IDatabaseDevice, IDBMeta } from "../../../api/db/db.interface";
 
 import { prepare_rethink, IEntity } from "../../../api";
-import { IVocab } from "../../../api/entities/vocab";
+import { IVocab, IVocabMediaMulter } from "../../../api/entities/vocab";
 
-import { test1, test2, test3, test4 } from "./db.provider";
+import { CreatorGet } from "../users/creator/creator.get";
+import { ICreator } from "../../../api/entities/users/creator";
+import { ICollection } from "../../../api/entities/collection";
+import { CollectionGet } from "../collection/collection.get";
+import { exit } from "process";
+import { VocabPut } from "../vocab/vocab.put";
+
+const DB_NAME = 'betaDb';
 
 @Injectable()
 export class DBService {
@@ -15,7 +22,8 @@ export class DBService {
     }
 
     async reset() {
-        this.client.prepare([test1, test2, test3, test4]);
+        // this.client.prepare();
+        console.log('TODO setup the betaDb reset in db.service.ts');
     }
 
     async getDbNames(): Promise<string[]> {
@@ -94,6 +102,7 @@ export class DBService {
             await this.client.insert(dbName, tableName, data);
         } catch (err) {
             console.log('error on insert!');
+            console.log(err);
         }
         const message = `logged ${data.length} items into ${dbName}.${tableName}`;
         console.log(message);
@@ -102,20 +111,59 @@ export class DBService {
 
     async getAllVocab(dbName:string, tableName: string) {
         try {
-            const res = await this.client.query(dbName, tableName, {}) as IVocab[];
+            const res = await this.client.query(dbName, tableName, []) as IVocab[];
             return res;
         } catch(err) {
             console.log(`error getting all vocab items in ${dbName}.${tableName}!`);
         }
     }
 
-    async getVocab(dbName:string, tableName: string, ids: IEntity[]) {
+    async getVocab(dbName:string, ids: IEntity[]) {
         try {
-            const res = await this.client.query(dbName, tableName, { id: ids.values }) as IVocab[];
+            const res = await this.client.query(dbName, 'vocab', ids) as IVocab[];
             return res;
         } catch(err) {
-            console.log(`error getting vocab items in ${dbName}.${tableName}`);
+            console.log(`error getting vocab items in ${dbName}.vocab`);
+            console.log(err);
+            exit(-1);
         }
+    }
+
+    async getCreator(dbName: string, id: IEntity): Promise<CreatorGet> {
+        const result = (await this.client.query(dbName, 'users', [id]) as ICreator[])[0];
+        let data: CreatorGet = result;
+        return data;
+    }
+
+    async getCollection(collectionID: string): Promise<CollectionGet> {
+        // console.log(`looking for ${collectionID}`);
+        const res = await this.client.query('betaDb', 'collections', [{id: collectionID}]) as ICollection[];
+        return res[0];
+    }
+
+    async getCollectionsFromUser(userID: string): Promise<CollectionGet[]> {
+        return await this.client.getCollectionsFromUser(userID);
+    }
+
+    async deleteItems(tableName: string, ids: IEntity[]): Promise<boolean> {
+        try {
+            await this.client.deleteItem(DB_NAME, tableName, ids);
+        } catch(e) {
+            return false;
+        }
+        return true;
+    }
+
+    async updateItems(tableName: string, ids: IEntity[], data: object[]): Promise<boolean> {
+        try {
+            this.client.update(DB_NAME, tableName, ids, data);
+        } catch(e) {
+            return false;
+        }
+    }
+
+    async getMedia(key: string): Promise<IVocabMediaMulter[]> {
+        return this.client.query(DB_NAME, 's3', [{ id: key }]) as unknown as IVocabMediaMulter[];
     }
 
 }

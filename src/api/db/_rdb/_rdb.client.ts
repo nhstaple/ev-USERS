@@ -1,8 +1,9 @@
 import { ICollection } from "../../entities/collection";
 import { IEntity } from "../../entities/entity.interface";
-import { IVocab } from "../../entities/vocab/vocab.interface";
+import { IVocab, IVocabMediaMulter } from "../../entities/vocab/vocab.interface";
 import { IDatabaseDevice, IDatabaseCredentials, IDBMeta } from "../db.interface";
 import * as r from "rethinkdb"
+import { ICreator } from "../../entities/users/creator";
 
 // TODO make a dev .env var
 const LOG = false;
@@ -108,7 +109,9 @@ export class RethinkdDb implements IDatabaseDevice {
                 throw err;
             }
         } else {
-            console.log(`db with name "${dbName}" exists!`)
+            if(LOG) {
+                console.log(`db with name "${dbName}" exists!`);
+            }
         }
 
         return true;
@@ -192,19 +195,31 @@ export class RethinkdDb implements IDatabaseDevice {
         throw new Error("Method not implemented.");
     }
     
-    async query(dbName: string, table: string, filter: object): Promise<IEntity[] | IVocab[] | ICollection[]> {
+    async query(dbName: string, table: string, filter: IEntity[]): Promise<IEntity[] | IVocab[] | ICollection[] | ICreator[] | IVocabMediaMulter[]> {
         this._validateConnection();
 
-        if (JSON.stringify(filter) != '{}') {
-            const p = r.db(dbName).table(table).filter(filter).run(this.conn);
-            const data: IEntity[] | IVocab[] | ICollection[] = await p.then( (value: r.Cursor) => {
+        if (filter.length > 0) {
+            const p = r.db(dbName).table(table).run(this.conn);
+            const data: IEntity[] | IVocab[] | ICollection[] | IVocabMediaMulter[] = await p.then( (value: r.Cursor) => {
                 return value.toArray().then((results) => results);
             });
     
-            return data;
+            let filtered: IEntity[] | IVocab[] | ICollection[] | IVocabMediaMulter[] = [];
+            // console.log(filter);
+            for(let i = 0; i < data.length; i++) {
+                // console.log(`? ${data[i].id}`);
+                for(let j = 0; j < filter.length; j++) {
+                    if(filter[j].id == data[i].id) {
+                        filtered.push(data[i] as any);
+                        // console.log(`found a thing! ${data[i].id}`);
+                    }
+                }
+            }
+
+            return filtered;
         } else {
             const p = r.db(dbName).table(table).run(this.conn);
-            const data: IEntity[] | IVocab[] | ICollection[] = await p.then( (value: r.Cursor) => {
+            const data: IEntity[] | IVocab[] | ICollection[] | ICreator[] | IVocabMediaMulter[] = await p.then( (value: r.Cursor) => {
                 return value.toArray().then((results) => results);
             });
     
@@ -238,33 +253,59 @@ export class RethinkdDb implements IDatabaseDevice {
         return true;
     }
     
-    async update(dbName:string, table: string, uuid: IEntity | IEntity[], data: object | object[]): Promise<boolean> {
+    async update(dbName:string, table: string, uuid: IEntity[], data: object[]): Promise<boolean> {
         this._validateConnection();
+        if(uuid.length != data.length) {
+            console.log('input to update must be same length!');
+            console.log(uuid);
+            console.log(data);
+            console.log('****');
+            return;
+        }
 
-        // TODO make sure len(uuid) == len(data)
-        await r.db(dbName).table(table).filter(uuid).update(data).run(this.conn, (err, res) => {
-            if(LOG) {
-                console.log(res);
-            }
-        })
-        
+        for(let i = 0; i < uuid.length; i++) {
+            console.log(`-.-.-.-.`);
+            console.log(uuid[i].id);
+            console.log(data[i]);
+            await r.db(dbName).table(table).get(uuid[i].id).update(data[i]).run(this.conn, (err, res) => {
+                if(true) {
+                    console.log(res);
+                }
+            })
+        }    
         return true;
     }
     
-    async deleteItem(dbName: string, table: string, uuid: IEntity | IEntity[]): Promise<boolean> {
+    async deleteItem(dbName: string, table: string, uuid: IEntity[]): Promise<boolean> {
         this._validateConnection();
+        let valid: boolean = null;
+        if(uuid.length == 0) {
+            return;
+        }
 
-        await r.db(dbName).table(table).filter(uuid).run(this.conn, (err, res) => {
+        // const p = r.db('betaDb').table('collections').filter(function (collection) {
+        //     return collection('creator').eq({id: id});
+        // }).run(this.conn);
+        
+        // const data: ICollection[] = await p.then( (value: r.Cursor) => {
+        //     return value.toArray().then((results) => results);
+        // });
+        // return data
+
+        let ids: string[] = [];
+        uuid.forEach((e) => {ids.push(e.id)});
+
+        await r.db(dbName).table(table).getAll(...ids).delete().run(this.conn, (err, res) => {
             if(err) {
                 console.log(err);
-                return false;
+                valid = false;
             }
             if(LOG) {
                 console.log(res);
             }
-            return true;
+            valid = true;
         });
-        return false;
+        return valid;
     }
 
     async deleteTable(dbName: string, tableName: string): Promise<boolean> {
@@ -287,6 +328,17 @@ export class RethinkdDb implements IDatabaseDevice {
             return false;
         }
     }
+
+    async getCollectionsFromUser(id: string): Promise<ICollection[]> {
+        const p = r.db('betaDb').table('collections').filter(function (collection) {
+            return collection('creator').eq({id: id});
+        }).run(this.conn);
+        
+        const data: ICollection[] = await p.then( (value: r.Cursor) => {
+            return value.toArray().then((results) => results);
+        });
+        return data
+    }
 }
 
 var client: IDatabaseDevice;
@@ -299,7 +351,7 @@ export async function init_rethink(credentials: IDatabaseCredentials): Promise<I
     return client;
 }
 
-const LOG_P = true;
+const LOG_P = false;
 
 export async function prepare_rethink(databases: IDBMeta[]) {
     if(client) {
@@ -321,7 +373,7 @@ export async function prepare_rethink(databases: IDBMeta[]) {
                 await client.createDb(dbName);
                 console.log(`created ${dbName}`);
             } catch(err) {
-                console.log(`db already exists! ${dbName}`);
+                if(LOG) console.log(`db already exists! ${dbName}`);
             }
 
             // create the tables
@@ -332,7 +384,9 @@ export async function prepare_rethink(databases: IDBMeta[]) {
                     await client.createTable(dbName, table);
                     console.log(`created ${dbName}.${table}`);
                 } catch(err) {
-                    console.log(`table already exists! ${dbName}.${table}`);
+                    if(LOG) {
+                        console.log(`table already exists! ${dbName}.${table}`);
+                    }
                 }
             }
         }

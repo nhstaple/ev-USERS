@@ -8,10 +8,13 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AppViewController } from './view/view.controller';
 import { AppViewService } from './view/view.service';
+
 import { DBModule } from './db/device/db.module';
 import { VocabModule } from './db/vocab/vocab.module';
 import { CollectionModule } from './db/collection/collection.module';
-import { resolve } from 'node:path';
+import { UsersModule } from './db/users/users.module';
+import { MulterModule } from '@nestjs/platform-express/multer';
+
 
 const DIR = './src/client'
 
@@ -26,8 +29,13 @@ const options = {
       dev: process.env.NODE_ENV !== 'production',
       dir: DIR
     }), options),
+    MulterModule.register({
+      dest: './files',
+    }),
+    DBModule,
     VocabModule,
-    DBModule
+    UsersModule,
+    CollectionModule
   ],
   controllers: [AppController, AppViewController],
   providers: [AppService, AppViewService ],

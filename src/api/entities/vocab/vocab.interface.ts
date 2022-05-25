@@ -1,4 +1,4 @@
-import { ICreator } from "../creator/creator.interface"
+
 import { IEntity } from "../entity.interface"
 
 // the supported langauges
@@ -13,14 +13,36 @@ export type TLanguage = keyof typeof ELanguage;
 export enum EPartOfSpeech {
     noun = 0,
     verb = 1,
-    participle = 2,
-    article = 3,
-    pronoun = 4,
-    preposition = 5,
-    adverb = 6,
-    conjunction = 7
+    adjective = 2,
+    participle = 4,
+    article = 8,
+    pronoun = 16,
+    preposition = 32,
+    adverb = 64,
+    conjunction = 128,
 }
 export type TPartOfSpeech = keyof typeof EPartOfSpeech;
+
+// the supported genders
+export enum EVocabSubject {
+    neutral = 0,
+    masculine = 1,
+    feminine =  2,
+    neutral_plural = 4,
+    masculine_plural = 8,
+    feminine_plural = 16
+}
+export type TVocabSubject = keyof typeof EVocabSubject;
+
+export interface IVocabMedia extends IEntity {
+    image: File;
+    sound: File;
+}
+
+export interface IVocabMediaMulter extends IEntity {
+    image: Express.Multer.File;
+    sound: Express.Multer.File;
+}
 
 // "a vocab" contains all the information for one flashcard
 export interface IVocab extends IEntity {
@@ -34,10 +56,16 @@ export interface IVocab extends IEntity {
     lang: TLanguage;
     // where we store the resources (image, sound) as a root path
     storagekey: string;
+    // the gedner of the word
+    subject: TVocabSubject;
 
+    // the images, description, sounds, etc.
+    media?: IVocabMedia;
+    description?: string;
+        
     // TODO
     // the person who made the vocav item
-    creator: ICreator;
+    creator: IEntity;
 
     // @deprecated from the original codebase
     idArbit?:string;

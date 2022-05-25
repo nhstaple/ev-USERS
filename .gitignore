@@ -42,6 +42,9 @@ lerna-debug.log*
 .next/*
 *.pack
 
+# rethinkdb
+rethinkdb_data/*
+
 # etc
 *.old
 *.next/

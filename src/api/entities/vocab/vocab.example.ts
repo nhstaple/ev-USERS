@@ -1,5 +1,5 @@
 import { IVocab } from "./vocab.interface";
-import { CreatorExample } from "../creator/creator.example";
+import { CreatorExample } from "../users/creator/creator.example";
 export const VocabExample: IVocab = {
     value: 'la cuchara',
     translation: 'the spoon',
@@ -7,6 +7,7 @@ export const VocabExample: IVocab = {
     lang: 'spanish',
     storagekey: 'TODO add asset storage',
     creator: CreatorExample,
-    id: '[vocab] a random stream of characters (TODO implement auto generation)'
+    id: '[vocab] a random stream of characters (TODO implement auto generation)',
+    subject: 'feminine'
 };
 

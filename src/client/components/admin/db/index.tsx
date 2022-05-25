@@ -15,7 +15,7 @@ interface DBViewProps {
     databases: IDBMeta[];
 }
 
-const HOST = 'localhost'; // 'DOCKER_NODE_SERVICE'; // 'localhost';
+const HOST = 'localhost'; // for DOCKER and local deploy
 const PORT = 3000;
 const END_POINT = `http://${HOST}:${PORT}/api/db`
 const LOG_DEBUG = true;
