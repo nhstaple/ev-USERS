@@ -4,40 +4,40 @@ import styles from './Main.module.scss'
 import Link from 'next/link'
 import { useRouter } from 'next/router';
 
-import { CreatorGet } from '../../../../server/db/users/creator/creator.get';
+import { Creator } from '../../../../api/entities/users/';
 import Axios, { AxiosResponse } from 'axios';
-import { IEntity, VOCAB } from '../../../../api';
+import { IEntity } from '../../../../api';
 import CollectionsView from './collections';
 import { IVocab } from '../../../../api/entities/vocab';
-import { CollectionGet } from '../../../../server/db/collection/collection.get';
-import { VocabGet } from '../../../../server/db/vocab/vocab.get';
+import { Collection, Vocab } from '../../../../api/entities/';
 
 import CollectionCreationEditor from './editor/collection/create'
 
+// TODO user authentication
 const CREATOR_ID = 'beta-creator';
 
-// TODO put into a dotenv
+// TODO dotenv file
 const PORT = '3000';
 const HOST = 'localhost'; // 'DOCKER_NODE_SERVICE'; 
 const END_POINT = `http://${HOST}:${PORT}/api/db`
 
 interface ICreatorProp {
-  userData: CreatorGet;
-  collectionsData: CollectionGet[];
-  vocabData: [VocabGet[]];
+  userData: Creator.Get;
+  collectionsData: Collection.Get[];
+  vocabData: [Vocab.Get[]];
 }
 
 export async function getServerSideProps() {
     let response: AxiosResponse;
-    let userData: CreatorGet;
-    let collectionsData: CollectionGet[];
-    let vocabData: [VocabGet[]] = [[]];
+    let userData: Creator.Get;
+    let collectionsData: Collection.Get[];
+    let vocabData: [Vocab.Get[]] = [[]];
 
     // user data
     try {
         const CALL = `${END_POINT}/creator/${CREATOR_ID}`;
         response = await Axios.get(CALL);
-        userData = response.data as CreatorGet;
+        userData = response.data as Creator.Get;
     } catch (err) {
         console.log(`there was an getting ${CREATOR_ID}`);
     }
@@ -90,10 +90,10 @@ function getCollectionIDs(ids: IEntity[]): string[] {
     return res;
 }
 
-async function getCollections(user: IEntity): Promise<CollectionGet[]> {
-    let result: CollectionGet[] = [];
+async function getCollections(user: IEntity): Promise<Collection.Get[]> {
+    let result: Collection.Get[] = [];
     try {
-        result = (await Axios.get(`${END_POINT}/collection/${user.id}`)).data as CollectionGet[];
+        result = (await Axios.get(`${END_POINT}/collection/${user.id}`)).data as Collection.Get[];
     } catch(e) {
         console.log(`error getting ${user.id} collections`)
     }
@@ -101,8 +101,8 @@ async function getCollections(user: IEntity): Promise<CollectionGet[]> {
     return result;
 }
 
-async function getVocabs(collectionID: string): Promise<VocabGet[]> {
-    let data: VocabGet[] = [];
+async function getVocabs(collectionID: string): Promise<Vocab.Get[]> {
+    let data: Vocab.Get[] = [];
     try {
         let res = await Axios.get(`${END_POINT}/vocab/fromcollection/${collectionID}`);
         data = res.data as IVocab[];
@@ -122,8 +122,8 @@ const CreatorView: NextPage = ({userData, collectionsData, vocabData}: ICreatorP
     let [ collectionsID, setCollectionsID] = useState<string[]>(getCollectionIDs(collectionsData));
     let [ showCollections, setCollectionView ] = useState<boolean>(false);
     let [ showCreationEditor, setCreationEditor ] = useState<boolean>(false);
-    let [ collections, setCollections ]= useState<CollectionGet[]>(collectionsData);
-    let [ vocabs, setVocabs ]= useState<Array<VocabGet[]>>(vocabData);
+    let [ collections, setCollections ]= useState<Collection.Get[]>(collectionsData);
+    let [ vocabs, setVocabs ]= useState<Array<Vocab.Get[]>>(vocabData);
 
     const router = useRouter();
 

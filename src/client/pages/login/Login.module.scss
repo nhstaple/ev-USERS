@@ -1,0 +1,98 @@
+@import '../styles/HeadersFooters.scss';
+@import '../styles/Buttons.scss';
+@import '../styles/Forms.scss';
+
+#LoginContainer {
+    width: 100vw;
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 10vh;
+    justify-content: center;
+}
+
+@keyframes appear {
+    0% {
+        width: 40vw;
+        height: 33%;
+        display: none;
+    }
+    33% {
+        display: flex;
+    }
+    100% {
+        width: 80vw;
+        height: 66%;
+    }
+}
+
+#LoginMenu {
+    padding: 1vh 1vw 1vh 1vw;
+    background-color: pink;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    margin-left: 10vw;
+    margin-right: 10vw;
+    margin-top: 5vh;
+    margin-bottom: 5vh;
+    padding-top: 5vh;
+    padding-bottom: 5vh;
+    border-radius: 20px;
+    box-shadow: 0px 0px 10px black;
+    animation: appear;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+}
+
+#Form {
+    width: 50vw;
+    justify-content: space-around;
+    > div > p {
+        margin: 0;
+    }
+}
+
+.UserButtonWrapper, .UnusableButtonWrapper {
+    > a, button {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    > a:hover, button:hover {
+        margin-left: 0;
+        margin-right: 0;
+    }
+}
+
+.UserButtonWrapper {
+    padding-top: 5vh;
+    > a, button, input:hover {
+        background-color: lightblue;
+    }
+
+    > a:hover, button:hover, input:hover {
+        background-color: lightgreen;
+        width: 50vw;
+        padding-left: 0;
+        padding-right: 0;
+    }
+}
+
+.UnusableButtonWrapper {
+    > a, button, input {
+        background-color: grey;
+        color: white;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.9em;
+    }
+
+    > a:hover, button:hover, input:hover {
+        background-color: lightcoral;
+        color: black;
+        box-shadow: none;
+    }
+}

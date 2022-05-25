@@ -3,11 +3,9 @@ import { IEntity } from "../../../api";
 import { ICollection } from "../../../api/entities/collection";
 import { IVocabMediaMulter } from "../../../api/entities/vocab";
 import { DBService } from "../device/db.service";
-import { VocabDelete } from "../vocab/vocab.delete";
-import { VocabPut } from "../vocab/vocab.put";
-import { CollectionGet } from "./collection.get";
-import { CollectionPut } from "./collection.put";
+import { Vocab, Collection } from '../../../api/entities/'
 
+// TODO dotenv file
 const DB_NAME = 'betaDb';
 
 @Injectable()
@@ -18,7 +16,7 @@ export class CollectionService {
         this.dbService = service;
     }
 
-    async insertCollection(collection: CollectionPut) {
+    async insertCollection(collection: Collection.Put) {
         console.log(collection);
         
         for(let i = 0; i < collection.items.length; i++) {
@@ -55,7 +53,7 @@ export class CollectionService {
         await this.dbService.insert(DB_NAME, 's3', media);
     }
     
-    async getUserCollections(id: string): Promise<CollectionGet[]> {
+    async getUserCollections(id: string): Promise<Collection.Get[]> {
         return this.dbService.getCollectionsFromUser(id);
     }
 
@@ -69,7 +67,7 @@ export class CollectionService {
         }
     }
 
-    async deleteItemsFromCollections(id: string, edits: VocabDelete[]): Promise<boolean> {
+    async deleteItemsFromCollections(id: string, edits: Vocab.Delete[]): Promise<boolean> {
         try {
             const collection = (await this.dbService.getCollection(id));
             let successes: number = 0;
@@ -122,7 +120,7 @@ export class CollectionService {
         }
     }
 
-    async updateVocabItems(ids: IEntity[], data: VocabPut[]): Promise<boolean> {
+    async updateVocabItems(ids: IEntity[], data: Vocab.Put[]): Promise<boolean> {
         try {
             return await this.dbService.updateItems('vocab', ids, data);
         } catch(e) {

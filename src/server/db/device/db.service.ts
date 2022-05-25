@@ -4,12 +4,12 @@ import { IDatabaseDevice, IDBMeta } from "../../../api/db/db.interface";
 import { prepare_rethink, IEntity } from "../../../api";
 import { IVocab, IVocabMediaMulter } from "../../../api/entities/vocab";
 
-import { CreatorGet } from "../users/creator/creator.get";
+import { Creator } from '../../../api/entities/users/';
 import { ICreator } from "../../../api/entities/users/creator";
 import { ICollection } from "../../../api/entities/collection";
-import { CollectionGet } from "../collection/collection.get";
+import { Collection } from '../../../api/entities/';
 import { exit } from "process";
-import { VocabPut } from "../vocab/vocab.put";
+import { Vocab } from '../../../api/entities/vocab';
 
 const DB_NAME = 'betaDb';
 
@@ -129,19 +129,19 @@ export class DBService {
         }
     }
 
-    async getCreator(dbName: string, id: IEntity): Promise<CreatorGet> {
+    async getCreator(dbName: string, id: IEntity): Promise<Creator.Get> {
         const result = (await this.client.query(dbName, 'users', [id]) as ICreator[])[0];
-        let data: CreatorGet = result;
+        let data: Creator.Get = result;
         return data;
     }
 
-    async getCollection(collectionID: string): Promise<CollectionGet> {
+    async getCollection(collectionID: string): Promise<Collection.Get> {
         // console.log(`looking for ${collectionID}`);
         const res = await this.client.query('betaDb', 'collections', [{id: collectionID}]) as ICollection[];
         return res[0];
     }
 
-    async getCollectionsFromUser(userID: string): Promise<CollectionGet[]> {
+    async getCollectionsFromUser(userID: string): Promise<Collection.Get[]> {
         return await this.client.getCollectionsFromUser(userID);
     }
 

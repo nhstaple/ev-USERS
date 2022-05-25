@@ -4,11 +4,9 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 
 import styles from './CollectionCreationEditor.module.scss'
-import { VocabPut } from '../../../../../../../server/db/vocab/vocab.put';
 import { IVocabMedia } from '../../../../../../../api/entities/vocab';
-import { TLanguage, TPartOfSpeech, TVocabSubject } from '../../../../../../../api/entities/vocab';
-import { CollectionPut } from '../../../../../../../server/db/collection/collection.put';
-import { CollectionGet } from '../../../../../../../server/db/collection/collection.get';
+import { TLanguage, TPartOfSpeech, TVocabSubject } from '../../../../../../../api/entities/vocab/vocab.interface';
+import { Collection, Vocab } from '../../../../../../../api/entities/';
 import Axios, { AxiosResponse } from 'axios';
 import { IEntity } from '../../../../../../../api';
 
@@ -16,10 +14,10 @@ const ENABLE_ALERTS = true;
 
 interface ICollectionValidation {
     valid: boolean;
-    payload: CollectionPut;
+    payload: Collection.Put;
 }
 
-async function SubmitHandler(e: React.FormEvent<HTMLFormElement>, collection: CollectionPut, vocabs: VocabPut[]): Promise<ICollectionValidation> {
+async function SubmitHandler(e: React.FormEvent<HTMLFormElement>, collection: Collection.Put, vocabs: Vocab.Put[]): Promise<ICollectionValidation> {
     e.preventDefault();
     // verify / transform data
     if(vocabs.length == 0) {
@@ -87,35 +85,38 @@ interface ICollectionEditorViewProp {
 }
 
 // used to set / reset the collection being edited
-const INITIAL_COLLECTION = {
-    id:'',
-    name:'',
+const INITIAL_COLLECTION: Collection.Put = {
+    id: '',
+    name: '',
     lang: 'english',
     description: '',
-    creator: {id: ''}
-} as CollectionPut;
+    creator: { id: '' },
+    items: []
+};
 
 // used to set / reset the vocab item(s) being edited
-const INITIAL_NEW_VOCAB = {
-    id:'',
-    value:'',
-    translation:'',
+const INITIAL_NEW_VOCAB: Vocab.Put = {
+    id: '',
+    value: '',
+    translation: '',
     pos: 'noun' as TPartOfSpeech,
     subject: 'neutral' as TVocabSubject,
-    media: {image: null, sound: null},
-    description: ''
-} as VocabPut;
+    media: { image: null, sound: null, id: null },
+    description: '',
+    lang: 'english',
+    creator: undefined
+};
 
 const HOST = 'localhost'; // TODO docker deploy (see parent pages)
 const PORT = `3000`;
 const END_POINT = `http://${HOST}:${PORT}/api/db/`
 
-async function SendCollectionToServer(payload: CollectionPut) {
+async function SendCollectionToServer(payload: Collection.Put) {
     console.log('sending the collection to the server!');
     console.log(payload);
     console.log(`${payload.items.length} vocab items to insert in th DB`);
     let formData = new FormData();
-    let collectionData: CollectionPut = {...payload};
+    let collectionData: Collection.Put = {...payload};
     for(let i = 0; i < collectionData.items.length; i++) {
         const data = collectionData.items[i].media;
         collectionData.items[i].media = {id: null, image: null, sound: null};
@@ -175,11 +176,11 @@ const CollectionCreationEditor = ({userID, userEmail}: ICollectionEditorViewProp
     let [ showVocabCreator, SetShowVocabCreator] = useState<boolean>(false);
 
     // this acache holds all the data for vocab cards for the current collection
-    let [ itemsCache, SetItemsCache ] = useState<VocabPut[]>([]);
+    let [ itemsCache, SetItemsCache ] = useState<Vocab.Put[]>([]);
     // this cache variable keeps track of the vocab item currently being created / edited by the user
-    let [ newVocab, SetNewVocab ] = useState<VocabPut>(INITIAL_NEW_VOCAB);
+    let [ newVocab, SetNewVocab ] = useState<Vocab.Put>(INITIAL_NEW_VOCAB);
     // this cache variable
-    let [ newCollection, SetNewCollection ] = useState<CollectionPut>(INITIAL_COLLECTION);
+    let [ newCollection, SetNewCollection ] = useState<Collection.Put>(INITIAL_COLLECTION);
 
     let [ editingVocab, SetEditingVocab ] = useState<boolean>(false);
     let [ editIndex, SetEditIndex ] = useState<number>(-1);
@@ -446,7 +447,7 @@ const CollectionCreationEditor = ({userID, userEmail}: ICollectionEditorViewProp
 
             {/* if the user has added items show them the items */}
             {itemsCache.length > 0 &&
-            itemsCache.map((vocab: VocabPut, i: number) => {
+            itemsCache.map((vocab: Vocab.Put, i: number) => {
                 // the preview of items
                 // TODO set the div background to the image the user uploaded
                 return <div className={styles.VocabMetaContainer} key={vocab.value}>

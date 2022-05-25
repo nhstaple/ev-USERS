@@ -1,0 +1,60 @@
+.UserButtonWrapper, .UnusableButtonWrapper {
+    display: flex;
+    width: 22vw;
+    justify-content: space-around;
+    height: fit-content;
+    font-size: 0.9em;
+
+    > a, button, input {
+        display: flex;
+        flex: 0 0 auto;
+        width: 100%;
+        margin: 1vh 1vh 1vh 1vh;
+        padding: 1vh 1vh 1vh 1vh;
+        transition: 0.75s;
+        justify-content: center;
+        text-decoration: none;
+        border-radius: 20px;
+    }
+
+    > a:hover, button:hover, input:hover {
+        transition: 0.75s;
+        box-shadow: 0 0 10px black;
+    }
+}
+
+.UserButtonWrapper {
+    > a, button, input {
+        background-color: lightblue;
+        color: white;
+    }
+
+    > a:hover, button:hover, input:hover {
+        background-color: lightgreen;
+        color: white;
+        text-decoration: underline;
+        border-radius: 0;
+        padding: 3vh 3vh 3vh 3vh;
+    }
+}
+
+.UnusableButtonWrapper {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9em;
+
+    > a, button, input {
+        background-color: grey;
+        color: white;
+    }
+
+    > a:hover, button:hover, input:hover {
+        background-color: lightcoral;
+        color: black;
+        box-shadow: none;
+    }
+
+    > a:active, button:active, input:active {
+        background-color: red;
+        color: lightgray;
+    }
+}

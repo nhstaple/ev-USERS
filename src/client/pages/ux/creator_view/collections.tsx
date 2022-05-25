@@ -3,22 +3,17 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { IEntity } from "../../../../api";
 import { ICollection } from "../../../../api/entities/collection"
-import { IVocab, IVocabMediaMulter, TLanguage, TPartOfSpeech, TVocabSubject } from "../../../../api/entities/vocab";
-import { CollectionGet } from '../../../../server/db/collection/collection.get';
-import { CollectionPost } from '../../../../server/db/collection/collection.post';
-import { CollectionPut } from "../../../../server/db/collection/collection.put";
-import { CollectionDelete } from "../../../../server/db/collection/collection.delete";
-import { VocabGet } from '../../../../server/db/vocab/vocab.get';
-import { VocabPost } from '../../../../server/db/vocab/vocab.post';
-import { VocabDelete } from '../../../../server/db/vocab/vocab.delete';
+import { IVocab, IVocabMediaMulter } from "../../../../api/entities/vocab";
+import { TLanguage, TPartOfSpeech, TVocabSubject } from '../../../../api/entities/vocab/vocab.interface'
+import { Collection, Vocab } from '../../../../api/entities';
 import styles from './CollectionsView.module.scss'
 import { ICreator } from "../../../../api/entities/users/creator";
 
 interface CollectionsViewProp {
-    data: CollectionGet[];
-    vocabs: Array<VocabGet[]>;
-    dataUpdate: React.Dispatch<React.SetStateAction<CollectionGet[]>>;
-    vocabsUpdate: React.Dispatch<React.SetStateAction<VocabGet[][]>>;
+    data: Collection.Get[];
+    vocabs: Array<Vocab.Get[]>;
+    dataUpdate: React.Dispatch<React.SetStateAction<Collection.Get[]>>;
+    vocabsUpdate: React.Dispatch<React.SetStateAction<Vocab.Get[][]>>;
 }
 
 
@@ -44,7 +39,7 @@ const INITIAL_VOCAB = {
     creator: {id: ''}
 } as IVocab;
 
-async function DeleteCollectionHandler(collection: CollectionDelete): Promise<boolean> {
+async function DeleteCollectionHandler(collection: Collection.Delete): Promise<boolean> {
     console.log('client wants to delete: ', collection);
     try{
         const res = await Axios.delete(`${END_POINT}/collection`, {data: collection});
@@ -111,11 +106,11 @@ const CollectionsView = ({ data, vocabs, dataUpdate, vocabsUpdate }: Collections
 
     let [ targetCollection, SetTargetCollection ] = useState<ICollection>(INITIAL_COLLECTION);
     let [ targetVocab, SetTargetVocab ] = useState<IVocab>(INITIAL_VOCAB);
-    let [ vocabDeleteCache, SetVocabDeleteCache ] = useState<VocabDelete[]>([]);
-    let [ vocabEditCache, SetVocabEditCache ] = useState<VocabPost[]>([]); 
-    let [ collectionCache, SetCollectionCache ] = useState<CollectionGet>(INITIAL_COLLECTION);
-    let [ vocabCache, SetVocabCache ] = useState<VocabGet[]>([]); 
-    let [ editingVocab, SetEditingVocab ] = useState<VocabPost>(INITIAL_VOCAB);  
+    let [ vocabDeleteCache, SetVocabDeleteCache ] = useState<Vocab.Delete[]>([]);
+    let [ vocabEditCache, SetVocabEditCache ] = useState<Vocab.Post[]>([]); 
+    let [ collectionCache, SetCollectionCache ] = useState<Collection.Get>(INITIAL_COLLECTION);
+    let [ vocabCache, SetVocabCache ] = useState<Vocab.Get[]>([]); 
+    let [ editingVocab, SetEditingVocab ] = useState<Vocab.Post>(INITIAL_VOCAB);  
     let [ editingVocabIndex, SetEditingVocabIndex ] = useState<number>(-1);
     let [ editingVocabsItemsIndex, SetEditingVocabsItemsIndex ] = useState<number>(-1);
 
@@ -404,7 +399,7 @@ const CollectionsView = ({ data, vocabs, dataUpdate, vocabsUpdate }: Collections
                     </div>
 
                     <div className={styles.vocabContainer}>
-                    { current && current.map((vocab: VocabGet, i: number) => {
+                    { current && current.map((vocab: Vocab.Get, i: number) => {
                         return <div className={styles.vocabMeta} key={vocab.id}>
                             <p className={styles.vocabValue}>{vocab.value}</p>
                             {/* <p className={styles.vocabTranslation}>{vocab.translation}</p> */}

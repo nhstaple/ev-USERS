@@ -1,10 +1,6 @@
 import { Controller, Post, Body, Get, Param, Put, Delete, UseInterceptors, UploadedFiles } from '@nestjs/common';
 import { CollectionService } from './collection.service';
-import { CollectionPut } from './collection.put';
-import { CollectionGet } from './collection.get';
-import { CollectionDelete } from './collection.delete';
-import { VocabDelete } from '../vocab/vocab.delete';
-import { VocabPut } from '../vocab/vocab.put';
+import { Collection, Vocab } from '../../../api';
 import { IEntity } from '../../../api';
 import { FileFieldsInterceptor, FilesInterceptor } from '@nestjs/platform-express/multer';
 import { Express } from 'express';
@@ -16,12 +12,12 @@ export class CollectionController {
     constructor(private readonly collectionService: CollectionService) {}
 
     @Get('/:userID')
-    async getCollection(@Param('userID') id): Promise<CollectionGet[]> {
+    async getCollection(@Param('userID') id): Promise<Collection.Get[]> {
         return await this.collectionService.getUserCollections(id);
     }
 
     @Put()
-    async insertCollection(@Body() data: CollectionPut) {
+    async insertCollection(@Body() data: Collection.Put) {
         let result: string;
         try {
             await this.collectionService.insertCollection(data);
@@ -55,7 +51,7 @@ export class CollectionController {
     }
 
     @Delete()
-    async deleteCollection(@Body() collection: CollectionDelete): Promise<string> {
+    async deleteCollection(@Body() collection: Collection.Delete): Promise<string> {
         let result: string;
         try {
             // delete from the database 
@@ -72,7 +68,7 @@ export class CollectionController {
     }
 
     @Delete('/:collectionID')
-    async deleteItemsFromCollection(@Param('collectionID') id, @Body() data: VocabDelete[]): Promise<boolean> {
+    async deleteItemsFromCollection(@Param('collectionID') id, @Body() data: Vocab.Delete[]): Promise<boolean> {
         try {
             return await this.collectionService.deleteItemsFromCollections(id, data);
         } catch(err) {
@@ -82,7 +78,7 @@ export class CollectionController {
 
     // TODO move to the vocab controller
     @Put('/:collectionID')
-    async updateItemsFromCollection(@Param('collectionID') id, @Body() data: VocabPut[]): Promise<boolean> {
+    async updateItemsFromCollection(@Param('collectionID') id, @Body() data: Vocab.Put[]): Promise<boolean> {
         console.log('got vocab edit request!');
         console.log(data['data']);
         let ids: IEntity[] = [];

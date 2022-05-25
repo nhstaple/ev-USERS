@@ -1,0 +1,36 @@
+#Header, #Footer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    width: 100vw;
+    height: 10vh;
+    background-color: lightgreen;
+    box-shadow: 0 0 10px black;
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+
+    > h1, h2 {
+        padding: 0;
+        margin: 0;
+    }
+
+    > h1 {
+        font-size: 1em;
+    }
+
+    > h2 {
+        font-size: 0.9em;
+    }
+}
+
+#Header {
+    font-size: 2em;
+    position: absolute;
+    bottom: 80vh;
+}
+
+#Footer {
+    position: absolute;
+    top: 80vh;
+}
