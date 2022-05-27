@@ -11,7 +11,53 @@
     }
     100% {
         width: 80vw;
-        height: 66%;
+        height: 90%;
         box-shadow: 0px 0px 10px black;
+    }
+}
+
+@keyframes LoginTypeButtonAppear {
+    0% {
+        width: 0;
+        display: flex;
+        font-size: 0em;
+    }
+    100% {
+        width: 22vw;
+        font-size: 1.25em;
+    }
+}
+
+@keyframes BackButtonAppear {
+    0% {
+        width: 0;
+        display: flex;
+        font-size: 1.25em;
+    }
+    100% {
+        width: 22vw;
+        font-size: 1.25em;
+    }
+}
+
+@keyframes InputFieldAppear {
+    0% {
+        width: 0;
+        display: flex;
+    }
+    100% {
+        width: 100%;
+    }
+}
+
+@keyframes InputImageAppear {
+    0% {
+        width: 0;
+        display: flex;
+        height: 0;
+    }
+    100% {
+        width: 66%;
+        height: fit-content;
     }
 }

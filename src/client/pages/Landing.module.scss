@@ -28,3 +28,13 @@
     align-items: center;
 }
 
+#BackButton {
+    width: 20vw;
+    .UserButtonWrapper {
+        > button {
+            animation: BackButtonAppear;
+            animation-duration: 0.250s;
+            animation-fill-mode: forwards;
+        }
+    }
+}

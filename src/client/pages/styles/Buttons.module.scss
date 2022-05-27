@@ -76,15 +76,20 @@
     }
 }
 
-#BackButton {
+#BackButton, #CancelButton {
     position: absolute;
-    bottom: 82vh;
+    top: -7.5vh;
     left: 2vw;
 
     > div.UserButtonWrapper {
+        > button {
+            width: 20vw;
+            margin: 0;
+            padding: 0;
+        }
         > button:hover, button:active {
-            margin: 1vh 1vh 1vh 1vh;
-            padding: 1vh 1vh 1vh 1vh;
+            margin: 0 1vh 0 1vh;
+            padding: 0 1vh 0 1vh;
         }
         
         > button:hover {
@@ -98,4 +103,13 @@
             color: black;
         }
     }
+}
+
+#BackButton {
+    z-index: 1;
+}
+
+#CancelButton {
+    z-index: 2;
+    top: 2.5vh;
 }

@@ -1,13 +1,13 @@
 import Axios, {AxiosResponse} from "axios";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { IEntity } from "../../../../api";
-import { ICollection } from "../../../../api/entities/collection"
-import { IVocab, IVocabMediaMulter } from "../../../../api/entities/vocab";
-import { TLanguage, TPartOfSpeech, TVocabSubject } from '../../../../api/entities/vocab/vocab.interface'
-import { Collection, Vocab } from '../../../../api/entities';
+import { IEntity } from "../../../../../api";
+import { ICollection } from "../../../../../api/entities/collection"
+import { IVocab, IVocabMediaMulter } from "../../../../../api/entities/vocab";
+import { TLanguage, TPartOfSpeech, TVocabSubject } from '../../../../../api/entities/vocab/vocab.interface'
+import { Collection, Vocab } from '../../../../../api/entities';
 import styles from './CollectionsView.module.scss'
-import { ICreator } from "../../../../api/entities/users/creator";
+import { ICreator } from "../../../../../api/entities/users/creator";
 
 interface CollectionsViewProp {
     data: Collection.Get[];

@@ -24,8 +24,8 @@
     margin-right: 10vw;
     margin-top: 5vh;
     margin-bottom: 5vh;
-    padding-top: 5vh;
-    padding-bottom: 5vh;
+    padding-top: 1vh;
+    padding-bottom: 1vh;
     border-radius: 20px;
     animation: appear;
     animation-duration: 0.75s;
@@ -78,4 +78,22 @@
 //         border: 1px solid black;
 //     }
 // }
+
+#BackButton {
+    .UserButtonWrapper, .UnusableButtonWrapper {
+        > button {
+            animation: BackButtonAppear;
+            animation-duration: 0.250s;
+            animation-fill-mode: forwards;
+        }
+    }
+}
+
+.UserButtonWrapper, .UnusableButtonWrapper {
+    > button {
+        animation: LoginTypeButtonAppear;
+        animation-duration: 0.750s;
+        animation-fill-mode: forwards;
+    }
+}
 

@@ -1,7 +1,7 @@
 
 import styles from './Main.module.scss'
 import Options from './Options'
-import { Creator } from '../../../api/entities/users/';
+import { Creator } from '../../../../api/entities/users';
 import { Dispatch, SetStateAction } from 'react';
 
 const Main = ( creator: any, handle: any ) => {

@@ -3,9 +3,9 @@ import styles from './Options.module.scss'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import Axios, { AxiosResponse } from 'axios'
-import { ICollection } from '../../../api/entities/collection'
-import { IVocab } from '../../../api/entities/vocab'
-import { Creator } from '../../../api/entities/users';
+import { ICollection } from '../../../../api/entities/collection'
+import { IVocab } from '../../../../api/entities/vocab'
+import { Creator } from '../../../../api/entities/users';
 import { Dispatch, SetStateAction } from 'react';
 
 const Options = ( creator: any, handle: any ) => {

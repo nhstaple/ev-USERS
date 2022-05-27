@@ -4,11 +4,11 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 
 import styles from './CollectionCreationEditor.module.scss'
-import { IVocabMedia } from '../../../../../../../api/entities/vocab';
-import { TLanguage, TPartOfSpeech, TVocabSubject } from '../../../../../../../api/entities/vocab/vocab.interface';
-import { Collection, Vocab } from '../../../../../../../api/entities/';
+import { IVocabMedia } from '../../../../../../../../api/entities/vocab';
+import { TLanguage, TPartOfSpeech, TVocabSubject } from '../../../../../../../../api/entities/vocab/vocab.interface';
+import { Collection, Vocab } from '../../../../../../../../api/entities/';
 import Axios, { AxiosResponse } from 'axios';
-import { IEntity } from '../../../../../../../api';
+import { IEntity } from '../../../../../../../../api';
 
 const ENABLE_ALERTS = true;
 

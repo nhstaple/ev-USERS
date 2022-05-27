@@ -4,12 +4,12 @@ import styles from './Main.module.scss'
 import Link from 'next/link'
 import { useRouter } from 'next/router';
 
-import { Creator } from '../../../../api/entities/users/';
+import { Creator } from '../../../../../api/entities/users/';
 import Axios, { AxiosResponse } from 'axios';
-import { IEntity } from '../../../../api';
+import { IEntity } from '../../../../../api';
 import CollectionsView from './collections';
-import { IVocab } from '../../../../api/entities/vocab';
-import { Collection, Vocab } from '../../../../api/entities/';
+import { IVocab } from '../../../../../api/entities/vocab';
+import { Collection, Vocab } from '../../../../../api/entities/';
 import { useSearchParams } from "react-router-dom";
 import CollectionCreationEditor from './editor/collection/create'
 

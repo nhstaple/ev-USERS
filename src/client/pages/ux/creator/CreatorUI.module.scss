@@ -15,7 +15,7 @@
 
     > div {
         display: flex;
-        width: 90%;
+        // width: 90%;
         flex-direction: row;
         justify-content: space-around;
 
@@ -61,5 +61,16 @@
         align-items: center;
         height: 80%;
         justify-content: space-around;
+    }
+}
+
+#BackButton {
+    width: 20vw;
+    .UserButtonWrapper, .UnusableButtonWrapper {
+        > button {
+            animation: BackButtonAppear;
+            animation-duration: 0.250s;
+            animation-fill-mode: forwards;
+        }
     }
 }

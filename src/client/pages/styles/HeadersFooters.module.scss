@@ -33,6 +33,10 @@
     font-size: 2em;
     position: absolute;
     bottom: 80vh;
+
+    > h1 {
+        z-index: 100;
+    }
 }
 
 #Footer {
