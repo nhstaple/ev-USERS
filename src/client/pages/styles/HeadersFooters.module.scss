@@ -1,0 +1,73 @@
+#Header, #Footer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+    width: 100vw;
+    height: 10vh;
+    background-color: lightgreen;
+    box-shadow: 0 0 10px black;
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    white-space: pre-wrap;
+    text-shadow: 0 0 5px black;
+
+    > h1, h2, div > h1, h2 {
+        padding: 0;
+        margin: 0;
+        display: flex;
+        align-self: center;
+    }
+
+    > h1, div > h1 {
+        font-size: 0.9em;
+    }
+
+    > h2, div > h2 {
+        font-size: 0.8em;
+    }
+}
+
+#Header {
+    font-size: 2em;
+    position: absolute;
+    bottom: 80vh;
+}
+
+#Footer {
+    position: absolute;
+    top: 80vh;
+    display: flex;
+    flex-direction: row;
+    justify-content: evenly;
+    align-content: center;
+    > div {
+        display: flex;
+        width: 30vw;
+        height: 8vh;
+        padding-top: 0.5vh;
+        padding-bottom: 0.5vh;
+        display: flex;
+        flex-grow: 0;
+        flex-shrink: 2;
+        justify-content: center;
+        align-content: center;
+        justify-content: center;
+        flex-direction: column;
+
+        > div {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+            align-content: center;
+            justify-content: space-evenly;
+            > p {
+                text-align: center;
+                margin-block-end: 0;
+                margin-block-start: 0;
+            }
+        }
+    }
+}

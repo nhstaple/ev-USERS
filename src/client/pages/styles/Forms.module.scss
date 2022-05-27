@@ -1,14 +1,17 @@
 
+@import './Buttons.module.scss';
+
 #Form {
     display: flex;
     flex-direction: column;
     height: 100%;
     justify-content: center;
-    background-color: yellowgreen;
+    background-color: turquoise;
     border-radius: 20px;
     align-content: center;
     align-items: center;
     color: white;
+    text-shadow: 0 0 2px black;
     font-family: Arial, Helvetica, sans-serif;
     > div {
         display: flex;
@@ -29,6 +32,7 @@
             border: 0;
             font-family: Arial, Helvetica, sans-serif;
             font-size: 1.10em;
+            border: 1px solid black;
         }
     }
 }

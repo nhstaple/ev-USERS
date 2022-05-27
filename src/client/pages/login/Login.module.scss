@@ -1,30 +1,15 @@
-@import '../styles/HeadersFooters.scss';
-@import '../styles/Buttons.scss';
-@import '../styles/Forms.scss';
+@import '../styles/HeadersFooters.module.scss';
+@import '../styles/Buttons.module.scss';
+@import '../styles/Forms.module.scss';
+@import '../styles/Animations.module.scss';
 
 #LoginContainer {
-    width: 100vw;
-    height: 80vh;
+    width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     position: absolute;
-    top: 10vh;
     justify-content: center;
-}
-
-@keyframes appear {
-    0% {
-        width: 40vw;
-        height: 33%;
-        display: none;
-    }
-    33% {
-        display: flex;
-    }
-    100% {
-        width: 80vw;
-        height: 66%;
-    }
 }
 
 #LoginMenu {
@@ -42,57 +27,55 @@
     padding-top: 5vh;
     padding-bottom: 5vh;
     border-radius: 20px;
-    box-shadow: 0px 0px 10px black;
     animation: appear;
-    animation-duration: 1s;
+    animation-duration: 0.75s;
     animation-fill-mode: forwards;
 }
 
+.UserAccess {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    width: 90vw;
+    height: 100%;
+    margin-left: 5vw;
+    margin-right: 5vw;
+    margin-top: 5vh;
+    margin-bottom: 5vh;
+}
+
 #Form {
-    width: 50vw;
+    // width: 50vw;
     justify-content: space-around;
     > div > p {
         margin: 0;
     }
+    animation: appear;
+    animation-duration: 1.5s;
+    animation-fill-mode: forwards;
 }
 
-.UserButtonWrapper, .UnusableButtonWrapper {
-    > a, button {
-        margin-left: 0;
-        margin-right: 0;
-    }
+// #Form > .UnusableButtonWrapper {
+//     > input {
+//         font-family: 'Courier New', Courier, monospace;
+//         background-color: grey;
+//         color: white;
+//         border: 1px solid lightcoral;
+//     }
 
-    > a:hover, button:hover {
-        margin-left: 0;
-        margin-right: 0;
-    }
-}
+//     > input:hover {
+//         background-color: lightcoral;
+//         color: black;
+//         box-shadow: none;
+//         border: 1px solid white;
+//     }
 
-.UserButtonWrapper {
-    padding-top: 5vh;
-    > a, button, input:hover {
-        background-color: lightblue;
-    }
+//     > input:active {
+//         background-color: red;
+//         color: lightgray;
+//         border: 1px solid black;
+//     }
+// }
 
-    > a:hover, button:hover, input:hover {
-        background-color: lightgreen;
-        width: 50vw;
-        padding-left: 0;
-        padding-right: 0;
-    }
-}
-
-.UnusableButtonWrapper {
-    > a, button, input {
-        background-color: grey;
-        color: white;
-        font-family: 'Courier New', Courier, monospace;
-        font-size: 0.9em;
-    }
-
-    > a:hover, button:hover, input:hover {
-        background-color: lightcoral;
-        color: black;
-        box-shadow: none;
-    }
-}

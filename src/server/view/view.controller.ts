@@ -8,7 +8,7 @@ export class AppViewController {
     constructor(private viewService: AppViewService) {}
 
     @Get('/')
-    @Redirect('/index')
+    // @Redirect('/index')
     @Render('')
     public index(@Res() res) {
         res.render('', {});

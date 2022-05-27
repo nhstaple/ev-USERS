@@ -1,0 +1,65 @@
+@import '../../styles/Buttons.module.scss';
+@import '../../styles/Forms.module.scss';
+@import '../../styles/Animations.module.scss';
+
+.UserInterface {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    animation: appear;
+    animation-duration: 0.75s;
+    animation-fill-mode: forwards;
+
+    background-color: pink;
+    border-radius: 20px;    
+
+    > div {
+        display: flex;
+        width: 90%;
+        flex-direction: row;
+        justify-content: space-around;
+
+        > div {
+            width: 95%;
+        }
+    }
+
+    h1, h2, h3, p, div {
+        margin-block-end: 0;
+        margin-block-end: 0;
+        color: white;
+        text-shadow: 0px 0px 5px black;
+    }
+
+    h1 {
+        text-align: center;
+        font-size: 1.75em;
+    }
+
+    h2 {
+        font-size: 1.33em;
+    }
+
+    h3 {
+        font-size: 1em;
+    }
+
+    p {
+        font-size: 0.9em;
+    }
+}
+
+#HomeVocabMenu, #HomeCollectionsMenu {
+    display: flex;
+    height: 90%;
+    flex-direction: column;
+    justify-content: space-between;
+
+    > div {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 80%;
+        justify-content: space-around;
+    }
+}

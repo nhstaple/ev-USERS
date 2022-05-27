@@ -1,0 +1,17 @@
+@keyframes appear {
+    0% {
+        width: 0;
+        height: 0;
+        display: none;
+    }
+    33% {
+        width: 50vw;
+        height: 16.5%;
+        display: flex;
+    }
+    100% {
+        width: 80vw;
+        height: 66%;
+        box-shadow: 0px 0px 10px black;
+    }
+}

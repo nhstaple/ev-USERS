@@ -10,7 +10,7 @@ import { IEntity } from '../../../../api';
 import CollectionsView from './collections';
 import { IVocab } from '../../../../api/entities/vocab';
 import { Collection, Vocab } from '../../../../api/entities/';
-
+import { useSearchParams } from "react-router-dom";
 import CollectionCreationEditor from './editor/collection/create'
 
 // TODO user authentication
@@ -32,7 +32,7 @@ export async function getServerSideProps() {
     let userData: Creator.Get;
     let collectionsData: Collection.Get[];
     let vocabData: [Vocab.Get[]] = [[]];
-
+    
     // user data
     try {
         const CALL = `${END_POINT}/creator/${CREATOR_ID}`;

@@ -73,11 +73,15 @@ export const CreatorExampleCollections: ICollection[] = [
     MakeCollection(3, 'los animales', Animals, 'No description.')
 ];
 
+export const ExampleVocabs: IVocab[] = Vegetables.concat(Fruits, Animals);
+
 export const CreatorExample: ICreator = {
     name: NAME,
     id: USER_ID,
     email: EMAIL,
-    collections: CreatorExampleCollections as IEntity[]
+    collections: CreatorExampleCollections as IEntity[],
+    grade: 'creator',
+    vocab: ExampleVocabs
 };
 
-export const ExampleVocabs: IVocab[] = Vegetables.concat(Fruits, Animals);
+
