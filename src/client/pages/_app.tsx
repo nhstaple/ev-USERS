@@ -42,14 +42,22 @@ export interface IAppStateManager {
    creator: {
       set: React.Dispatch<React.SetStateAction<Creator.Get>>
       read: Creator.Get,
+      refresh: () => Promise<void>,
       data: {
          collections: {
-            set: React.Dispatch<React.SetStateAction<Collection.Get[]>>
-            read: Collection.Get[]
+            set: React.Dispatch<React.SetStateAction<Collection.Get[]>>,
+            read: Collection.Get[],
+            refresh: () => Promise<void>
          },
          vocab: {
-            set: React.Dispatch<React.SetStateAction<Array<Vocab.Get[]>>>
-            read: Array<Vocab.Get[]>
+            set: React.Dispatch<React.SetStateAction<Vocab.Get[]>>,
+            read: Vocab.Get[],
+            refresh: () => Promise<void>,
+            media: {
+               set: React.Dispatch<React.SetStateAction<Vocab.GetMedia[]>>
+               read: Vocab.GetMedia[],
+               refresh: () => Promise<void>
+            }
          }
       }
    }
@@ -77,7 +85,9 @@ const Landing: NextPage = () => {
    // creator data
    const [creator, setCreator] = useState<Creator.Get>(null);
    const [creatorCollectionData, setCreatorCollectionData] = useState<Collection.Get[]>(null);
-   const [creatorVocabData, setCreatorVocabData] = useState<Array<Vocab.Get[]>>(null);
+   const [creatorVocabData, setCreatorVocabData] = useState<Vocab.Get[]>(null);
+   const [creatorVocabMedia, setCreatorVocabMedia] = useState<Vocab.GetMedia[]>(null);
+
    // logout user
    const logout = () => {
       if(!confirm('Are you sure you want to logout?')) {
@@ -86,6 +96,8 @@ const Landing: NextPage = () => {
       setPageTitle(INIT_TITLE);
       setUser(null);
       setCreator(null);
+      setCreatorCollectionData(null);
+      setCreatorVocabData(null);
       // TODO add instructor and admin
       // setInstructor(null);
       // setAdmin(null);
@@ -110,14 +122,22 @@ const Landing: NextPage = () => {
       creator: {
          set: setCreator,
          read: creator,
+         refresh: null,
          data: {
             collections: {
                set: setCreatorCollectionData,
-               read: creatorCollectionData
+               read: creatorCollectionData,
+               refresh: null
             },
             vocab: {
                set: setCreatorVocabData,
-               read: creatorVocabData
+               read: creatorVocabData,
+               refresh: null,
+               media: {
+                  set: setCreatorVocabMedia,
+                  read: creatorVocabMedia,
+                  refresh: null
+               }
             }
          }
       }

@@ -2,14 +2,22 @@
 import { useState } from 'react';
 import { Vocab, Collection } from '../../../../api/entities/';
 import VocabCreator from '../../../components/creator/vocab.creator';
+import VocabViewer from '../../../components/creator/vocab.viewer';
 import { IAppProps, IAppStateManager } from '../../_app';
 import styles from './CreatorUI.module.scss';
 
 export interface ICreatorStateManager {
+    // update the client data
+    refreshCreatorData: () => Promise<void>,
+
     // vocab states
     viewVocab: {
         set: React.Dispatch<React.SetStateAction<boolean>>,
-        read: boolean
+        read: boolean,
+        target: {
+            set: React.Dispatch<React.SetStateAction<Vocab.Get>>,
+            read: Vocab.Get,
+        }
     },
     createVocab: {
         set: React.Dispatch<React.SetStateAction<boolean>>,
@@ -52,6 +60,7 @@ export interface ICreatorUIProps {
 const CreatorUI = ({stateManager}: IAppProps) => {
     // vocab states
     const [ viewVocab, setViewVocab ] = useState<boolean>(false);
+    const [ viewTarget, setViewTarget ] = useState<Vocab.Get>(null);
     const [ createVocab, setCreateVocab ] = useState<boolean>(false);
     const [ editVocab, setEditVocab ] = useState<boolean>(false);
 
@@ -59,6 +68,12 @@ const CreatorUI = ({stateManager}: IAppProps) => {
     const [ viewCollections, setViewCollections ] = useState<boolean>(false);
     const [ createCollection, setCreateCollection ] = useState<boolean>(false);
     const [ editCollection, setEditCollection ] = useState<boolean>(false);
+
+    const resfreshCreatorData = async () => {
+        await stateManager.creator.refresh();
+        await stateManager.creator.data.vocab.refresh();
+        await stateManager.creator.data.collections.refresh();
+    }
 
     // helpers 
     const makeActive = () => {
@@ -125,7 +140,7 @@ const CreatorUI = ({stateManager}: IAppProps) => {
         CreatorStateManager.editCollection.target = null;
     }
 
-    const resetUI = () => {
+    const resetUI = async () => {
         stateManager.pageTitle.set('Creator Home');
         resetViewer();
         resetCreator();
@@ -134,9 +149,14 @@ const CreatorUI = ({stateManager}: IAppProps) => {
 
     // state manager 
     const CreatorStateManager: ICreatorStateManager = {
+        refreshCreatorData: resfreshCreatorData,
         viewVocab: {
             set: setViewVocab,
-            read: viewVocab
+            read: viewVocab,
+            target: {
+                set: setViewTarget,
+                read: viewTarget
+            }
         },
         createVocab: {
             set: setCreateVocab,
@@ -169,6 +189,7 @@ const CreatorUI = ({stateManager}: IAppProps) => {
 
     return (
     <div className={styles.UserInterface} >
+        {/* the interactable menu to set the different interfaces */}
         {!stateManager.user.isActive.read && <div>
             {/* vocab menu  */}
             <div id={styles.HomeVocabMenu}>
@@ -212,7 +233,7 @@ const CreatorUI = ({stateManager}: IAppProps) => {
         </div>}
 
         {viewVocab && 
-            'vocab viewer'
+            <VocabViewer stateManager={stateManager} creatorManager={CreatorStateManager} />
         }
 
         {createVocab && 
@@ -238,7 +259,7 @@ const CreatorUI = ({stateManager}: IAppProps) => {
         {stateManager.user.isActive.read &&
         <div id={styles.BackButton}>
             <div className={styles.UserButtonWrapper}>
-                <button onClick={(e) => {resetUI()}}>
+                <button onClick={async (e) => { await resetUI()}}>
                     Back
                 </button>
             </div>

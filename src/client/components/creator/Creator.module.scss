@@ -3,7 +3,7 @@
 @import '../../pages/styles/Forms.module.scss';
 @import '../../pages/styles/Buttons.module.scss';
 
-#VocabCreator {
+#VocabCreator, #VocabViewer {
     display: flex;
     flex-direction: row;
     box-shadow: 0px 0px 10px back;
@@ -42,7 +42,7 @@
     }
 }
 
-#VocabMenu, #VocabMedia {
+#VocabMenu, #VocabMedia, #VocabList, #VocabDataView {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -56,7 +56,7 @@
     }
 }
 
-#VocabMedia {
+#VocabMedia, #VocabDataView {
     display: flex;
     padding-top: 5vh;
     #ImageWrapper {
@@ -84,6 +84,13 @@
         display: flex;
         justify-content: center;
     }
+}
+
+#VocabText {
+    display: flex;
+    flex-direction: column;
+    margin-top: 9vh;
+    margin-bottom: 9vh;
 }
 
 #Form {
@@ -116,4 +123,52 @@
 
 .SoundInput::before {
     content: 'Select Sound';
+}
+
+#VocabList {
+    width: 33vw;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    margin-top: 9vh;
+    margin-bottom: 9vh;
+    justify-content: space-evenly;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.VocabListWrapper {
+    width: 90%;
+    box-shadow: 0px 0px 5px white;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+
+    button {
+        display: flex;
+        text-align: center;
+        align-items: center;
+        justify-content: center;
+        border-radius: 20px;
+        background-color: rgba(144, 238, 144, 0.33);
+        border: 1px white;
+        font-size: 0.8em;
+
+        h1 {
+            margin-block-start: 0;
+            margin-block-end: 0;
+            font-size: 1.15em;
+            align-self: center;
+        }
+    }
+
+    animation: InputImageAppear;
+    animation-duration: .33s;
+    animation-fill-mode: forwards;
+}
+
+#VocabDataView {
+    width: 100%;
+    background-color: rgba(0, 255, 255, 0.33);
 }

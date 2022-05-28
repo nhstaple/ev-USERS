@@ -1,9 +1,10 @@
 import { Injectable, Inject } from "@nestjs/common";
 import { DBService } from "../device/db.service";
 import { Vocab } from "../../../api";
+import { IVocabMediaMulter } from "../../../api/entities/vocab";
 
 // TODO dotenv file
-const DB_NAME = 'testDb';
+const DB_NAME = 'betaDb';
 
 @Injectable()
 export class VocabService {
@@ -21,8 +22,17 @@ export class VocabService {
         const collection = await this.dbService.getCollection(collectionID);
         const vocabs = await this.dbService.getVocab('betaDb', collection.items);
         let data: Vocab.Get[] = vocabs;
-        //console.log(`${collection.id} should have `, collection.items);
-        //console.log(`${collection.id} has `, data);
         return data;
+    }
+
+    async getVocabFromUser(creatorID: string): Promise<Vocab.Get[]> {
+        const user = await this.dbService.getCreator(DB_NAME, {id: creatorID});
+        const vocabs = await this.dbService.getVocab(DB_NAME, user.vocab);
+        let data: Vocab.Get[] = vocabs;
+        return data;
+    }
+
+    async getMedia(key: string): Promise<IVocabMediaMulter[]> {
+        return this.dbService.getMedia(key);
     }
 }

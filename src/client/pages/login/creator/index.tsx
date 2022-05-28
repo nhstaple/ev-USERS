@@ -5,7 +5,7 @@ import { useLocation } from "react-router-dom";
 import styles from '../Login.module.scss';
 import Axios, {AxiosResponse} from 'axios';
 import {setBodyStyle} from '../../_app';
-import { Creator, ICreator } from '../../../../api';
+import { Collection, Creator, ICreator, Vocab } from '../../../../api';
 import { useRouter } from 'next/router';
 import { IAppProps } from '../../_app';
 
@@ -39,19 +39,66 @@ const CreatorLogin = ({stateManager}: IAppProps) => {
         // TODO send to data base and open creator view with user data
         let response: AxiosResponse;
         let userData: Creator.Get;
-    
-        // user data
-        try {
-            const CALL = `${END_POINT}/creator/${CREATOR_ID}`;
-            response = await Axios.get(CALL);
-            userData = response.data as Creator.Get;
-            console.log(userData);
-        } catch (err) {
-            console.log(`there was an getting ${CREATOR_ID}`);
-        }
+        let collectionsData: Collection.Get[];
+        let vocabData: Vocab.Get[];
+        let vocabMedia: Vocab.GetMedia[] = [];
 
-        stateManager.creator.set(userData);
-        stateManager.user.set(userData);
+        // user data
+        stateManager.creator.refresh = async () => {
+            try {
+                const CALL = `${END_POINT}/creator/${CREATOR_ID}`;
+                response = await Axios.get(CALL);
+                userData = response.data as Creator.Get;
+                
+                stateManager.user.set({...userData});
+                stateManager.creator.set({...userData});
+            } catch (err) {
+                console.log(`there was an getting ${CREATOR_ID}`);
+            }
+        }
+        await stateManager.creator.refresh();
+        
+        // vocab data
+        stateManager.creator.data.vocab.refresh = async () => {
+            try {
+                vocabData = (await Axios.get(`${END_POINT}/vocab/fromUser/${userData.id}`)).data as Vocab.Get[];
+                stateManager.creator.data.vocab.set({...vocabData});
+                console.log(`got ${vocabData.length} vocabs from ${userData.name}`);
+            } catch(err) {
+                console.log(`error getting ${userData.id} vocab`);
+            }
+        }
+        await stateManager.creator.data.vocab.refresh();
+
+        // vocab media
+        stateManager.creator.data.vocab.media.refresh = async () => {
+            try {
+                // TODO make this a single back end call by sending an array of names as a POST request with type 'application/json'
+                for(let i = 0; i < vocabData.length; i++) {
+                    const vocab = (await Axios.get(`${END_POINT}/vocab/media/${vocabData[i].id}`)).data[0] as Vocab.GetMedia;
+                    vocabMedia.push(vocab);
+                }
+                stateManager.creator.data.vocab.media.set({...vocabMedia});
+                console.log(`got ${vocabMedia.length} vocabsMedias from ${userData.name}`);
+            } catch(err) {
+                console.log(`error getting ${userData.id} vocabMedia`);
+            }
+        }
+        await stateManager.creator.data.vocab.media.refresh();
+
+        // collection data
+        stateManager.creator.data.collections.refresh = async () => {
+            try {
+                collectionsData = (await Axios.get(`${END_POINT}/collections/fromUser/${userData.id}`)).data as Collection.Get[];
+                stateManager.creator.data.collections.set({...collectionsData});
+                console.log(`got ${collectionsData.length} collections from ${userData.name}`);
+            } catch(err) {
+                console.log(`error getting ${userData.id} collections`);
+            }
+        }
+        await stateManager.creator.data.collections.refresh();
+
+        // update the page title
         stateManager.pageTitle.set('Creator Home');
     }
     
@@ -63,7 +110,7 @@ const CreatorLogin = ({stateManager}: IAppProps) => {
         {/* the login menu */}
         <div id={styles.LoginMenu}>
             {/* the form the user sends to login */}
-            <form id={styles.Form} onSubmit={e => loginHandler(e)} >
+            <form id={styles.Form} onSubmit={async (e) => await loginHandler(e)} >
                 {/* credentials */}
                 <div>
                     <p>Email or Username</p>

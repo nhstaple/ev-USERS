@@ -4,7 +4,7 @@ export { IVocab, IVocabMedia, IVocabMediaMulter } from './vocab.interface';
 export { VocabExample } from './vocab.example';
 
 import * as Vocab from './vocab.interface';
-import { IVocab } from './vocab.interface'; 
+import { IVocab, IVocabMedia, IVocabMediaMulter } from './vocab.interface'; 
 import { IEntity } from '../entity.interface';
 import { ICreator } from '../users/creator';
 
@@ -32,7 +32,13 @@ export class Get implements Partial<IVocab> {
     }
 }
 
-export class Put    implements Partial<IVocab> {
+export class GetMedia implements IVocabMedia {
+    id: string; // this is the storage key of the vocab object
+    image: File;
+    sound: File;
+}
+
+export class Put implements Partial<IVocab> {
     id: string;
     // the native language (el gato)
     value: string;
@@ -72,7 +78,7 @@ export class Put    implements Partial<IVocab> {
     }
 }
 
-export class Post   implements Partial<IVocab> {
+export class Post implements Partial<IVocab> {
     id: string;
     value?: string;
     translation?: string;

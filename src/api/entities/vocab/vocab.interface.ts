@@ -34,11 +34,13 @@ export enum EVocabSubject {
 }
 export type TVocabSubject = keyof typeof EVocabSubject;
 
+// front end
 export interface IVocabMedia extends IEntity {
     image: File;
     sound: File;
 }
 
+// back end
 export interface IVocabMediaMulter extends IEntity {
     image: Express.Multer.File;
     sound: Express.Multer.File;
