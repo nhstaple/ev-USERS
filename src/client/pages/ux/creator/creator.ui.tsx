@@ -17,6 +17,10 @@ export interface ICreatorStateManager {
         target: {
             set: React.Dispatch<React.SetStateAction<Vocab.Get>>,
             read: Vocab.Get,
+            media: {
+                set: React.Dispatch<React.SetStateAction<Vocab.GetMedia>>
+                read: Vocab.GetMedia
+            }
         }
     },
     createVocab: {
@@ -155,7 +159,8 @@ const CreatorUI = ({stateManager}: IAppProps) => {
             read: viewVocab,
             target: {
                 set: setViewTarget,
-                read: viewTarget
+                read: viewTarget,
+                media: null
             }
         },
         createVocab: {

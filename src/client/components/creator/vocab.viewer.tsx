@@ -39,34 +39,7 @@ const VocabViewer = ({stateManager, creatorManager}: ICreatorUIProps) => {
                 <button onClick={(e) => {
                     e.preventDefault();
                     creatorManager.viewVocab.target.set(v);
-                    console.log('VIEW TARGET\n', v.value, v.translation);
-                }}>
-                    <h1>{v.value}</h1>
-                    {/* <p>{v.lang}</p>
-                    <p>{v.pos}</p> */}
-                </button>
-            </div>
-            )})}
-
-            {Object.entries(stateManager.creator.data.vocab.read).map(([i, v]) => { return (
-            <div key={v.id} className={styles.VocabListWrapper} >
-                <button onClick={(e) => {
-                    e.preventDefault();
-                    creatorManager.viewVocab.target.set(v);
-                    console.log('VIEW TARGET\n', v.value, v.translation);
-                }}>
-                    <h1>{v.value}</h1>
-                    {/* <p>{v.lang}</p>
-                    <p>{v.pos}</p> */}
-                </button>
-            </div>
-            )})}
-
-            {Object.entries(stateManager.creator.data.vocab.read).map(([i, v]) => { return (
-            <div key={v.id} className={styles.VocabListWrapper} >
-                <button onClick={(e) => {
-                    e.preventDefault();
-                    creatorManager.viewVocab.target.set(v);
+                    // TODO set the targetMedia through a get request
                     console.log('VIEW TARGET\n', v.value, v.translation);
                 }}>
                     <h1>{v.value}</h1>
@@ -92,7 +65,7 @@ const VocabViewer = ({stateManager, creatorManager}: ICreatorUIProps) => {
                 {targetMedia && targetMedia.image &&
                 <div id={styles.ImageWrapper}>
                     <img src={imgToURL(targetMedia.image)}></img>
-                    <p>{creatorManager.viewVocab.target.read.description}</p>
+                    <p>{targetMedia.description}</p>
                 </div>}
 
                 {/* previews the sound */}

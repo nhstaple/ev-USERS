@@ -38,6 +38,7 @@ export type TVocabSubject = keyof typeof EVocabSubject;
 export interface IVocabMedia extends IEntity {
     image: File;
     sound: File;
+    description: string;
 }
 
 // back end
@@ -60,19 +61,11 @@ export interface IVocab extends IEntity {
     storagekey: string;
     // the gedner of the word
     subject: TVocabSubject;
-
-    // the images, description, sounds, etc.
-    media?: IVocabMedia;
-    description?: string;
+    //
+    note: string;
+    example: string;
         
     // TODO
     // the person who made the vocav item
     creator: IEntity;
-
-    // @deprecated from the original codebase
-    idArbit?:string;
-    arbitId?:string;
-    idLegacy?:string;
-    unitType?:string;
-    wordType?:string;
 }

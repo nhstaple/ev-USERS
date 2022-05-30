@@ -18,9 +18,10 @@ export class Get implements Partial<IVocab> {
     storagekey: string;
     creator: IEntity;
     subject: Vocab.TVocabSubject;
-    description?: string;
+    note: string;
+    example: string;
 
-    constructor(id: string, value: string, translation: string, pos: Vocab.TPartOfSpeech, lang: Vocab.TLanguage, storagekey: string, creator: IEntity, description: string) {
+    constructor(id: string, value: string, translation: string, pos: Vocab.TPartOfSpeech, lang: Vocab.TLanguage, storagekey: string, creator: IEntity, note: string, example: string) {
         this.id = id;
         this.value = value;
         this.translation = translation;
@@ -28,7 +29,8 @@ export class Get implements Partial<IVocab> {
         this.lang = lang;
         this.storagekey = storagekey;
         this.creator = creator;
-        this.description = description;
+        this.example = example;
+        this.note = note;
     }
 }
 
@@ -36,6 +38,7 @@ export class GetMedia implements IVocabMedia {
     id: string; // this is the storage key of the vocab object
     image: File;
     sound: File;
+    description: string;
 }
 
 export class Put implements Partial<IVocab> {
@@ -44,6 +47,10 @@ export class Put implements Partial<IVocab> {
     value: string;
     // in english (the cat)
     translation: string;
+    //
+    example: string;
+    //
+    note: string;
     // the part of speech (noun, verb, adjective, etc)
     pos: Vocab.TPartOfSpeech;
     // the language of vocab item (english, spanish, ...)
@@ -55,27 +62,22 @@ export class Put implements Partial<IVocab> {
     //
     subject: Vocab.TVocabSubject;
 
-    // TODO
-    media: Vocab.IVocabMedia;
-    description: string;
-
-    // TODO
-    // @deprecated from the original codebase
-    idArbit?:string;
-    arbitId?:string;
-    idLegacy?:string;
-    unitType?:string;
-    wordType?:string;
-
-    constructor(id: string, value: string, translation: string, language: Vocab.TLanguage, description: string, creator?: ICreator, media?: Vocab.IVocabMedia) {
+    constructor(id: string, creator: IEntity, value: string, translation: string, example: string, note: string, language: Vocab.TLanguage) {
         this.id = id;
-        this.lang = language;
         this.creator = creator;
         this.value = value;
         this.translation = translation;
-        this.media = media;
-        this.description = description
+        this.example = example;
+        this.note = note;
+        this.lang = language;
     }
+}
+
+export class PutMedia implements IVocabMedia {
+    id: string; // this is the storage key of the vocab object
+    image: File;
+    sound: File;
+    description: string;
 }
 
 export class Post implements Partial<IVocab> {

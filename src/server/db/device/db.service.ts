@@ -118,9 +118,10 @@ export class DBService {
         }
     }
 
-    async getVocab(dbName:string, ids: IEntity[]) {
+    async getVocab(dbName:string, creator: IEntity) {
         try {
-            const res = await this.client.query(dbName, 'vocab', ids) as IVocab[];
+            // const res = await this.client.query(dbName, 'vocab', ids) as IVocab[];
+            const res = await this.client.getVocabsFromUser(creator.id) as IVocab[];
             return res;
         } catch(err) {
             console.log(`error getting vocab items in ${dbName}.vocab`);

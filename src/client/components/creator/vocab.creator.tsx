@@ -1,8 +1,15 @@
 
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { ICreatorUIProps } from '../../pages/ux/creator/creator.ui';
-import { TLanguage, TPartOfSpeech } from '../../../api/entities/vocab/vocab.interface';
+import { TLanguage, TPartOfSpeech, TVocabSubject } from '../../../api/entities/vocab/vocab.interface';
 import styles from './Creator.module.scss';
+import { IEntity, Vocab } from '../../../api/entities/';
+import Axios from 'axios';
+
+// TODO dot env file
+const HOST = 'http://localhost';
+const PORT = '3000';
+const END_POINT = `${HOST}:${PORT}/api/db/vocab`
 
 const SupportedLanguages = [
     'english',
@@ -13,6 +20,16 @@ const SupportedLanguages = [
 const SupportedPOS = [
     "noun", "verb", "participle", "article", "pronoun", "preposition",  "adverb",  "conjunction"
 ]
+
+const SupportedSubjects = [
+    "neutral", "masculine", "feminine", "neutral_plural",  "masculine_plural", "feminine_plural"
+]
+
+// https://www.iana.org/assignments/media-types/media-types.xhtml#image
+const SupportedImageTypes = 'image/png, image/jpeg, image/gif';
+
+// https://www.iana.org/assignments/media-types/media-types.xhtml#audio
+const SupportedSoundTypes = 'sound/mpeg';
 
 function imgToURL(file:any) {
     if(file == null) return '';
@@ -32,14 +49,77 @@ const VocabCreator = ({stateManager, creatorManager}: ICreatorUIProps) => {
     const [image, setImage] = useState(null);
     const [sound, setSound] = useState(null);
 
+    const submitVocabPutRequest = async (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        // retrieve put data
+        const creator: IEntity = {id: stateManager.user.read.id };
+        const lang = e.target['Lang'].value as TLanguage;
+        const value = e.target['Root'].value;
+        const translation = e.target['Trans'].value;
+        const example = e.target['Example'].value;
+        const pos = e.target['POS'].value as TPartOfSpeech;
+        const subject = e.target['Subject'].value as TVocabSubject; 
+        const note = vocabNote;
+        const description = imageDescription;
+        const id = `${creator.id}-${value.id}-${translation}`;
+        const storagekey = `${id}-media`;
+
+        // TODO validate data
+        if(image == null || sound == null) return;
+        if(value == '' || translation == '') return;
+
+        // create payloads
+        const vocabPayload: Vocab.Put = {
+            id: id,
+            value: value,
+            translation: translation,
+            example: example,
+            pos: pos,
+            note: note,
+            lang: lang,
+            subject: subject,
+            storagekey: storagekey,
+            creator: creator
+        }
+
+        const mediaPayload: Vocab.IVocabMedia = {
+            image: image,
+            sound: sound,
+            description: description,
+            id: storagekey
+        }
+
+        // sanity check
+        console.log('PUT REQUEST ON CLIENT\n', vocabPayload, mediaPayload);
+    
+        // submit vocab data
+        try {
+            const result = await Axios.put(`${END_POINT}/new`, { body: vocabPayload });
+            console.log(result);
+        } catch(err) {
+            console.log(err);
+        }
+        // TODO submit media data
+
+        // refresh the client state
+        console.log(stateManager.creator.data.vocab);
+        return;
+        await stateManager.creator.data.vocab.refresh();
+        await stateManager.creator.data.vocab.media.refresh();
+
+        // reset the creator on success
+        creatorManager.reset.create();
+    }
+
     return (
     <div id={styles.VocabCreator}>
         <div id={styles.VocabMenu}>
-            <form id={styles.Form}>
+            <form id={styles.Form} onSubmit={async (e) => {await submitVocabPutRequest(e)}}>
                 {/* vocab language */}
                 <div>
                     <p>Language</p>
-                    <select>
+                    <select name='Lang'>
                         {SupportedLanguages.map((lang) =>  <option key={lang}>{lang}</option>)}
                     </select>
                 </div>
@@ -47,20 +127,34 @@ const VocabCreator = ({stateManager, creatorManager}: ICreatorUIProps) => {
                 {/* root vocab value */}
                 <div>
                     <p>Root Value</p>
-                    <input placeholder='Root'/>
+                    <input name='Root' placeholder='Root'/>
                 </div>
 
                 {/* the word in english */}
                 <div>
                     <p>Translation</p>
-                    <input placeholder='Translation'/>
+                    <input name='Trans' placeholder='Translation'/>
+                </div>
+
+                {/* the word in english */}
+                <div>
+                    <p>Example Phrase</p>
+                    <input name='Example' placeholder='Example Usage'/>
                 </div>
 
                 {/* part of speach */}
                 <div>
                     <p>Part of Speach</p>
-                    <select>
+                    <select name='POS'>
                         {SupportedPOS.map((pos) => <option key={pos}>{pos}</option>)}
+                    </select>
+                </div>
+
+                {/* subject */}
+                <div>
+                    <p>Subject</p>
+                    <select name='Subject'>
+                        {SupportedSubjects.map((sub) => <option key={sub}>{sub}</option>)}
                     </select>
                 </div>
 
@@ -71,7 +165,7 @@ const VocabCreator = ({stateManager, creatorManager}: ICreatorUIProps) => {
 
                 {/* image uploading */}
                 <div>
-                    <input type='file' placeholder='Image' onChange={(e)=>{setImage(e.target.files[0])}} className={styles.ImageInput}/>
+                    <input type='file' placeholder='Image' onChange={(e)=>{setImage(e.target.files[0])}} className={styles.ImageInput} accept={SupportedImageTypes}/>
                 </div>
 
                 {/* sound uploading */}
@@ -79,7 +173,12 @@ const VocabCreator = ({stateManager, creatorManager}: ICreatorUIProps) => {
                     <input type='file' placeholder='Sound' onChange={(e)=> {
                         console.log(e.target.files)
                         setSound(e.target.files[0])}
-                    } className={styles.SoundInput} />
+                    } className={styles.SoundInput} accept={SupportedSoundTypes}/>
+                </div>
+
+                {/* form submission */}
+                <div>
+                    <input type='Submit' placeholder='Create Vocab'/>
                 </div>
 
             </form>

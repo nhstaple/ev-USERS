@@ -1,6 +1,6 @@
 import { Injectable, Inject } from "@nestjs/common";
 import { DBService } from "../device/db.service";
-import { Vocab } from "../../../api";
+import { IEntity, Vocab } from "../../../api";
 import { IVocabMediaMulter } from "../../../api/entities/vocab";
 
 // TODO dotenv file
@@ -15,19 +15,18 @@ export class VocabService {
     }
 
     async insertVocab(data: Vocab.Put) {
-        return await this.dbService.insert(DB_NAME, 'vocabs', [ data ]);
+        return await this.dbService.insert(DB_NAME, 'vocab', [ data ]);
     }
 
-    async getVocabfromCollection(collectionID: string): Promise<Vocab.Get[]> {
-        const collection = await this.dbService.getCollection(collectionID);
-        const vocabs = await this.dbService.getVocab('betaDb', collection.items);
-        let data: Vocab.Get[] = vocabs;
-        return data;
-    }
+    // async getVocabfromCollection(collectionID: string): Promise<Vocab.Get[]> {
+    //     const collection = await this.dbService.getCollection(collectionID);
+    //     const vocabs = await this.dbService.getVocab('betaDb', collection.items);
+    //     let data: Vocab.Get[] = vocabs;
+    //     return data;
+    // }
 
-    async getVocabFromUser(creatorID: string): Promise<Vocab.Get[]> {
-        const user = await this.dbService.getCreator(DB_NAME, {id: creatorID});
-        const vocabs = await this.dbService.getVocab(DB_NAME, user.vocab);
+    async getVocabFromUser(creator: IEntity): Promise<Vocab.Get[]> {
+        const vocabs = await this.dbService.getVocab(DB_NAME, creator);
         let data: Vocab.Get[] = vocabs;
         return data;
     }
