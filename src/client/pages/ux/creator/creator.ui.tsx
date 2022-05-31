@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import { Vocab, Collection } from '../../../../api/entities/';
 import VocabCreator from '../../../components/creator/vocab.creator';
 import VocabViewer from '../../../components/creator/vocab.viewer';
@@ -12,40 +12,42 @@ export interface ICreatorStateManager {
 
     // vocab states
     viewVocab: {
-        set: React.Dispatch<React.SetStateAction<boolean>>,
         read: boolean,
         target: {
-            set: React.Dispatch<React.SetStateAction<Vocab.Get>>,
             read: Vocab.Get,
             media: {
-                set: React.Dispatch<React.SetStateAction<Vocab.GetMedia>>
                 read: Vocab.GetMedia
             }
         }
     },
     createVocab: {
-        set: React.Dispatch<React.SetStateAction<boolean>>,
         read: boolean
     },
     editVocab: {
-        set: React.Dispatch<React.SetStateAction<boolean>>,
         read: boolean,
-        target: Vocab.Get
+        target: {
+            read: Vocab.Get,
+            media: {
+                read: Vocab.GetMedia
+            }
+        }
     }
 
     // collection states
     viewCollections: {
-        set: React.Dispatch<React.SetStateAction<boolean>>,
-        read: boolean
+        read: boolean,
+        target: {
+            read: Collection.Get
+        }
     },
     createCollection: {
-        set: React.Dispatch<React.SetStateAction<boolean>>,
         read: boolean
     },
     editCollection: {
-        set: React.Dispatch<React.SetStateAction<boolean>>,
         read: boolean,
-        target: Collection.Get
+        target: {
+            read: Collection.Get
+        }
     }
 
     // helper functions
@@ -58,144 +60,185 @@ export interface ICreatorStateManager {
 
 export interface ICreatorUIProps {
     creatorManager: ICreatorStateManager;
+    setCreator: Dispatch<SetStateAction<ICreatorStateManager>>
     stateManager: IAppStateManager;
+    set: Dispatch<SetStateAction<IAppStateManager>>
 }
 
-const CreatorUI = ({stateManager}: IAppProps) => {
+const CreatorUI = ({stateManager, set}: IAppProps) => {
     // vocab states
-    const [ viewVocab, setViewVocab ] = useState<boolean>(false);
-    const [ viewTarget, setViewTarget ] = useState<Vocab.Get>(null);
-    const [ createVocab, setCreateVocab ] = useState<boolean>(false);
-    const [ editVocab, setEditVocab ] = useState<boolean>(false);
+    // const [ viewVocab, setViewVocab ] = useState<boolean>(false);
+    // const [ viewTarget, setViewTarget ] = useState<Vocab.Get>(null);
+    // const [ createVocab, setCreateVocab ] = useState<boolean>(false);
+    // const [ editVocab, setEditVocab ] = useState<boolean>(false);
 
-    // collection states
-    const [ viewCollections, setViewCollections ] = useState<boolean>(false);
-    const [ createCollection, setCreateCollection ] = useState<boolean>(false);
-    const [ editCollection, setEditCollection ] = useState<boolean>(false);
+    // // collection states
+    // const [ viewCollections, setViewCollections ] = useState<boolean>(false);
+    // const [ createCollection, setCreateCollection ] = useState<boolean>(false);
+    // const [ editCollection, setEditCollection ] = useState<boolean>(false);
 
-    const resfreshCreatorData = async () => {
+    const refreshCreatorData = async () => {
         await stateManager.creator.refresh();
         await stateManager.creator.data.vocab.refresh();
         await stateManager.creator.data.collections.refresh();
     }
 
+    // state manager 
+    const INITIAL_CREATOR_STATE: ICreatorStateManager = {
+        refreshCreatorData: refreshCreatorData,
+        viewVocab: {
+            read: false,
+            target: {
+                read: null,
+                media: {
+                    read: null
+                }
+            }
+        },
+        createVocab: {
+            read: false
+        },
+        editVocab: {
+            read: false,
+            target: undefined
+        },
+        viewCollections: {
+            read: false,
+            target: {
+                read: null
+            }
+        },
+        createCollection: {
+            read: false
+        },
+        editCollection: {
+            read: false,
+            target: {
+                read: null
+            }
+        },
+        reset: {
+            view: null,
+            create: null,
+            edit: null
+        }
+    }
+
+    const [CreatorManager, setCreator] = useState(INITIAL_CREATOR_STATE);
+
     // helpers 
     const makeActive = () => {
-        stateManager.user.isActive.set(true);
+        // stateManager.user.isActive.set(true);
+        set({...stateManager, user: {...stateManager.user, isActive: true}});
     }
 
     const makeInactive = () => {
-        stateManager.user.isActive.set(false);
+        // stateManager.user.isActive.set(false);
+        set({...stateManager, user: {...stateManager.user, isActive: false}});
     }
 
+    // creator manager state functions
     const vocabViewInterface = () => {
-        stateManager.pageTitle.set('Vocab Viewer');
-        setViewVocab(true);
+        // stateManager.pageTitle.set('Vocab Viewer');
+        set((prev) => {
+            prev.pageTitle.read = 'Vocab Viewer';
+            return prev;
+        });
+        setCreator({...CreatorManager, viewVocab: {...CreatorManager.viewVocab, read: true}});
         makeActive();
     }
 
     const vocabCreateInterface = () => {
-        stateManager.pageTitle.set('Vocab Creator');
-        setCreateVocab(true);
+        // stateManager.pageTitle.set('Vocab Creator');
+        set((prev) => {
+            prev.pageTitle.read = 'Vocab Creator';
+            return prev;
+        });
+        setCreator({...CreatorManager, createVocab: {...CreatorManager.createVocab, read: true}});
         makeActive();
     }
 
     const vocabEditInterface = () => {
-        stateManager.pageTitle.set('Vocab Editor');
-        setEditVocab(true);
+        // stateManager.pageTitle.set('Vocab Editor');
+        set((prev) => {
+            prev.pageTitle.read = 'Vocab Editor';
+            return prev;
+        });
+        setCreator({...CreatorManager, editVocab: {...CreatorManager.editVocab, read: true}});
         makeActive();
     }
 
     const collectionsViewInterface = () => {
-        stateManager.pageTitle.set('Collections Viewer');
-        setViewCollections(true);
+        // stateManager.pageTitle.set('Collections Viewer');
+        set((prev) => {
+            prev.pageTitle.read = 'Collections Viewer';
+            return prev;
+        });
+        setCreator({...CreatorManager, viewCollections: {...CreatorManager.viewCollections, read: true}});
         makeActive();
     }
 
     const collectionCreateInterface = () => {
-        stateManager.pageTitle.set('Collection Create');
-        setCreateCollection(true);
+        // stateManager.pageTitle.set('Collection Creator');
+        set((prev) => {
+            prev.pageTitle.read = 'Collections Creator';
+            return prev;
+        });
+        setCreator({...CreatorManager, createCollection: {...CreatorManager.createCollection, read: true}});
         makeActive();
     }
 
     const collectionEditInterface = () => {
-        stateManager.pageTitle.set('Collection Editor');
-        setEditCollection(true);
+        // stateManager.pageTitle.set('Collection Editor');
+        set((prev) => {
+            prev.pageTitle.read = 'Collections Editor';
+            return prev;
+        });
+        setCreator({...CreatorManager, editCollection: {...CreatorManager.editCollection, read: true}});
         makeActive();
     }
 
     const resetViewer = () => {
-        setViewVocab(false);
-        setViewCollections(false);
+        setCreator((prev) => {
+            prev.viewVocab = { read: false, target: {read: null, media: null} };
+            prev.viewCollections = { read: false, target: {read: null }};
+            return prev;
+        });
         makeInactive();
     }
 
     const resetCreator = () => {
-        setCreateVocab(false);
-        setCreateCollection(false);
+        setCreator((prev) => {
+            prev.createVocab = { read: false };
+            prev.createVocab = { read: false };
+            return prev;
+        });
         makeInactive();
     }
 
     const resetEditor = () => {
-        setEditVocab(false);
-        setEditCollection(false);
+        setCreator((prev) => {
+            prev.editVocab = { read: false, target: null };
+            prev.editCollection = { read: false, target: null };
+            return prev;
+        });
         makeInactive();
-        CreatorStateManager.editVocab.target = null;
-        CreatorStateManager.editCollection.target = null;
     }
 
     const resetUI = async () => {
-        stateManager.pageTitle.set('Creator Home');
+        set((prev) => {
+            prev.pageTitle.read = 'Creator Home'
+            return prev;
+        });
         resetViewer();
         resetCreator();
         resetEditor();
     }
 
-    // state manager 
-    const CreatorStateManager: ICreatorStateManager = {
-        refreshCreatorData: resfreshCreatorData,
-        viewVocab: {
-            set: setViewVocab,
-            read: viewVocab,
-            target: {
-                set: setViewTarget,
-                read: viewTarget,
-                media: null
-            }
-        },
-        createVocab: {
-            set: setCreateVocab,
-            read: createVocab
-        },
-        editVocab: {
-            set: setEditVocab,
-            read: editVocab,
-            target: null
-        },
-        viewCollections: {
-            set: setViewCollections,
-            read: viewCollections
-        },
-        createCollection: {
-            set: setCreateCollection,
-            read: createCollection
-        },
-        editCollection: {
-            set: setEditCollection,
-            read: editCollection,
-            target: null
-        },
-        reset: {
-            view: resetViewer,
-            create: resetCreator,
-            edit: resetEditor
-        }
-    }
-
     return (
     <div className={styles.UserInterface} >
         {/* the interactable menu to set the different interfaces */}
-        {!stateManager.user.isActive.read && <div>
+        {!stateManager.user.isActive && <div>
             {/* vocab menu  */}
             <div id={styles.HomeVocabMenu}>
                 <h1>Vocab Actions</h1>
@@ -237,31 +280,31 @@ const CreatorUI = ({stateManager}: IAppProps) => {
             </div>
         </div>}
 
-        {viewVocab && 
-            <VocabViewer stateManager={stateManager} creatorManager={CreatorStateManager} />
+        {CreatorManager.viewVocab.read && 
+            <VocabViewer stateManager={stateManager} set={set} creatorManager={CreatorManager} setCreator={setCreator}/>
         }
 
-        {createVocab && 
-            <VocabCreator stateManager={stateManager} creatorManager={CreatorStateManager} />
+        {CreatorManager.createVocab.read && 
+            <VocabCreator stateManager={stateManager} set={set} creatorManager={CreatorManager} setCreator={setCreator} />
         }
 
-        {editVocab && 
+        {CreatorManager.editVocab.read && 
             'vocab editor'
         }
 
-        {viewCollections && 
+        {CreatorManager.viewCollections.read && 
             'collections viewer'
         }
 
-        {createCollection &&
+        {CreatorManager.createCollection.read &&
             'collection creator'
         }
 
-        {editCollection &&
+        {CreatorManager.editCollection.read &&
             'collection editor'
         }
 
-        {stateManager.user.isActive.read &&
+        {stateManager.user.isActive &&
         <div id={styles.BackButton}>
             <div className={styles.UserButtonWrapper}>
                 <button onClick={async (e) => { await resetUI()}}>

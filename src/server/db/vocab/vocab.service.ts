@@ -44,6 +44,6 @@ export class VocabService {
     }
 
     async getMedia(key: string): Promise<IVocabMedia[]> {
-        return this.dbService.getMedia(key);
+        return await this.dbService.getMedia(key);
     }
 }

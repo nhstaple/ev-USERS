@@ -46,6 +46,8 @@ const VocabCreator = ({stateManager, creatorManager}: ICreatorUIProps) => {
     const submitVocabPutRequest = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
+        console.log('state check\n', stateManager);
+
         // retrieve put data
         const creator: IEntity = {id: stateManager.user.read.id };
         const lang = e.target['Lang'].value as TLanguage;
@@ -113,11 +115,13 @@ const VocabCreator = ({stateManager, creatorManager}: ICreatorUIProps) => {
         // potential solution: make the stateManger a state and pass the set function with it to the user interfaces
         // refresh the client state
         // console.log(stateManager.creator.data.vocab);
-        // await stateManager.creator.data.vocab.refresh();
-        // await stateManager.creator.data.vocab.media.refresh();
+        console.log(stateManager);
+        await stateManager.creator.data.vocab.refresh();
+        await stateManager.creator.data.vocab.media.refresh();
+        await stateManager.creator.refresh();
 
         // reset the creator on success
-        // creatorManager.reset.create();
+        creatorManager.reset.create();
     }
 
     return (

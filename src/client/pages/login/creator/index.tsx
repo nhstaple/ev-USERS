@@ -24,7 +24,7 @@ const END_POINT = `http://${HOST}:${PORT}/api/db`
 // export const CreatorContext = createContext<Creator.Get | null>(null); 
 
 // HELPERS
-const CreatorLogin = ({stateManager}: IAppProps) => {
+const CreatorLogin = ({stateManager, set}: IAppProps) => {
     const loginHandler = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
     
@@ -44,63 +44,109 @@ const CreatorLogin = ({stateManager}: IAppProps) => {
         let vocabMedia: Vocab.GetMedia[] = [];
 
         // creator data
-        stateManager.creator.refresh = async () => {
+        const refresh_creator = async () => {
             try {
                 const CALL = `${END_POINT}/creator/${CREATOR_ID}`;
                 response = await Axios.get(CALL);
                 userData = response.data as Creator.Get;
                 console.log('got creator login\n', userData);
 
-                stateManager.user.set({...userData});
-                stateManager.creator.set({...userData});
+                set({...stateManager,
+                    creator: {...stateManager.creator, read: userData},
+                    user: {...stateManager.user, read: userData}
+                });
             } catch (err) {
                 console.log(`there was an getting ${CREATOR_ID}`);
             }
-        }
-        await stateManager.creator.refresh();
+        };
+        set( (prev) => {
+            prev.creator.refresh = refresh_creator;
+            return prev;
+        });
+        await refresh_creator();
         
         // vocab data
-        stateManager.creator.data.vocab.refresh = async () => {
+        const refresh_vocab_data = async () => {
+            const userID = userData.id;
             try {
-                vocabData = (await Axios.get(`${END_POINT}/vocab/fromUser/${userData.id}`)).data as Vocab.Get[];
-                stateManager.creator.data.vocab.set({...vocabData});
-                console.log(`got ${vocabData.length} vocabs from ${userData.name}`);
+                vocabData = (await Axios.get(`${END_POINT}/vocab/fromUser/${userID}`)).data as Vocab.Get[];
+                // stateManager.creator.data.vocab.set({...vocabData});
+                set((prev) => {
+                    prev.creator.data.vocab.read = vocabData;
+                    return prev;
+                })
+                console.log(`got ${vocabData.length} vocabs from ${userID}`);
             } catch(err) {
-                console.log(`error getting ${userData.id} vocab`);
+                console.log(`error getting ${userID}'s vocab`);
             }
-        }
-        await stateManager.creator.data.vocab.refresh();
+        };
+        set( (prev) => {
+            prev.creator.data.vocab.refresh = refresh_vocab_data;
+            return prev;
+        });
+        await refresh_vocab_data();
 
         // vocab media
-        stateManager.creator.data.vocab.media.refresh = async () => {
+        const refresh_vocab_media = async () => {
+            await refresh_vocab_data();
+            console.log('getting media sanity')
+            const data = vocabData;
+            console.log(vocabData);
             try {
+                vocabMedia = [];
                 // TODO make this a single back end call by sending an array of names as a POST request with type 'application/json'
-                for(let i = 0; i < vocabData.length; i++) {
-                    const vocab = (await Axios.get(`${END_POINT}/vocab/media/${vocabData[i].id}`)).data[0] as Vocab.GetMedia;
-                    vocabMedia.push(vocab);
+                for(let i = 0; i < data.length; i++) {
+                    const key = data[i].storagekey;
+                    console.log('STORAGE KEY', key);
+                    if(key != '') {
+                        const media = (await Axios.get(`${END_POINT}/vocab/media/${key}`)).data[0] as Vocab.GetMedia;
+                        vocabMedia.push(media);
+                    } else {
+                        vocabMedia.push(null);
+                    }
                 }
-                stateManager.creator.data.vocab.media.set({...vocabMedia});
+                set((prev) => {
+                    prev.creator.data.vocab.media.read = vocabMedia;
+                    return prev;
+                })
                 console.log(`got ${vocabMedia.length} vocabsMedias from ${userData.name}`);
+                console.log(stateManager.creator.data.vocab.media.read);
             } catch(err) {
                 console.log(`error getting ${userData.id} vocabMedia`);
+                console.log(err);
             }
-        }
-        await stateManager.creator.data.vocab.media.refresh();
+        };
+        set( (prev) => {
+            prev.creator.data.vocab.media.refresh = refresh_vocab_media;
+            return prev;
+        });
+        await refresh_vocab_media();
 
         // collection data
-        stateManager.creator.data.collections.refresh = async () => {
+        const refresh_collection_data = async () => {
             try {
                 collectionsData = (await Axios.get(`${END_POINT}/collections/fromUser/${userData.id}`)).data as Collection.Get[];
-                stateManager.creator.data.collections.set({...collectionsData});
+                // stateManager.creator.data.collections.set({...collectionsData});
+                set((prev) => {
+                    prev.creator.data.collections.read = collectionsData;
+                    return prev;
+                })
                 console.log(`got ${collectionsData.length} collections from ${userData.name}`);
             } catch(err) {
                 console.log(`error getting ${userData.id} collections`);
             }
-        }
-        await stateManager.creator.data.collections.refresh();
+        };
+        set( (prev) => {
+            prev.creator.data.collections.refresh = refresh_collection_data;
+            return prev;
+        });
+        await refresh_collection_data();
 
         // update the page title
-        stateManager.pageTitle.set('Creator Home');
+        set((prev) => {
+            prev.pageTitle.read = 'Creator Home';
+            return prev;
+        })
     }
     
     setBodyStyle();

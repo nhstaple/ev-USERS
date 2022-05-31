@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { IUser } from '../../../api/entities/users/users.interface';
 import CreatorLogin from './creator'
 import { IAppProps, IAppStateManager } from '../_app';
+import { prepareServerlessUrl } from 'next/dist/server/base-server';
 
 enum ELoginType {
    none = 0,
@@ -13,17 +14,17 @@ enum ELoginType {
    admin = 4
 }
 
-const LandingLoginMenu = ({stateManager}: IAppProps) => {
+const LandingLoginMenu = ({stateManager, set}: IAppProps) => {
    let [ loginType, setLoginType ] = useState(ELoginType.none);
 
    // these set which type of user is trying to sign in
    const reset = () => {
       setLoginType(ELoginType.none)
-      stateManager.pageTitle.set('EyeVocab');
+      set({...stateManager, pageTitle: {...stateManager.pageTitle, read: 'EyeVocab'}});
    };
    const setCreator = () => {
       setLoginType(ELoginType.creator);
-      stateManager.pageTitle.set('Creator Login');
+      set({...stateManager, pageTitle: {...stateManager.pageTitle, read: 'Creator Login'}});
    };
    const setInstructor = () => {alert('Warning: Instructor Interface not yet implented (see p2)')}; // {setLoginType(ELoginType.instructor); stateManager.pageTitle.set('Instructor Login'); };
    const setAdmin = () => {alert('Warning: Admin Interface not yet implented (see p1)')}; // {setLoginType(ELoginType.admin); stateManager.pageTitle.set('Admin Login'); };
@@ -56,7 +57,7 @@ const LandingLoginMenu = ({stateManager}: IAppProps) => {
 
       {/* a creator is logging in */}
       {loginType == ELoginType.creator && 
-         <CreatorLogin stateManager={stateManager}/>
+         <CreatorLogin stateManager={stateManager} set={set}/>
       }
 
       {/* an instructor is logging in */}
