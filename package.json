@@ -44,10 +44,12 @@
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "react-router-dom": "^6.3.0",
+    "react-simple-keyboard": "^3.4.141",
     "reflect-metadata": "^0.1.13",
     "rethinkdb": "^2.4.2",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
+    "simple-keyboard": "^3.4.107",
     "webpack": "^5.72.0"
   },
   "devDependencies": {

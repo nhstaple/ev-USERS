@@ -5,7 +5,8 @@ import { TLanguage, TPartOfSpeech, TVocabSubject } from '../../../api/entities/v
 import styles from './Creator.module.scss';
 import { IEntity, Vocab } from '../../../api/entities/';
 import Axios from 'axios';
-
+import Keyboard from 'react-simple-keyboard';
+import 'react-simple-keyboard/build/css/index.css';
 // TODO dot env file
 const HOST = 'http://localhost';
 const PORT = '3000';
@@ -42,6 +43,7 @@ const VocabCreator = ({stateManager, set, creatorManager, setCreator}: ICreatorU
     const [vocabNote, setVocabNote] = useState<string>('');
     const [image, setImage] = useState(null);
     const [sound, setSound] = useState(null);
+    const [language, setLanguage] = useState<TLanguage>('english');
 
     const submitVocabPutRequest = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -136,11 +138,19 @@ const VocabCreator = ({stateManager, set, creatorManager, setCreator}: ICreatorU
     return (
     <div id={styles.VocabCreator}>
         <div id={styles.VocabMenu}>
+            {language != 'english' &&
+            <Keyboard>
+                {`${language} virtual keyboard`}
+            </Keyboard>
+            }
             <form id={styles.Form} onSubmit={async (e) => {await submitVocabPutRequest(e)}}>
                 {/* vocab language */}
                 <div>
                     <p>Language</p>
-                    <select name='Lang'>
+                    <select name='Lang' onChange={(e)=> {
+                        e.preventDefault();
+                        setLanguage(e.target.value as TLanguage);
+                    }}>
                         {SupportedLanguages.map((lang) =>  <option key={lang}>{lang}</option>)}
                     </select>
                 </div>
