@@ -28,12 +28,23 @@ export class VocabController {
     async createVocab(@Body() data: Vocab.Put): Promise<string> {
         console.log('endpoint for inserting new vocab');
         console.log(data);
+        const vocab: Vocab.Put = data['body'];
+        console.log(vocab);
+        // insert into data base
         let result: string;
         try {
-            result = await this.vocabService.insertVocab(data['body']);
+            result = await this.vocabService.insertVocab(vocab);
         } catch(err) {
             console.log(`error on api/db/vocab PUT`);
         }
+
+        // update the creator's list of vocab items
+        try {
+            result += '\n' + await this.vocabService.updateCreator(vocab.creator, {id: vocab.id})
+        } catch(err) {
+            console.log(err);
+        }
+
         return result;
     }
 

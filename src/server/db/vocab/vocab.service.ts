@@ -1,7 +1,7 @@
 import { Injectable, Inject } from "@nestjs/common";
 import { DBService } from "../device/db.service";
-import { IEntity, Vocab } from "../../../api";
-import { IVocabMedia } from "../../../api/entities/vocab";
+import { ICreator, IEntity, Vocab } from "../../../api";
+import { IVocab, IVocabMedia } from "../../../api/entities/vocab";
 
 // TODO dotenv file
 const DB_NAME = 'betaDb';
@@ -20,6 +20,14 @@ export class VocabService {
 
     async insertVocabMedia(data: Vocab.IVocabMedia) {
         return await this.dbService.insert(DB_NAME, 's3', [data]);
+    }
+
+    async updateCreator(creator: IEntity, vocab: IEntity) {
+        const CREATOR: ICreator = await this.dbService.getCreator(DB_NAME, creator);
+        const VOCAB: IEntity[] = CREATOR.vocab;
+        return await this.dbService.updateItems('users', [creator], [
+            {...CREATOR, vocab: [...VOCAB, vocab]}
+        ]);
     }
 
     // async getVocabfromCollection(collectionID: string): Promise<Vocab.Get[]> {

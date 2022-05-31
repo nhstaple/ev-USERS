@@ -43,13 +43,14 @@ const CreatorLogin = ({stateManager}: IAppProps) => {
         let vocabData: Vocab.Get[];
         let vocabMedia: Vocab.GetMedia[] = [];
 
-        // user data
+        // creator data
         stateManager.creator.refresh = async () => {
             try {
                 const CALL = `${END_POINT}/creator/${CREATOR_ID}`;
                 response = await Axios.get(CALL);
                 userData = response.data as Creator.Get;
-                
+                console.log('got creator login\n', userData);
+
                 stateManager.user.set({...userData});
                 stateManager.creator.set({...userData});
             } catch (err) {
