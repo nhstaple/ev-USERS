@@ -5,7 +5,7 @@ import { IEntity } from '../../../api';
 import { FileFieldsInterceptor, FilesInterceptor } from '@nestjs/platform-express/multer';
 import { Express } from 'express';
 import { stringify } from 'querystring';
-import { IVocabMediaMulter } from '../../../api/entities/vocab';
+import { IVocabMedia } from '../../../api/entities/vocab';
 
 @Controller('api/db/collections')
 export class CollectionController {

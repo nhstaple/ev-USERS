@@ -2,7 +2,7 @@ import { Injectable, Inject } from "@nestjs/common";
 import { IDatabaseDevice, IDBMeta } from "../../../api/db/db.interface";
 
 import { prepare_rethink, IEntity } from "../../../api";
-import { IVocab, IVocabMediaMulter } from "../../../api/entities/vocab";
+import { IVocab, IVocabMedia } from "../../../api/entities/vocab";
 
 import { Creator } from '../../../api/entities/users/';
 import { ICreator } from "../../../api/entities/users/creator";
@@ -163,8 +163,8 @@ export class DBService {
         }
     }
 
-    async getMedia(key: string): Promise<IVocabMediaMulter[]> {
-        return this.client.query(DB_NAME, 's3', [{ id: key }]) as unknown as IVocabMediaMulter[];
+    async getMedia(key: string): Promise<IVocabMedia[]> {
+        return this.client.query(DB_NAME, 's3', [{ id: key }]) as unknown as IVocabMedia[];
     }
 
 }

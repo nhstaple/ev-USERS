@@ -1,7 +1,7 @@
 import { Injectable, Inject } from "@nestjs/common";
 import { IEntity } from "../../../api";
 import { ICollection } from "../../../api/entities/collection";
-import { IVocabMediaMulter } from "../../../api/entities/vocab";
+import { IVocabMedia } from "../../../api/entities/vocab";
 import { DBService } from "../device/db.service";
 import { Vocab, Collection } from '../../../api/entities/'
 
@@ -128,7 +128,7 @@ export class CollectionService {
         }
     }
 
-    async getMedia(key: string): Promise<IVocabMediaMulter[]> {
+    async getMedia(key: string): Promise<IVocabMedia[]> {
         return this.dbService.getMedia(key);
     }
 

@@ -1,6 +1,6 @@
 import { ICollection } from "../../entities/collection";
 import { IEntity } from "../../entities/entity.interface";
-import { IVocab, IVocabMediaMulter } from "../../entities/vocab/vocab.interface";
+import { IVocab, IVocabMedia } from "../../entities/vocab/vocab.interface";
 import { IDatabaseDevice, IDatabaseCredentials, IDBMeta, TDBData } from "../db.interface";
 import * as r from "rethinkdb"
 import { ICreator } from "../../entities/users/creator";
@@ -177,11 +177,11 @@ export class RethinkdDb implements IDatabaseDevice {
 
         if (filter.length > 0) {
             const p = r.db(dbName).table(tableName).run(this.conn);
-            const data: IEntity[] | IVocab[] | ICollection[] | IVocabMediaMulter[] = await p.then( (value: r.Cursor) => {
+            const data: IEntity[] | IVocab[] | ICollection[] | IVocabMedia[] = await p.then( (value: r.Cursor) => {
                 return value.toArray().then((results) => results);
             });
     
-            let filtered: IEntity[] | IVocab[] | ICollection[] | IVocabMediaMulter[] = [];
+            let filtered: IEntity[] | IVocab[] | ICollection[] | IVocabMedia[] = [];
             // console.log(filter);
             for(let i = 0; i < data.length; i++) {
                 // console.log(`? ${data[i].id}`);
@@ -196,7 +196,7 @@ export class RethinkdDb implements IDatabaseDevice {
             return filtered;
         } else {
             const p = r.db(dbName).table(tableName).run(this.conn);
-            const data: IEntity[] | IVocab[] | ICollection[] | ICreator[] | IVocabMediaMulter[] = await p.then( (value: r.Cursor) => {
+            const data: IEntity[] | IVocab[] | ICollection[] | ICreator[] | IVocabMedia[] = await p.then( (value: r.Cursor) => {
                 return value.toArray().then((results) => results);
             });
     

@@ -1,5 +1,5 @@
 import { IEntity } from "../entities/entity.interface";
-import { IVocab, IVocabMediaMulter } from "../entities/vocab/vocab.interface";
+import { IVocab, IVocabMedia } from "../entities/vocab/vocab.interface";
 import { ICollection } from "../entities/collection/collection.interface";
 import { ICreator } from "../entities/users/creator";
 import * as r from 'rethinkdb';
@@ -27,7 +27,7 @@ export interface IDBMeta {
     tableNames: string[]
 }
 
-export type TDBData = IEntity[] | IVocab[] | ICollection[] | ICreator[] | IVocabMediaMulter;
+export type TDBData = IEntity[] | IVocab[] | ICollection[] | ICreator[] | IVocabMedia;
 
 export interface IDatabaseDevice {
     credentials: IDatabaseCredentials;

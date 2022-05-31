@@ -1,7 +1,7 @@
 import { Injectable, Inject } from "@nestjs/common";
 import { DBService } from "../device/db.service";
 import { IEntity, Vocab } from "../../../api";
-import { IVocabMediaMulter } from "../../../api/entities/vocab";
+import { IVocabMedia } from "../../../api/entities/vocab";
 
 // TODO dotenv file
 const DB_NAME = 'betaDb';
@@ -18,6 +18,10 @@ export class VocabService {
         return await this.dbService.insert(DB_NAME, 'vocab', [ data ]);
     }
 
+    async insertVocabMedia(data: Vocab.IVocabMedia) {
+        return await this.dbService.insert(DB_NAME, 's3', [data]);
+    }
+
     // async getVocabfromCollection(collectionID: string): Promise<Vocab.Get[]> {
     //     const collection = await this.dbService.getCollection(collectionID);
     //     const vocabs = await this.dbService.getVocab('betaDb', collection.items);
@@ -31,7 +35,7 @@ export class VocabService {
         return data;
     }
 
-    async getMedia(key: string): Promise<IVocabMediaMulter[]> {
+    async getMedia(key: string): Promise<IVocabMedia[]> {
         return this.dbService.getMedia(key);
     }
 }

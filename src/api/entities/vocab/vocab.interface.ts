@@ -35,16 +35,19 @@ export enum EVocabSubject {
 export type TVocabSubject = keyof typeof EVocabSubject;
 
 // front end
-export interface IVocabMedia extends IEntity {
+export interface IVocabMediaFile extends IEntity {
     image: File;
     sound: File;
     description: string;
 }
 
 // back end
-export interface IVocabMediaMulter extends IEntity {
-    image: Express.Multer.File;
-    sound: Express.Multer.File;
+export interface IVocabMedia extends IEntity {
+    image: Buffer; // Express.Multer.File;
+    sound: Buffer; // Express.Multer.File;
+    creator: IEntity;
+    description: string;
+    vocab: IEntity;
 }
 
 // "a vocab" contains all the information for one flashcard

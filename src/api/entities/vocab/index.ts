@@ -1,10 +1,10 @@
 
 export * as Vocab from './vocab.interface';
-export { IVocab, IVocabMedia, IVocabMediaMulter } from './vocab.interface';
+export { IVocab, IVocabMedia } from './vocab.interface';
 export { VocabExample } from './vocab.example';
 
 import * as Vocab from './vocab.interface';
-import { IVocab, IVocabMedia, IVocabMediaMulter } from './vocab.interface'; 
+import { IVocab, IVocabMedia } from './vocab.interface'; 
 import { IEntity } from '../entity.interface';
 import { ICreator } from '../users/creator';
 
@@ -35,9 +35,11 @@ export class Get implements Partial<IVocab> {
 }
 
 export class GetMedia implements IVocabMedia {
+    creator: IEntity;
+    vocab: IEntity;
     id: string; // this is the storage key of the vocab object
-    image: File;
-    sound: File;
+    image: Buffer;
+    sound: Buffer;
     description: string;
 }
 
@@ -73,12 +75,12 @@ export class Put implements Partial<IVocab> {
     }
 }
 
-export class PutMedia implements IVocabMedia {
-    id: string; // this is the storage key of the vocab object
-    image: File;
-    sound: File;
-    description: string;
-}
+// export class PutMedia implements IVocabMedia {
+//     id: string; // this is the storage key of the vocab object
+//     image: Buffer;
+//     sound: Buffer;
+//     description: string;
+// }
 
 export class Post implements Partial<IVocab> {
     id: string;

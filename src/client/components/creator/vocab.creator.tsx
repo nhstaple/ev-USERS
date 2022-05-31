@@ -29,17 +29,11 @@ const SupportedSubjects = [
 const SupportedImageTypes = 'image/png, image/jpeg, image/gif';
 
 // https://www.iana.org/assignments/media-types/media-types.xhtml#audio
-const SupportedSoundTypes = 'sound/mpeg';
+const SupportedSoundTypes = 'audio/mpeg';
 
-function imgToURL(file:any) {
+function fileToURL(file:any) {
     if(file == null) return '';
     return URL.createObjectURL(file);
-}
-
-function soundToAudio(file:any) {
-    const url = URL.createObjectURL(file);
-    if(url == '') return null;
-    return new Audio(url);
 }
 
 const VocabCreator = ({stateManager, creatorManager}: ICreatorUIProps) => {
@@ -62,7 +56,7 @@ const VocabCreator = ({stateManager, creatorManager}: ICreatorUIProps) => {
         const subject = e.target['Subject'].value as TVocabSubject; 
         const note = vocabNote;
         const description = imageDescription;
-        const id = `${creator.id}-${value.id}-${translation}`;
+        const id = `${creator.id}-${value}-${translation}`;
         const storagekey = `${id}-media`;
 
         // TODO validate data
@@ -83,33 +77,47 @@ const VocabCreator = ({stateManager, creatorManager}: ICreatorUIProps) => {
             creator: creator
         }
 
-        const mediaPayload: Vocab.IVocabMedia = {
-            image: image,
-            sound: sound,
-            description: description,
-            id: storagekey
-        }
+        // create the multer formdata for the media upload
+        let formData = new FormData();
+        formData.append('image', image, `vocabID.${id}.storagekey.${storagekey}`);
+        formData.append('sound', sound, `creatorID.${creator.id}.description.${description}`);
+        // formData.append('id', id);
+        // formData.append('description', description);
+        // formData.append('creatorID', creator.id);
 
         // sanity check
-        console.log('PUT REQUEST ON CLIENT\n', vocabPayload, mediaPayload);
+        console.log('PUT REQUEST ON CLIENT\n', vocabPayload, formData);
     
         // submit vocab data
         try {
+            console.log('sending vocab...');
             const result = await Axios.put(`${END_POINT}/new`, { body: vocabPayload });
             console.log(result);
         } catch(err) {
+            alert('error! could not create vocab');
             console.log(err);
         }
         // TODO submit media data
+        try {
+            console.log('sending vocab media...');
+            const result = await Axios.put(`${END_POINT}/new/media`, formData, {
+                headers: { "content-type": "multipart/form-data" }
+            });
+            console.log(result);
+        } catch(err) {
+            alert('error! could not create vocab media');
+            console.log(err);
+        }
 
+        // TODO fix the refresh bug
+        // potential solution: make the stateManger a state and pass the set function with it to the user interfaces
         // refresh the client state
-        console.log(stateManager.creator.data.vocab);
-        return;
-        await stateManager.creator.data.vocab.refresh();
-        await stateManager.creator.data.vocab.media.refresh();
+        // console.log(stateManager.creator.data.vocab);
+        // await stateManager.creator.data.vocab.refresh();
+        // await stateManager.creator.data.vocab.media.refresh();
 
         // reset the creator on success
-        creatorManager.reset.create();
+        // creatorManager.reset.create();
     }
 
     return (
@@ -188,7 +196,7 @@ const VocabCreator = ({stateManager, creatorManager}: ICreatorUIProps) => {
             {/* previews the image */}
             {image &&
             <div id={styles.ImageWrapper}>
-                <img src={imgToURL(image)}></img>
+                <img src={fileToURL(image)}></img>
                 <textarea placeholder='Image Description' onChange={(e)=>{setImageDescription(e.target.value)}}></textarea>
             </div>}
 
@@ -196,7 +204,7 @@ const VocabCreator = ({stateManager, creatorManager}: ICreatorUIProps) => {
             {sound &&
             <div id={styles.SoundWrapper}>
                 <audio controls={true}>
-                    <source src={imgToURL(sound)} type='audio/mpeg'/>
+                    <source src={fileToURL(sound)} type='audio/mpeg'/>
                     HELP
                 </audio>
             </div>}
