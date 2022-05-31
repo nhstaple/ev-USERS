@@ -1,6 +1,7 @@
 
 import { Dispatch, SetStateAction, useState } from 'react';
 import { Vocab, Collection } from '../../../../api/entities/';
+import CollectionView from '../../../components/creator/collection.view';
 import VocabCreator from '../../../components/creator/vocab.creator';
 import VocabViewer from '../../../components/creator/vocab.viewer';
 import { IAppProps, IAppStateManager } from '../../_app';
@@ -51,11 +52,11 @@ export interface ICreatorStateManager {
     }
 
     // helper functions
-    reset: {
-        view: () => void,
-        create: () => void,
-        edit: () => void;
-    }
+    // reset: {
+    //     view: () => void,
+    //     create: () => void,
+    //     edit: () => void;
+    // }
 }
 
 export interface ICreatorUIProps {
@@ -66,17 +67,6 @@ export interface ICreatorUIProps {
 }
 
 const CreatorUI = ({stateManager, set}: IAppProps) => {
-    // vocab states
-    // const [ viewVocab, setViewVocab ] = useState<boolean>(false);
-    // const [ viewTarget, setViewTarget ] = useState<Vocab.Get>(null);
-    // const [ createVocab, setCreateVocab ] = useState<boolean>(false);
-    // const [ editVocab, setEditVocab ] = useState<boolean>(false);
-
-    // // collection states
-    // const [ viewCollections, setViewCollections ] = useState<boolean>(false);
-    // const [ createCollection, setCreateCollection ] = useState<boolean>(false);
-    // const [ editCollection, setEditCollection ] = useState<boolean>(false);
-
     const refreshCreatorData = async () => {
         await stateManager.creator.refresh();
         await stateManager.creator.data.vocab.refresh();
@@ -116,11 +106,6 @@ const CreatorUI = ({stateManager, set}: IAppProps) => {
             target: {
                 read: null
             }
-        },
-        reset: {
-            view: null,
-            create: null,
-            edit: null
         }
     }
 
@@ -174,7 +159,10 @@ const CreatorUI = ({stateManager, set}: IAppProps) => {
             prev.pageTitle.read = 'Collections Viewer';
             return prev;
         });
-        setCreator({...CreatorManager, viewCollections: {...CreatorManager.viewCollections, read: true}});
+        setCreator((prev) => {
+            prev.viewCollections.read = true;
+            return prev;
+        })
         makeActive();
     }
 
@@ -210,7 +198,7 @@ const CreatorUI = ({stateManager, set}: IAppProps) => {
     const resetCreator = () => {
         setCreator((prev) => {
             prev.createVocab = { read: false };
-            prev.createVocab = { read: false };
+            prev.createCollection = { read: false };
             return prev;
         });
         makeInactive();
@@ -235,6 +223,12 @@ const CreatorUI = ({stateManager, set}: IAppProps) => {
         resetEditor();
     }
 
+    // setCreator({...CreatorManager, reset: {
+    //     view: resetViewer,
+    //     create: resetCreator,
+    //     edit: resetEditor}
+    // });
+
     return (
     <div className={styles.UserInterface} >
         {/* the interactable menu to set the different interfaces */}
@@ -245,14 +239,14 @@ const CreatorUI = ({stateManager, set}: IAppProps) => {
                 {/* wraps all the buttons */}
                 <div>
                     {/* for viewing the vocab items */}
-                    <div className={styles.UnusableButtonWrapper}>
+                    <div className={styles.UserButtonWrapper}>
                         <button onClick={(e) => {vocabViewInterface()}}>
                             View Vocab
                         </button>
                     </div>
                     {/* for creating new vocab items */}
-                    <div className={styles.UnusableButtonWrapper}>
-                        <button onClick={(e) => {vocabCreateInterface()}}>
+                    <div className={styles.UserButtonWrapper}>
+                        <button onClick={(e) => {vocabCreateInterface();}}>
                             Create Vocab
                         </button>
                     </div>
@@ -284,7 +278,7 @@ const CreatorUI = ({stateManager, set}: IAppProps) => {
             <VocabViewer stateManager={stateManager} set={set} creatorManager={CreatorManager} setCreator={setCreator}/>
         }
 
-        {CreatorManager.createVocab.read && 
+        {CreatorManager.createVocab.read && stateManager.user.isActive &&
             <VocabCreator stateManager={stateManager} set={set} creatorManager={CreatorManager} setCreator={setCreator} />
         }
 
@@ -293,7 +287,7 @@ const CreatorUI = ({stateManager, set}: IAppProps) => {
         }
 
         {CreatorManager.viewCollections.read && 
-            'collections viewer'
+            <CollectionView stateManager={stateManager} set={set} creatorManager={CreatorManager} setCreator={setCreator}/>
         }
 
         {CreatorManager.createCollection.read &&

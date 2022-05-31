@@ -38,21 +38,28 @@ const VocabViewer = ({stateManager, set, creatorManager, setCreator}: ICreatorUI
             <div key={v.id} className={styles.VocabListWrapper} >
                 <button onClick={(e) => {
                     e.preventDefault();
-                    setCreator({...creatorManager, viewVocab:
-                        {...creatorManager.viewVocab, target: {
-                            ...creatorManager.viewVocab.target,
+                    // setCreator({...creatorManager, viewVocab:
+                    //     {...creatorManager.viewVocab, target: {
+                    //         ...creatorManager.viewVocab.target,
+                    //         read: v,
+                    //         media: stateManager.creator.data.vocab.media.read[i]
+                    //     }}});
+                    setCreator((prev) => {
+                        prev.viewVocab.target = {
                             read: v,
-                            media: stateManager.creator.data.vocab.media.read[i]
-                        }}});
+                            media: {
+                                read: stateManager.creator.data.vocab.media.read[i]
+                            }
+                        }
+                        return prev;
+                    })
                     // TODO set the targetMedia through a get request
                     console.log('VIEW TARGET\n', v.value, v.translation);
                     console.log(stateManager.creator.data.vocab.media.read[i]);
                     setTargetVocab(v);
-                    setTargetMedia(stateManager.creator.data.vocab.media.read[i]);
+                    setTargetMedia(stateManager.creator.data.vocab.media.read[i]);   
                 }}>
                     <h1>{v.value}</h1>
-                    {/* <p>{v.lang}</p>
-                    <p>{v.pos}</p> */}
                 </button>
             </div>
             )})}
@@ -60,18 +67,55 @@ const VocabViewer = ({stateManager, set, creatorManager, setCreator}: ICreatorUI
 
         <div id={styles.VocabDataView}>
             {/* the text of the vocab */}
-            {creatorManager.viewVocab.target.read != null &&
+            {targetVocab!= null &&
             <div id={styles.VocabText}>
-                <h1>{creatorManager.viewVocab.target.read.value}</h1>
-                <p>{creatorManager.viewVocab.target.read.translation}</p>
-                <p>{creatorManager.viewVocab.target.read.lang}</p>
-                <p>{creatorManager.viewVocab.target.read.pos}</p>
+                <div>
+                    <p>ID</p>
+                    <p>{targetVocab.id}</p>
+                </div>
+                
+                <div>
+                    <p>language</p>
+                    <p>{targetVocab.lang}</p>
+                </div>
+
+                <div>
+                    <p>root</p>
+                    <h1>{targetVocab.value}</h1>
+                </div>
+                
+                <div>
+                    <p>example</p>
+                    <p>{targetVocab.example}</p>
+                </div>
+
+                <div>
+                    <p>subject</p>
+                    <p>{targetVocab.subject}</p>
+                </div>
+                
+                <div>
+                    <p>part of speech</p>
+                    <p>{targetVocab.pos}</p>
+                </div>
+
+                <div>
+                    <p>creator</p>
+                    <p>{targetVocab.creator.id}</p>
+                </div>
+
+                {targetVocab.note != '' &&
+                <div>
+                    <p>note</p>
+                    <p>{targetVocab.note}</p>
+                </div>}
             </div>}
 
+            {targetVocab &&
             <div id={styles.VocabMedia}>
                 {/* previews the image */}
                 {targetMedia && targetMedia.image != null &&
-                <div id={styles.ImageWrapper}>
+                <div id={styles.VocabImageView}>
                     <img src={bufferToString(targetMedia.image, 'image/png')}></img>
                     <p>{targetMedia.description}</p>
                 </div>}
@@ -92,7 +136,12 @@ const VocabViewer = ({stateManager, set, creatorManager, setCreator}: ICreatorUI
                 <div id={styles.ImageWrapper}>
                     Sound not found
                 </div>}
-            </div>
+            </div>}
+
+            {targetVocab == null &&
+            <div id={styles.NoTargetVocab}>
+                Please select a vocab item
+            </div>}
         </div>
     </div>);
 }

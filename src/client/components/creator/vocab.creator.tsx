@@ -36,7 +36,7 @@ function fileToURL(file:any) {
     return URL.createObjectURL(file);
 }
 
-const VocabCreator = ({stateManager, creatorManager}: ICreatorUIProps) => {
+const VocabCreator = ({stateManager, set, creatorManager, setCreator}: ICreatorUIProps) => {
 
     const [imageDescription, setImageDescription] = useState<string>('');
     const [vocabNote, setVocabNote] = useState<string>('');
@@ -121,7 +121,16 @@ const VocabCreator = ({stateManager, creatorManager}: ICreatorUIProps) => {
         await stateManager.creator.refresh();
 
         // reset the creator on success
-        creatorManager.reset.create();
+        // creatorManager.reset.create(); // TODO doesnt work .-.
+        setCreator((prev) => {
+            prev.createVocab.read = false;
+            creatorManager.createVocab.read = false;
+            return prev;
+        });
+        set((prev) => {
+            prev.user.isActive = false;
+            return prev;
+        })
     }
 
     return (
