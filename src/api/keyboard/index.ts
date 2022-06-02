@@ -1,6 +1,4 @@
 
-
-
 // https://github.com/simple-keyboard/simple-keyboard-layouts/blob/master/src/lib/interfaces.ts
 
 // https://github.com/simple-keyboard/simple-keyboard-layouts/tree/master/src/lib/layouts

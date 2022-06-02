@@ -259,7 +259,7 @@ const CreatorUI = ({stateManager, set}: IAppProps) => {
                 {/* wraps all the buttons */}
                 <div>
                     {/* for viewing the vocab items */}
-                    <div className={styles.UnusableButtonWrapper}>
+                    <div className={styles.UserButtonWrapper}>
                     <button onClick={(e) => {collectionsViewInterface()}}>
                             View Collections
                         </button>

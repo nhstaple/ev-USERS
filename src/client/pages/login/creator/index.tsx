@@ -90,7 +90,7 @@ const CreatorLogin = ({stateManager, set}: IAppProps) => {
         const refresh_vocab_media = async () => {
             await refresh_vocab_data();
             console.log('getting media sanity')
-            const data = vocabData;
+            const data = vocabData != null ? vocabData : stateManager.creator.data.vocab.read;
             console.log(vocabData);
             try {
                 vocabMedia = [];

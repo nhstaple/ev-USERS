@@ -5,21 +5,6 @@ import { TLanguage, TPartOfSpeech } from '../../../api/entities/vocab/vocab.inte
 import styles from './Creator.module.scss';
 import { Vocab } from '../../../api';
 
-const SupportedLanguages = [
-    'english',
-    'spanish',
-    'punjabi'
-]
-
-const SupportedPOS = [
-    "noun", "verb", "participle", "article", "pronoun", "preposition",  "adverb",  "conjunction"
-]
-
-function fileToURL(file:any) {
-    if(file == null) return '';
-    return URL.createObjectURL(file);
-}
-
 function bufferToString(buff: Buffer, fileType: string) {
     if(buff == null) return '';
     const encoding = Buffer.from(buff).toString('base64');
@@ -30,12 +15,13 @@ const VocabViewer = ({stateManager, set, creatorManager, setCreator}: ICreatorUI
     const [targetVocab, setTargetVocab] = useState<Vocab.Get>(null);
     const [targetMedia, setTargetMedia] = useState<Vocab.GetMedia>(null);
     console.log('VOCAB DATA CHECK\n', stateManager.creator.data.vocab.read);
-
+    
     return (
     <div id={styles.VocabViewer}>
         <div id={styles.VocabList}>
             {Object.entries(stateManager.creator.data.vocab.read).map(([i, v]) => { return (
             <div key={v.id} className={styles.VocabListWrapper} >
+                <p>{v.lang.slice(0, 3).toUpperCase()}</p>
                 <button onClick={(e) => {
                     e.preventDefault();
                     // setCreator({...creatorManager, viewVocab:
@@ -67,6 +53,11 @@ const VocabViewer = ({stateManager, set, creatorManager, setCreator}: ICreatorUI
 
         <div id={styles.VocabDataView}>
             {/* the text of the vocab */}
+            {targetVocab != null &&
+            <div style={{paddingBottom: '5vh', fontSize: '2em'}}>
+                <h1>{targetVocab.value}</h1>
+            </div>}
+                
             {targetVocab!= null &&
             <div id={styles.VocabText}>
                 <div>
