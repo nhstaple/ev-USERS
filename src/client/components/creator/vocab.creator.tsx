@@ -16,7 +16,10 @@ const END_POINT = `${HOST}:${PORT}/api/db/vocab`
 const SupportedLanguages = [
     'english',
     'spanish',
-    'punjabi'
+    'punjabi',
+    'arabic',
+    'german',
+    'japanese'
 ]
 
 const SupportedPOS = [
@@ -30,7 +33,10 @@ const SupportedSubjects = [
 import * as KeyboardSupport from '../../../api/keyboard'
 const SupportedKeyboardLanguages = {
     'spanish': KeyboardSupport.layout_span,
-    'punjabi': KeyboardSupport.layout_punj
+    'punjabi': KeyboardSupport.layout_punj,
+    'arabic': KeyboardSupport.layout_arab,
+    'german': KeyboardSupport.layout_germ,
+    'japanese': KeyboardSupport.layout_japa
 }
 
 // https://www.iana.org/assignments/media-types/media-types.xhtml#image

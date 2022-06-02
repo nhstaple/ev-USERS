@@ -5,7 +5,10 @@ import { IEntity } from "../entity.interface"
 export enum ELanguage {
     english = 0,
     spanish = 1,
-    punjabi = 2
+    punjabi = 2,
+    arabic = 4,
+    german = 8,
+    japanese = 16
 }
 export type TLanguage = keyof typeof ELanguage;
 
