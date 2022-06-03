@@ -19,6 +19,14 @@ export class CollectionController {
     @Put('new')
     async insertNewCollection(@Body() data): Promise<boolean> {
         console.log(data);
+        const payload: Collection.Put = data['body'];
+        try {
+            await this.collectionService.insertCollection(payload);
+            await this.collectionService.updateCreatorCollections(payload.creator, payload);
+            return true;
+        } catch(err) {
+            return false;
+        }
         return true;
     }
 

@@ -97,8 +97,13 @@ const CollectionViewer = ({stateManager, set, creatorManager, setCreator}: ICrea
                     </div>
                     <div id={styles.CollectionItemsWrapper}>
                         {targetCollection.items.map((v, i) => {
+                            const media = stateManager.creator.data.vocab.media.read.find(m => {return m && m.vocab.id == v.id});
+                            let imageURL: string = '';
+                            if(media && media.image != null) {
+                                imageURL = bufferToString(media.image, 'image');
+                            }
                             return(
-                                <div key={v.id} style={{backgroundImage: getVocabMediaURL(v.id)}}>
+                                <div key={v.id} style={{backgroundImage: `url(${imageURL})`}}>
                                     <p>{getVocabByID(v.id).value}</p>
                                     {/* {shouldRenderMedia(getVocabMediaByID(v.id)) &&
                                         <div style={{backgroundImage: bufferToString(getVocabMediaByID(v.id).image, 'image')}}>

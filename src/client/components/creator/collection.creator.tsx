@@ -197,6 +197,7 @@ const CollectionCreator = ({stateManager, set, creatorManager, setCreator}: ICre
 
     const submitCollectionPutRequest = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        console.log('COLLECTION.PUT REQUEST BEGIN');
         // retrieve put data
         const creator: IEntity = {id: stateManager.user.read.id };
         const lang = e.target['Lang'].value as TLanguage;
@@ -206,13 +207,19 @@ const CollectionCreator = ({stateManager, set, creatorManager, setCreator}: ICre
         const id = `${creator.id}-${name}-${lang}`;
 
         // TODO validate data
-        if(name == '' || note == '') return;
+        if(name == '') {
+            alert('collection name cannot be empty!');
+            return;
+        } else if(note == '') {
+            alert('collection description cannot be empty!');
+            return;
+        }
 
         // create payloads
         const collectionPayload: Collection.Put = {
             name: name,
             creator: creator,
-            items: [], // TODO 
+            items: vocabItems,
             lang: lang,
             id: id,
             description: note
@@ -243,7 +250,7 @@ const CollectionCreator = ({stateManager, set, creatorManager, setCreator}: ICre
         // reset the creator on success
         // creatorManager.reset.create(); // TODO doesnt work .-.
         setCreator((prev) => {
-            prev.createVocab.read = false;
+            prev.createCollection.read = false;
             return prev;
         });
         set((prev) => {
@@ -253,8 +260,8 @@ const CollectionCreator = ({stateManager, set, creatorManager, setCreator}: ICre
     }
 
     const processKeyboardInput = buffer => {
-        if(keyboardInput.current == null) return
-        console.log('BOOP', buffer);
+        if(keyboardInput.current == null) return;
+        // console.log('BOOP', buffer);
         keyboardInput.current.value = buffer;
     }
 
@@ -306,7 +313,7 @@ const CollectionCreator = ({stateManager, set, creatorManager, setCreator}: ICre
                 </div>
             </div>}
 
-            <form id={styles.Form} onSubmit={async (e) => {await submitCollectionPutRequest(e)}}>
+            <form id={styles.Form} onSubmit={async (e) => {await submitCollectionPutRequest(e);}}>
                 {/* vocab language */}
                 <div>
                     <p>Language</p>

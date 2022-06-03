@@ -3,7 +3,7 @@ import { IEntity } from "../../../api";
 import { ICollection } from "../../../api/entities/collection";
 import { IVocabMedia } from "../../../api/entities/vocab";
 import { DBService } from "../device/db.service";
-import { Vocab, Collection } from '../../../api/entities/'
+import { Vocab, Collection, ICreator } from '../../../api/entities/'
 
 // TODO dotenv file
 const DB_NAME = 'betaDb';
@@ -16,29 +16,16 @@ export class CollectionService {
         this.dbService = service;
     }
 
-    // async insertCollection(collection: Collection.Put) {
-    //     console.log(collection);
+    async insertCollection(collection: Collection.Put) {
+        console.log(collection);
         
-    //     for(let i = 0; i < collection.items.length; i++) {
-    //         collection.items[i].creator = collection.creator;
-    //         collection.items[i].lang = collection.lang;
-    //         if(collection.items[i].media) {
-    //             delete collection.items[i].media;
-    //         }
-    //     }
+        try {
+            await this.dbService.insert(DB_NAME, 'collections', [ collection ]);
+        } catch(err) {
+            console.log(err);
+        }
 
-    //     try {
-    //         await this.dbService.insert(DB_NAME, 'collections', [ collection ]);
-    //     } catch(err) {
-    //         console.log(err);
-    //     }
-
-    //     try {
-    //         await this.dbService.insert(DB_NAME, 'vocab', collection.items);
-    //     } catch(err) {
-    //         console.log(err);
-    //     }
-    // }
+    }
 
     // async insertCollectionMedia(images: Express.Multer.File[], sounds: Express.Multer.File[]) {
     //     let media: IVocabMediaMulter[] = [];
@@ -104,18 +91,21 @@ export class CollectionService {
         }
     }
 
-    async updateCreatorCollections(userID: string, collectionID: string): Promise<boolean> {
+    async updateCreatorCollections(user: IEntity, collection: IEntity): Promise<boolean> {
         try {
-            const creator = await this.dbService.getCreator(DB_NAME, {id: userID});
+            const creator = await this.dbService.getCreator(DB_NAME, user);
             let updatedItems = creator.collections;
-            updatedItems.forEach((c, i) => {
-                if(c.id == collectionID) {
-                    updatedItems.splice(i, 1);
-                    return;
-                }
-            })
-            this.dbService.insert(DB_NAME, 'users', [{...creator, collections: updatedItems}]);
+            // update
+            if(updatedItems.find(c => { return c.id == collection.id})) {
+
+            }
+            // insert
+            else {
+                // this.dbService.insert(DB_NAME, 'users', [{...creator, collections: updatedItems}]);
+                this.dbService.updateItems('users', [creator], [{collections: [...updatedItems, collection]}])
+            }
         } catch(e) {
+            console.log('ERROR TRYING TO UPDATE CREATOR COLLECTIONS');
             return false;
         }
     }
