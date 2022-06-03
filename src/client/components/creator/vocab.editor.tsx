@@ -165,7 +165,7 @@ const VocabEditor = ({stateManager, set, creatorManager, setCreator}: ICreatorUI
 
     const processKeyboardInput = buffer => {
         if(keyboardInput.current == null) return
-        console.log('BOOP', buffer);
+        console.log('KEYBOARD BUFFER', buffer);
         keyboardInput.current.value = buffer;
     }
 
@@ -180,7 +180,7 @@ const VocabEditor = ({stateManager, set, creatorManager, setCreator}: ICreatorUI
         keyboard.current.setInput(r.value);
     }
 
-    console.log('VOCAB DATA CHECK\n', stateManager.creator.data.vocab.read);
+    // console.log('VOCAB DATA CHECK\n', stateManager.creator.data.vocab.read);
     
     const submitVocabPostRequest = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -268,7 +268,7 @@ const VocabEditor = ({stateManager, set, creatorManager, setCreator}: ICreatorUI
                     })
                     // TODO set the targetMedia through a get request
                     console.log('EDIT TARGET\n', v.value, v.translation);
-                    console.log(stateManager.creator.data.vocab.media.read[i]);
+                    // console.log(stateManager.creator.data.vocab.media.read[i]);
                     if(formObject.current) formObject.current.reset();
                     setTargetVocab({...v});
                     setTargetMedia({...stateManager.creator.data.vocab.media.read[i],
@@ -449,7 +449,7 @@ const VocabEditor = ({stateManager, set, creatorManager, setCreator}: ICreatorUI
 
                     {/* form submission */}
                     <div>
-                        <input type='Submit' value='Edit Vocab'/>
+                        <input type='Submit' value='Edit Vocab' readOnly={true}/>
                     </div>
                 </form>}
             </div>

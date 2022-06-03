@@ -15,7 +15,7 @@ const CollectionViewer = ({stateManager, set, creatorManager, setCreator}: ICrea
     const [targetCollection, setTargetCollection] = useState<Collection.Get>(null);
     const [targetVocab, setTargetVocab] = useState<Vocab.Get>(null);
     const [targetVocabMedia, setTargetMedia] = useState<Vocab.GetMedia>(null);
-    console.log('COLLECTION DATA CHECK\n', stateManager.creator.data.vocab.read);
+    // console.log('COLLECTION DATA CHECK\n', stateManager.creator.data.vocab.read);
 
     function getVocabByID(id: string): Vocab.Get {
         const v = stateManager.creator.data.vocab.read.find(vocab => vocab.id == id);
@@ -26,7 +26,7 @@ const CollectionViewer = ({stateManager, set, creatorManager, setCreator}: ICrea
         const v: Vocab.Get = getVocabByID(id);
         stateManager.creator.data.vocab.media.refresh().then();
         const media = stateManager.creator.data.vocab.media.read;
-        console.log(media);
+        // console.log(media);
         const m = media.find(m => {
             m && m.id == v.storagekey
         });
@@ -48,7 +48,7 @@ const CollectionViewer = ({stateManager, set, creatorManager, setCreator}: ICrea
             return '';
         }
         const url = bufferToString(media.image, 'image');
-        console.log(vocabID, url);
+        // console.log(vocabID, url);
         return url;
     }
 

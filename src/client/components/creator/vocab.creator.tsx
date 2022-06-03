@@ -11,9 +11,10 @@ import Keyboard, {SimpleKeyboard} from 'react-simple-keyboard';
 // TODO dot env file
 const HOST = 'http://localhost';
 const PORT = '3000';
-const END_POINT = `${HOST}:${PORT}/api/db/vocab`
+const END_POINT = `${HOST}:${PORT}/api/db/vocab`;
 
-import * as KeyboardSupport from '../../../api/keyboard'
+import * as KeyboardSupport from '../../../api/keyboard';
+import { makeKeyboardDraggable } from '../../../api/keyboard';
 
 // https://www.iana.org/assignments/media-types/media-types.xhtml#image
 const SupportedImageTypes = 'image/png, image/jpeg, image/gif';
@@ -24,68 +25,6 @@ const SupportedSoundTypes = 'audio/mpeg';
 function fileToURL(file:any) {
     if(file == null) return '';
     return URL.createObjectURL(file);
-}
-
-// TEST
-// https:www.w3schools.com/howto/tryit.asp?filename=tryhow_js_draggable
-let boundCheckKeyboard: (x, y) => void;
-function dragElement(grabbable, grabHeader) {
-    if(grabbable == null || grabHeader == null) return false;
-
-    console.log('adding event listeners to', grabbable, grabHeader);
-    boundCheckKeyboard = checkBounds;
-
-    var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-    if (document.getElementById(grabHeader.id)) {
-      /* if present, the header is where you move the DIV from:*/
-      document.getElementById(grabHeader.id).onmousedown = dragMouseDown;
-    } else {
-      /* otherwise, move the DIV from anywhere inside the DIV:*/
-      grabbable.onmousedown = dragMouseDown;
-    }
-
-    return true;
-    
-    function checkBounds(leftOffset, topOffset) {
-        if(topOffset < 0) topOffset = 0;
-        //f(topOffset > grabbable.offsetHeigth * 0.90) topOffset = grabbable.offsetHeigth * 0.90;
-        if(leftOffset < 0) leftOffset = 0;
-        if(leftOffset > grabbable.offsetWidth * 0.80) leftOffset = grabbable.offsetWidth * 0.80;
-
-        grabbable.style.top = topOffset + "px";
-        grabbable.style.left = leftOffset + "px";
-    }
-
-    function dragMouseDown(e) {
-      e = e || window.event;
-      e.preventDefault();
-      // get the mouse cursor position at startup:
-      pos3 = e.clientX;
-      pos4 = e.clientY;
-      document.onmouseup = closeDragElement;
-      // call a function whenever the cursor moves:
-      document.onmousemove = elementDrag;
-    }
-  
-    function elementDrag(e) {
-        e = e || window.event;
-        e.preventDefault();
-        // calculate the new cursor position:
-        pos1 = pos3 - e.clientX;
-        pos2 = pos4 - e.clientY;
-        pos3 = e.clientX;
-        pos4 = e.clientY;
-        const x = grabbable.offsetLeft - pos1;
-        const y = grabbable.offsetTop - pos2;
-        // bound check and set new position
-        checkBounds(x, y);
-    }
-  
-    function closeDragElement() {
-      /* stop moving when mouse button is released:*/
-      document.onmouseup = null;
-      document.onmousemove = null;
-    }
 }
 
 const VocabCreator = ({stateManager, set, creatorManager, setCreator}: ICreatorUIProps) => {
@@ -163,7 +102,7 @@ const VocabCreator = ({stateManager, set, creatorManager, setCreator}: ICreatorU
     const submitVocabPutRequest = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        console.log('state check\n', stateManager);
+        // console.log('state check\n', stateManager);
 
         // retrieve put data
         const creator: IEntity = {id: stateManager.user.read.id };
@@ -205,7 +144,7 @@ const VocabCreator = ({stateManager, set, creatorManager, setCreator}: ICreatorU
         // formData.append('creatorID', creator.id);
 
         // sanity check
-        console.log('PUT REQUEST ON CLIENT\n', vocabPayload, formData);
+        console.log('VOCAB.PUT REQUEST ON CLIENT\n', vocabPayload, formData);
     
         // submit vocab data
         try {
@@ -252,7 +191,7 @@ const VocabCreator = ({stateManager, set, creatorManager, setCreator}: ICreatorU
 
     const processKeyboardInput = buffer => {
         if(keyboardInput.current == null) return
-        console.log('BOOP', buffer);
+        console.log('KEYBOARD BUFFER', buffer);
         keyboardInput.current.value = buffer;
     }
 
@@ -285,9 +224,7 @@ const VocabCreator = ({stateManager, set, creatorManager, setCreator}: ICreatorU
                         <button onClick={(e) => {
                             e.preventDefault();
                             setShowKeyboard((prev) => !prev);
-                            if(!dragElement(draggableKeyboardMenu.current, draggableHeader.current)) {
-                                alert('oof!');
-                            }
+                            makeKeyboardDraggable(draggableKeyboardMenu.current, draggableHeader.current);
                             if(keyboardInput.current != null) {
                                 keyboardInput.current.classList.remove(styles.ActiveInput);
                             }
@@ -312,6 +249,7 @@ const VocabCreator = ({stateManager, set, creatorManager, setCreator}: ICreatorU
                         e.preventDefault();
                         keyboardInput.current = null;
                         setLanguage(e.target.value as TLanguage);
+                        makeKeyboardDraggable(draggableKeyboardMenu.current, draggableHeader.current)
                     }}>
                         {KeyboardSupport.SupportedLanguages.map((lang) =>  <option key={lang}>{lang}</option>)}
                     </select>
@@ -379,7 +317,7 @@ const VocabCreator = ({stateManager, set, creatorManager, setCreator}: ICreatorU
                 {/* sound uploading */}
                 <div>
                     <input type='file' placeholder='Sound' onChange={(e)=> {
-                        console.log(e.target.files)
+                        // console.log(e.target.files)
                         setSound(e.target.files[0])}
                     } className={styles.SoundInput} accept={SupportedSoundTypes}/>
                 </div>

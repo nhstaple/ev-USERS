@@ -242,9 +242,9 @@ export class RethinkdDb implements IDatabaseDevice {
         }
 
         for(let i = 0; i < uuid.length; i++) {
-            console.log(`-.-.-.-.`);
-            console.log(uuid[i].id);
-            console.log(data[i]);
+            // console.log(`-.-.-.-.`);
+            // console.log(uuid[i].id);
+            // console.log(data[i]);
             await r.db(dbName).table(tableName).get(uuid[i].id).update(data[i]).run(this.conn, (err, res) => {
                 if(LOG) {
                     console.log(res);

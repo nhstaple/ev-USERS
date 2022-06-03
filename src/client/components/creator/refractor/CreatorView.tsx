@@ -7,7 +7,7 @@ import { Dispatch, SetStateAction } from 'react';
 const Main = ( creator: any, handle: any ) => {
   let USER = creator as Creator.Get;
   let USER_HANDLE = handle as Dispatch<React.SetStateAction<Creator.Get>>;
-  console.log(`inside the prop\ngot user: ${USER}`);
+  // console.log(`inside the prop\ngot user: ${USER}`);
   return ( USER &&
     <main id={styles.container}>
       <h1>Creator View</h1>

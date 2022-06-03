@@ -14,7 +14,7 @@ function bufferToString(buff: Buffer, fileType: string) {
 const VocabViewer = ({stateManager, set, creatorManager, setCreator}: ICreatorUIProps) => {
     const [targetVocab, setTargetVocab] = useState<Vocab.Get>(null);
     const [targetMedia, setTargetMedia] = useState<Vocab.GetMedia>(null);
-    console.log('VOCAB DATA CHECK\n', stateManager.creator.data.vocab.read);
+    // console.log('VOCAB DATA CHECK\n', stateManager.creator.data.vocab.read);
     
     return (
     <div id={styles.VocabViewer}>
@@ -41,7 +41,7 @@ const VocabViewer = ({stateManager, set, creatorManager, setCreator}: ICreatorUI
                     })
                     // TODO set the targetMedia through a get request
                     console.log('VIEW TARGET\n', v.value, v.translation);
-                    console.log(stateManager.creator.data.vocab.media.read[i]);
+                    // console.log(stateManager.creator.data.vocab.media.read[i]);
                     setTargetVocab(v);
                     setTargetMedia(stateManager.creator.data.vocab.media.read[i]);   
                 }}>
