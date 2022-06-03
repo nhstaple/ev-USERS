@@ -268,7 +268,7 @@ div#CollectionItemsView {
     flex-direction: row;
     overflow-y: hidden;
     overflow-x: scroll;
-    height: 33vh;
+    // height: 33vh;
     width: 63vw;
     scrollbar-width: thin;
     background-color: rgba(255, 145, 0, 0.298);
@@ -282,9 +282,10 @@ div#CollectionItemsView {
     }
 
     > div {
-        width: 33vw;
+        // width: 33vw;
         // padding-left: 10vw;
         // padding-right: 10vw;
+        height: 25vh;
         display: flex;
         background: rgba(128, 64, 192, 0.6);
         border-radius: 20px;
@@ -340,6 +341,114 @@ div#CollectionItemsView {
                 align-self: center;
                 width: 100%;
             }
+        }
+    }
+}
+
+// language filter slider
+/* The switch - the box around the slider */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+  }
+  
+  /* Hide default HTML checkbox */
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  /* The slider */
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+  
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+  
+  input:checked + .slider {
+    background-color: #2196F3;
+  }
+  
+  input:focus + .slider {
+    box-shadow: 0 0 1px #2196F3;
+  }
+  
+  input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+  }
+  
+  /* Rounded sliders */
+  .slider.round {
+    border-radius: 34px;
+  }
+  
+  .slider.round:before {
+    border-radius: 50%;
+  }
+
+#LanguageFilterToggleWrapper {
+    display: flex;
+    flex-direction: row !important;
+    width: 100%;
+    justify-content: space-between !important;
+}
+
+#CollectionMenu {
+    padding-top: 5vh;
+}
+
+#VocabEditor {
+    display: flex;
+    flex-direction: row;
+    #VocabMenu {
+        width: 66%;
+    }
+    #VocabMedia {
+        width: 33%;
+    }
+    #Form {
+        width: 90%;
+        padding-left: 2vw;
+        padding-right: 2vw;
+        > div {
+            width: 100%;
+        }
+
+        input, select, textarea {
+            padding-right: 0;
+            margin-right: 0;
+            scroll-margin-left: 0;
+            padding-left: 0;
+            width: 95%;
+            align-self: center;
+            display: flex;
+        }
+
+        select {
+
         }
     }
 }

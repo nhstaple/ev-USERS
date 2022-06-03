@@ -18,6 +18,11 @@ export class VocabService {
         return await this.dbService.insert(DB_NAME, 'vocab', [ data ]);
     }
 
+    async updateVocab(data: Vocab.Post) {
+        const success = await this.dbService.updateItems('vocab', [data as IEntity], [data]);
+        return success ? `updated ${data.id}` : 'failed to update vocab';
+    }
+
     async insertVocabMedia(data: Vocab.IVocabMedia) {
         return await this.dbService.insert(DB_NAME, 's3', [data]);
     }

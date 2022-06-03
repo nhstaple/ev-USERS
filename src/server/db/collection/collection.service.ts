@@ -101,7 +101,6 @@ export class CollectionService {
             }
             // insert
             else {
-                // this.dbService.insert(DB_NAME, 'users', [{...creator, collections: updatedItems}]);
                 this.dbService.updateItems('users', [creator], [{collections: [...updatedItems, collection]}])
             }
         } catch(e) {

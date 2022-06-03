@@ -5,6 +5,7 @@ import CollectionCreator from '../../../components/creator/collection.creator';
 import CollectionViewer from '../../../components/creator/collection.viewer';
 import VocabCreator from '../../../components/creator/vocab.creator';
 import VocabViewer from '../../../components/creator/vocab.viewer';
+import VocabEditor from '../../../components/creator/vocab.editor';
 import { IAppProps, IAppStateManager } from '../../_app';
 import styles from './CreatorUI.module.scss';
 
@@ -251,6 +252,12 @@ const CreatorUI = ({stateManager, set}: IAppProps) => {
                             Create Vocab
                         </button>
                     </div>
+                    {/* for editing vocab items */}
+                    <div className={styles.UserButtonWrapper}>
+                        <button onClick={(e) => {vocabEditInterface()}}>
+                            Edit Vocab
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -259,16 +266,24 @@ const CreatorUI = ({stateManager, set}: IAppProps) => {
                 <h1>Collections Actions</h1>
                 {/* wraps all the buttons */}
                 <div>
-                    {/* for viewing the vocab items */}
+                    {/* for viewing collections */}
                     <div className={styles.UserButtonWrapper}>
                     <button onClick={(e) => {collectionsViewInterface()}}>
                             View Collections
                         </button>
                     </div>
-                    {/* for creating new vocab items */}
-                    <div className={styles.UnusableButtonWrapper}>
+                    {/* for creating new collections */}
+                    <div className={styles.UserButtonWrapper}>
                         <button onClick={(e) => {collectionCreateInterface()}}>
                             Create Collection
+                        </button>
+                    </div>
+                    {/* for editing collections */}
+                    <div className={styles.UnusableButtonWrapper}>
+                        <button onClick={(e) => {
+                            // collectionEditInterface();
+                        }}>
+                            Edit Collections
                         </button>
                     </div>
                 </div>
@@ -284,7 +299,7 @@ const CreatorUI = ({stateManager, set}: IAppProps) => {
         }
 
         {CreatorManager.editVocab.read && 
-            'vocab editor'
+            <VocabEditor stateManager={stateManager} set={set} creatorManager={CreatorManager} setCreator={setCreator}/>
         }
 
         {CreatorManager.viewCollections.read && 

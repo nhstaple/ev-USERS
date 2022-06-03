@@ -107,13 +107,14 @@ const CollectionCreator = ({stateManager, set, creatorManager, setCreator}: ICre
     const [language, setLanguage] = useState<TLanguage>('english');
     const [showKeyboard, setShowKeyboard] = useState(false);
     const [vocabItems, setVocabItems] = useState<Vocab.Get[]>([]);
-    
+    const [useLangFilter, setUseLangFilter] = useState(false);
+
     function isInVocabItems(vocab: Vocab.Get): boolean {
         if(vocabItems.find(v => { return v.id == vocab.id })) {
-            console.log(vocabItems, 'contains', vocab.id);
+            // console.log(vocabItems, 'contains', vocab.id);
             return true;
         } else {
-            console.log(vocabItems, 'does not contain', vocab.id);
+            // console.log(vocabItems, 'does not contain', vocab.id);
             return false;
         }
     }
@@ -347,6 +348,18 @@ const CollectionCreator = ({stateManager, set, creatorManager, setCreator}: ICre
                 <div>
                     <input type='Submit' placeholder='Create Vocab'/>
                 </div>
+
+                <div id={styles.LanguageFilterToggleWrapper}>
+                    <p>Use Language Filter?</p>
+                    <label className={styles.switch}>
+                        <input type="checkbox" onChange={(e) => {
+                            setUseLangFilter(e.target.checked);
+                        }} onClick={(e) => {
+                            setUseLangFilter(prev => !prev);
+                        }} />
+                        <span className={styles.slider}></span>
+                    </label>
+                </div>
             </form>
 
         </div>
@@ -354,6 +367,8 @@ const CollectionCreator = ({stateManager, set, creatorManager, setCreator}: ICre
         <div id={styles.CollectionItemsWrapper}>
             {stateManager.creator.data.vocab.read.map((v, i)=> {
             if(isInVocabItems(v)) return
+            if(useLangFilter && v.lang != language) return;
+
             const media = stateManager.creator.data.vocab.media.read[i];
             let imageURL: string = '';
             if(media != null && media.image != null) {

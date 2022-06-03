@@ -106,6 +106,22 @@ export class VocabController {
         return 'testing';
     }
 
+    @Post('/edit')
+    async editVocab(@Body() data: Vocab.Post): Promise<string> {
+        console.log('endpoint for eidting a vocab');
+        console.log(data);
+        const vocab: Vocab.Post = data['body'];
+        console.log(vocab);
+        // insert into data base
+        let result: string;
+        try {
+            result = await this.vocabService.updateVocab(vocab);
+        } catch(err) {
+            console.log(`error on api/db/vocab PUT`);
+        }
+        return result;
+    }
+
     // @Put('/media')
     // @UseInterceptors(FileFieldsInterceptor([
     //     { name: 'image' },
