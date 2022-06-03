@@ -1,4 +1,23 @@
 
+export const SupportedLanguages = [
+    'english',
+    'spanish',
+    'punjabi',
+    'arabic',
+    'german',
+    'japanese'
+]
+
+export const SupportedPOS = [
+    "noun", "verb", "participle", "article", "pronoun", "preposition",  "adverb",  "conjunction"
+]
+
+export const SupportedSubjects = [
+    "neutral", "masculine", "feminine", "neutral_plural",  "masculine_plural", "feminine_plural"
+]
+
+
+
 // https://github.com/simple-keyboard/simple-keyboard-layouts/blob/master/src/lib/interfaces.ts
 
 // https://github.com/simple-keyboard/simple-keyboard-layouts/tree/master/src/lib/layouts
@@ -36,15 +55,15 @@ export const layout_punj = {
         "{lock} ੋ ੇ ੍ ਿ ੁ ਪ ਰ ਕ ਤ ਚ ਟ {enter}",
         "{shift} ੰ ਮ ਨ ਵ ਲ ਸ , . ਯ {shift}",
         ".com @ {space}",
-      ],
-      shift: [
+    ],
+    shift: [
         'ੱ ( ) {bksp}',
         "{tab} ਔ ਐ ਆ ਈ ਊ ਭ ਙ ਘ ਧ ਝ ਢ ਞ",
         "{lock} ਓ ਏ ਅ ਇ ਉ ਫ  ਖ ਥ ਛ ਠ {enter}",
         "{shift} ਂ ਣ ੲ ਲ਼ ਸ਼ । {shift}",
         ".com @ {space}",
-      ],
-  };
+    ],
+};
 
 // arabic
 export const layout_arab = {
@@ -100,3 +119,10 @@ export const layout_japa = {
     ],
 }
 
+export const LanguageLayouts = {
+    'spanish': layout_span,
+    'punjabi': layout_punj,
+    'arabic': layout_arab,
+    'german': layout_germ,
+    'japanese': layout_japa
+}

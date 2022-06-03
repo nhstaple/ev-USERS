@@ -65,6 +65,9 @@
     display: flex;
     padding-top: 1vh;
     padding-bottom: 1vh;
+    h1, h2, h3 {
+        margin-top: 0;
+    }
     #ImageWrapper, #VocabImageView {
         height: fit-content;
         justify-content: space-around;
@@ -212,6 +215,7 @@
 #VocabDataView, #CollectionDataView{
     width: 100%;
     background-color: rgba(0, 255, 255, 0.66);
+    justify-content: space-evenly;
 }
 
 #VocabImageView {
@@ -231,7 +235,8 @@
     }
     img {
         animation: none;
-        width: 30vw;
+        width: 33vh;
+        height: min-content;
     }
 }
 

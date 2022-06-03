@@ -58,7 +58,7 @@ const VocabViewer = ({stateManager, set, creatorManager, setCreator}: ICreatorUI
                 <h1>{targetVocab.value}</h1>
             </div>}
                 
-            {targetVocab!= null &&
+            {targetVocab != null &&
             <div id={styles.VocabText}>
                 <div>
                     <p>ID</p>

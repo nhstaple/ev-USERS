@@ -2,42 +2,18 @@
 import { FormEvent, useState, useRef } from 'react';
 import { ICreatorUIProps } from '../../pages/ux/creator/creator.ui';
 import { TLanguage, TPartOfSpeech, TVocabSubject } from '../../../api/entities/vocab/vocab.interface';
+import "react-simple-keyboard/build/css/index.css";
 import styles from './Creator.module.scss';
 import { IEntity, Vocab } from '../../../api/entities/';
 import Axios from 'axios';
-import Keyboard from 'react-simple-keyboard';
-import "react-simple-keyboard/build/css/index.css";
+import Keyboard, {SimpleKeyboard} from 'react-simple-keyboard';
 
 // TODO dot env file
 const HOST = 'http://localhost';
 const PORT = '3000';
 const END_POINT = `${HOST}:${PORT}/api/db/vocab`
 
-const SupportedLanguages = [
-    'english',
-    'spanish',
-    'punjabi',
-    'arabic',
-    'german',
-    'japanese'
-]
-
-const SupportedPOS = [
-    "noun", "verb", "participle", "article", "pronoun", "preposition",  "adverb",  "conjunction"
-]
-
-const SupportedSubjects = [
-    "neutral", "masculine", "feminine", "neutral_plural",  "masculine_plural", "feminine_plural"
-]
-
 import * as KeyboardSupport from '../../../api/keyboard'
-const SupportedKeyboardLanguages = {
-    'spanish': KeyboardSupport.layout_span,
-    'punjabi': KeyboardSupport.layout_punj,
-    'arabic': KeyboardSupport.layout_arab,
-    'german': KeyboardSupport.layout_germ,
-    'japanese': KeyboardSupport.layout_japa
-}
 
 // https://www.iana.org/assignments/media-types/media-types.xhtml#image
 const SupportedImageTypes = 'image/png, image/jpeg, image/gif';
@@ -124,7 +100,7 @@ const VocabCreator = ({stateManager, set, creatorManager, setCreator}: ICreatorU
     
     const draggableKeyboardMenu = useRef(null);
     const draggableHeader = useRef(null);
-    const keyboard = useRef(null);
+    const keyboard = useRef<SimpleKeyboard>(null);
     const keyboardInput = useRef(null);
     const rootInput = useRef(null);
     const exampleInput = useRef(null);
@@ -132,14 +108,56 @@ const VocabCreator = ({stateManager, set, creatorManager, setCreator}: ICreatorU
     const descriptionInput = useRef(null);
     const [layoutName, setLayoutName] = useState("default"); // for shift, caps lock, etc
 
-    const handleShift = () => {
-        const newLayoutName = layoutName === "default" ? "shift" : "default";
-        setLayoutName(newLayoutName);  
-    };
-
+    const [keyboardShift, setKeyboardShift] = useState(false);
+    const [keyboardLock, setKeyboardLock] = useState(false);
     const onKeyboardPress = button => {
         console.log("Button pressed", button);
-        if (button === "{shift}" || button === "{lock}") handleShift();
+
+        if(button == '{lock}') {
+            // set caps lock
+            if(!keyboardLock) {
+                setLayoutName('shift');
+                setKeyboardLock(true);
+                keyboard.current.addButtonTheme('{lock}', styles.LockActive);
+            }
+            // turn off caps lock
+            else {
+                setLayoutName('default');
+                setKeyboardLock(false);
+                keyboard.current.removeButtonTheme('{lock}', styles.LockActive);
+            }
+
+            if(keyboardShift) {
+                setKeyboardShift(false);
+                keyboard.current.removeButtonTheme('{shift}', styles.ShiftActive);
+            }
+        } else if (button == '{shift}') {
+            // the caps lock is on
+            if(keyboardLock) {
+                setLayoutName('shift');
+            }
+
+            // shift is off (turn on)
+            else if(!keyboardShift) {
+                setLayoutName('shift');
+                setKeyboardShift(true);
+                keyboard.current.addButtonTheme('{shift}', styles.ShiftActive);
+            }
+
+            // shift is on (turn off)
+            else if(keyboardShift) {
+                setLayoutName('default');
+                setKeyboardShift(false);
+                keyboard.current.removeButtonTheme('{shift}', styles.ShiftActive);
+            }
+        } else {
+            // shift was set now clear it for the next input 
+            if(keyboardShift) {
+                setLayoutName('default');
+                setKeyboardShift(false);
+                keyboard.current.removeButtonTheme('{shift}', styles.ShiftActive);
+            }
+        }
     };
 
     const submitVocabPutRequest = async (e: FormEvent<HTMLFormElement>) => {
@@ -239,8 +257,13 @@ const VocabCreator = ({stateManager, set, creatorManager, setCreator}: ICreatorU
     }
 
     const focusKeyboardOn = r => {
-        if(r == null) return;
+        if(r == null || keyboard.current == null) return;
+        if(keyboardInput.current != null) {
+            keyboardInput.current.classList.remove(styles.ActiveInput);
+        }
+        
         keyboardInput.current = r;
+        r.classList.add(styles.ActiveInput);
         keyboard.current.setInput(r.value);
     }
 
@@ -252,7 +275,7 @@ const VocabCreator = ({stateManager, set, creatorManager, setCreator}: ICreatorU
                 {showKeyboard &&
                 <Keyboard
                     keyboardRef={r => {keyboard.current = r}}
-                    layout={SupportedKeyboardLanguages[language]}
+                    layout={KeyboardSupport.LanguageLayouts[language]}
                     layoutName={layoutName}
                     onKeyPress={onKeyboardPress}
                     onChange={processKeyboardInput}
@@ -265,8 +288,9 @@ const VocabCreator = ({stateManager, set, creatorManager, setCreator}: ICreatorU
                             if(!dragElement(draggableKeyboardMenu.current, draggableHeader.current)) {
                                 alert('oof!');
                             }
-                            // TODO fix this to prevent keyboard from opening off the screen
-                            // boundCheckKeyboard(draggableKeyboardMenu.current.leftOffset, draggableKeyboardMenu.current.topOffset);
+                            if(keyboardInput.current != null) {
+                                keyboardInput.current.classList.remove(styles.ActiveInput);
+                            }
                         }}>
                             {`toggle ${language} keyboard`}
                         </button>
@@ -289,7 +313,7 @@ const VocabCreator = ({stateManager, set, creatorManager, setCreator}: ICreatorU
                         keyboardInput.current = null;
                         setLanguage(e.target.value as TLanguage);
                     }}>
-                        {SupportedLanguages.map((lang) =>  <option key={lang}>{lang}</option>)}
+                        {KeyboardSupport.SupportedLanguages.map((lang) =>  <option key={lang}>{lang}</option>)}
                     </select>
                 </div>
 
@@ -307,6 +331,9 @@ const VocabCreator = ({stateManager, set, creatorManager, setCreator}: ICreatorU
                     <p>Translation</p>
                     <input name='Trans' placeholder='Translation' onFocus={(e)=>{
                         e.preventDefault();
+                        if(keyboardInput.current != null) {
+                            keyboardInput.current.classList.remove(styles.ActiveInput);
+                        }
                         keyboardInput.current = null;
                     }}/>
                 </div>
@@ -324,7 +351,7 @@ const VocabCreator = ({stateManager, set, creatorManager, setCreator}: ICreatorU
                 <div>
                     <p>Part of Speach</p>
                     <select name='POS'>
-                        {SupportedPOS.map((pos) => <option key={pos}>{pos}</option>)}
+                        {KeyboardSupport.SupportedPOS.map((pos) => <option key={pos}>{pos}</option>)}
                     </select>
                 </div>
 
@@ -332,7 +359,7 @@ const VocabCreator = ({stateManager, set, creatorManager, setCreator}: ICreatorU
                 <div>
                     <p>Subject</p>
                     <select name='Subject'>
-                        {SupportedSubjects.map((sub) => <option key={sub}>{sub}</option>)}
+                        {KeyboardSupport.SupportedSubjects.map((sub) => <option key={sub}>{sub}</option>)}
                     </select>
                 </div>
 
