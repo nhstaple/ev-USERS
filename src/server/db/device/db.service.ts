@@ -157,7 +157,8 @@ export class DBService {
 
     async updateItems(tableName: string, ids: IEntity[], data: object[]): Promise<boolean> {
         try {
-            this.client.update(DB_NAME, tableName, ids, data);
+            const res = await this.client.update(DB_NAME, tableName, ids, data);
+            console.log('update res\t', res);
         } catch(e) {
             return false;
         }

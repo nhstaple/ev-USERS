@@ -9,6 +9,9 @@ import { IEntity, Vocab } from '../../../api';
 import Axios from 'axios';
 
 import * as KeyboardSupport from '../../../api/keyboard';
+import { of } from 'rxjs';
+import { isUndefined } from 'util';
+import { isDefined } from 'class-validator';
 
 // TODO dot env file
 const HOST = 'http://localhost';
@@ -186,12 +189,20 @@ const VocabEditor = ({stateManager, set, creatorManager, setCreator}: ICreatorUI
         if(targetMedia.image == null || targetMedia.sound == null) return;
         if(targetVocab.value == '' || targetVocab.translation == '') return;
 
+        if(!targetMedia.description) {
+            targetMedia.description = ''
+        }
+
+        if(!targetVocab.storagekey) {
+            targetVocab.storagekey = `${targetVocab.id}-media`;
+        }
+
         // create payloads
         const vocabPayload: Vocab.Post = targetVocab as IVocab;
 
         // create the multer formdata for the media upload
         let formData = new FormData();
-        if(imageFile) formData.append('image', imageFile, `vocabID.${targetVocab.id}.storagekey.${targetMedia.id}`);
+        if(imageFile) formData.append('image', imageFile, `vocabID.${targetVocab.id}.storagekey.${targetVocab.storagekey}`);
         if(soundFile) formData.append('sound', soundFile, `creatorID.${targetMedia.creator.id}.description.${targetMedia.description}`);
         // formData.append('id', id);
         // formData.append('description', description);
@@ -211,7 +222,7 @@ const VocabEditor = ({stateManager, set, creatorManager, setCreator}: ICreatorUI
         }
 
         // TODO submit media data
-        if(imageFile || soundFile) {
+        if(imageFile && soundFile) {
             try {
                 console.log('sending vocab media...');
                 const result = await Axios.put(`${END_POINT}/edit/media`, formData, {
@@ -224,23 +235,13 @@ const VocabEditor = ({stateManager, set, creatorManager, setCreator}: ICreatorUI
             }
         }
 
-        // TODO fix the refresh bug
-        // potential solution: make the stateManger a state and pass the set function with it to the user interfaces
-        // refresh the client state
-        // console.log(stateManager.creator.data.vocab);
-        console.log(stateManager);
         await stateManager.creator.data.vocab.refresh();
         await stateManager.creator.data.vocab.media.refresh();
-        await stateManager.creator.refresh();
 
         // reset the creator on success
         // creatorManager.reset.create(); // TODO doesnt work .-.
         setTargetVocab(null);
         setTargetMedia(null);
-        set((prev) => {
-            prev.user.isActive = false;
-            return prev;
-        })
     }
 
     return (
@@ -270,7 +271,9 @@ const VocabEditor = ({stateManager, set, creatorManager, setCreator}: ICreatorUI
                     console.log(stateManager.creator.data.vocab.media.read[i]);
                     if(formObject.current) formObject.current.reset();
                     setTargetVocab({...v});
-                    setTargetMedia({...stateManager.creator.data.vocab.media.read[i]});
+                    setTargetMedia({...stateManager.creator.data.vocab.media.read[i],
+                        creator: stateManager.creator.read
+                    });
                     setChanged(false);   
                 }}>
                     <h1>{v.value}</h1>
@@ -413,7 +416,10 @@ const VocabEditor = ({stateManager, set, creatorManager, setCreator}: ICreatorUI
                             const file = e.target.files[0];
                             reader.addEventListener('load', () => {
                                 const buffer: ArrayBuffer = reader.result as ArrayBuffer;
-                                setTargetMedia({...targetMedia, image: Buffer.from(buffer)});
+                                setTargetMedia({...targetMedia,
+                                    image: Buffer.from(buffer),
+                                    creator: stateManager.creator.read
+                                });
                                 setImageFile(file);
                                 setChanged(true);
                             });
@@ -429,7 +435,10 @@ const VocabEditor = ({stateManager, set, creatorManager, setCreator}: ICreatorUI
                             const file = e.target.files[0];
                             reader.addEventListener('load', () => {
                                 const buffer: ArrayBuffer = reader.result as ArrayBuffer;
-                                setTargetMedia({...targetMedia, sound: Buffer.from(buffer)});
+                                setTargetMedia({...targetMedia,
+                                    sound: Buffer.from(buffer),
+                                    creator: stateManager.creator.read
+                                });
                                 setSoundFile(file);
                                 setChanged(true);
                             });
@@ -455,7 +464,10 @@ const VocabEditor = ({stateManager, set, creatorManager, setCreator}: ICreatorUI
                         e.preventDefault();
                         focusKeyboardOn(descriptionInput.current);
                     }} onChange={(e)=> {
-                        setTargetMedia({...targetMedia, description: e.target.value});
+                        setTargetMedia({...targetMedia,
+                            description: e.target.value,
+                            creator: stateManager.creator.read
+                        });
                     }} value={targetMedia.description}></textarea>
                 </div>}
                 {(!targetMedia || targetMedia.image == null) &&

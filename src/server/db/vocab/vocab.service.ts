@@ -23,6 +23,11 @@ export class VocabService {
         return success ? `updated ${data.id}` : 'failed to update vocab';
     }
 
+    async updateMedia(data: Vocab.IVocabMedia) {
+        // check if the vocab card has a storage key
+        return await this.insertVocabMedia(data);
+    }
+
     async insertVocabMedia(data: Vocab.IVocabMedia) {
         return await this.dbService.insert(DB_NAME, 's3', [data]);
     }

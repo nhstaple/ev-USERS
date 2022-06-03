@@ -122,6 +122,59 @@ export class VocabController {
         return result;
     }
 
+    @Put('/edit/media')
+    @UseInterceptors(FileFieldsInterceptor([
+        { name: 'image' },
+        { name: 'sound' },
+        // { name: 'id' },
+        // { name: 'description' },
+        // { name: 'creatorID' }
+    ]))
+    async editVocabMedia(@UploadedFiles() files: {
+        image?: Express.Multer.File[],
+        sound?: Express.Multer.File[]
+    }): Promise<string> {
+        console.log('endpoint for editing vocab media');
+        console.log(files);
+
+        const image_file: Express.Multer.File = files.image[0];
+        const sound_file: Express.Multer.File = files.sound[0];
+        console.log('image file', image_file);
+        console.log('sound file', sound_file);
+
+        const encoding_1: string = image_file.originalname;
+        const val_1: string[] = encoding_1.split('.');
+        console.log(val_1);
+        const vocab: IEntity = {id: val_1[1]};
+        const id: string = val_1[3];
+
+        const encoding_2: string = sound_file.originalname;
+        const val_2: string[] = encoding_2.split('.');
+        console.log(val_2);
+        const creator: IEntity = {id: val_2[1]};
+        const description: string = val_2[3];
+
+        let payload: IVocabMedia = {
+            image: image_file.buffer,
+            sound: sound_file.buffer,
+            id: id,
+            creator: creator,
+            description: description,
+            vocab: vocab
+        }
+
+        try {
+            console.log('inserting\n', payload);
+            await this.vocabService.updateMedia(payload);
+            console.log('inserted vocab media');
+        } catch(err) {
+            console.log('error inserting vocab media!');
+            console.log(err);
+        }
+
+        return 'testing';
+    }
+
     // @Put('/media')
     // @UseInterceptors(FileFieldsInterceptor([
     //     { name: 'image' },
