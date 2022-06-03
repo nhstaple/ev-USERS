@@ -244,16 +244,12 @@ const CollectionCreator = ({stateManager, set, creatorManager, setCreator}: ICre
         // refresh the client state
         // console.log(stateManager.creator.data.vocab);
         console.log(stateManager);
-        await stateManager.creator.data.vocab.refresh();
-        await stateManager.creator.data.vocab.media.refresh();
         await stateManager.creator.refresh();
+        await stateManager.creator.data.collections.refresh();
 
         // reset the creator on success
         // creatorManager.reset.create(); // TODO doesnt work .-.
-        setCreator((prev) => {
-            prev.createCollection.read = false;
-            return prev;
-        });
+        setCreator({...creatorManager, createCollection: {read: false}});
         set((prev) => {
             prev.user.isActive = false;
             return prev;
