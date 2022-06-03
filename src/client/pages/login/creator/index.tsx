@@ -90,26 +90,26 @@ const CreatorLogin = ({stateManager, set}: IAppProps) => {
         const refresh_vocab_media = async () => {
             await refresh_vocab_data();
             console.log('getting media sanity')
-            const data = vocabData != null ? vocabData : stateManager.creator.data.vocab.read;
-            console.log(vocabData);
+            const data = stateManager.creator.data.vocab.read;
+            console.log('VOCABDATA TO MAKE MEDIA', data);
             try {
-                vocabMedia = [];
+                let newMedia: Vocab.GetMedia[] = [];
                 // TODO make this a single back end call by sending an array of names as a POST request with type 'application/json'
                 for(let i = 0; i < data.length; i++) {
                     const key = data[i].storagekey;
                     console.log('STORAGE KEY', key);
                     if(key != '') {
                         const media = (await Axios.get(`${END_POINT}/vocab/media/${key}`)).data[0] as Vocab.GetMedia;
-                        vocabMedia.push(media);
+                        newMedia.push(media);
                     } else {
-                        vocabMedia.push(null);
+                        newMedia.push(null);
                     }
                 }
                 set((prev) => {
-                    prev.creator.data.vocab.media.read = vocabMedia;
+                    prev.creator.data.vocab.media.read = newMedia;
                     return prev;
                 })
-                console.log(`got ${vocabMedia.length} vocabsMedias from ${userData.name}`);
+                console.log(`got ${newMedia.length} vocabsMedias from ${userData.name}`);
                 console.log(stateManager.creator.data.vocab.media.read);
             } catch(err) {
                 console.log(`error getting ${userData.id} vocabMedia`);

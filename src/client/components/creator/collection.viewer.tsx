@@ -5,19 +5,13 @@ import { TLanguage, TPartOfSpeech } from '../../../api/entities/vocab/vocab.inte
 import styles from './Creator.module.scss';
 import { Collection, Vocab } from '../../../api'; 
 
-function shouldRenderMedia(m: Vocab.GetMedia) {
-    if(m == null) return false;
-    if(m.image == null || m.sound == null) return false;
-    return true;
-}
-
 function bufferToString(buff: Buffer, fileType: string) {
     if(buff == null) return null;
     const encoding = Buffer.from(buff).toString('base64');
     return `data:${fileType};base64,${encoding}`;
 }
 
-const CollectionView = ({stateManager, set, creatorManager, setCreator}: ICreatorUIProps) => {
+const CollectionViewer = ({stateManager, set, creatorManager, setCreator}: ICreatorUIProps) => {
     const [targetCollection, setTargetCollection] = useState<Collection.Get>(null);
     const [targetVocab, setTargetVocab] = useState<Vocab.Get>(null);
     const [targetVocabMedia, setTargetMedia] = useState<Vocab.GetMedia>(null);
@@ -45,6 +39,17 @@ const CollectionView = ({stateManager, set, creatorManager, setCreator}: ICreato
             description: ''
         };
         return m != null ? m : no_result;
+    }
+
+    function getVocabMediaURL(vocabID: string) {
+        const media = getVocabMediaByID(vocabID);
+        if (media.image == null) {
+            // alert('could not get vocab image');
+            return '';
+        }
+        const url = bufferToString(media.image, 'image');
+        console.log(vocabID, url);
+        return url;
     }
 
     return (
@@ -93,7 +98,7 @@ const CollectionView = ({stateManager, set, creatorManager, setCreator}: ICreato
                     <div id={styles.CollectionItemsWrapper}>
                         {targetCollection.items.map((v, i) => {
                             return(
-                                <div key={v.id} style={{backgroundImage: bufferToString(getVocabMediaByID(v.id).image, 'image')}}>
+                                <div key={v.id} style={{backgroundImage: getVocabMediaURL(v.id)}}>
                                     <p>{getVocabByID(v.id).value}</p>
                                     {/* {shouldRenderMedia(getVocabMediaByID(v.id)) &&
                                         <div style={{backgroundImage: bufferToString(getVocabMediaByID(v.id).image, 'image')}}>
@@ -110,4 +115,4 @@ const CollectionView = ({stateManager, set, creatorManager, setCreator}: ICreato
     </div>);
 }
 
-export default CollectionView;
+export default CollectionViewer;

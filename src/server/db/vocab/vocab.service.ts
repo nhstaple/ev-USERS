@@ -22,6 +22,10 @@ export class VocabService {
         return await this.dbService.insert(DB_NAME, 's3', [data]);
     }
 
+    async getAll() {
+        return await this.dbService.getAllVocab(DB_NAME, 'vocab');
+    }
+
     async updateCreator(creator: IEntity, vocab: IEntity) {
         const CREATOR: ICreator = await this.dbService.getCreator(DB_NAME, creator);
         const VOCAB: IEntity[] = CREATOR.vocab;

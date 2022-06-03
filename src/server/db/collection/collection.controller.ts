@@ -16,6 +16,12 @@ export class CollectionController {
         return await this.collectionService.getUserCollections(id);
     }
 
+    @Put('new')
+    async insertNewCollection(@Body() data): Promise<boolean> {
+        console.log(data);
+        return true;
+    }
+
     // @Get('/:userID')
     // async getCollection(@Param('userID') id): Promise<Collection.Get[]> {
     //     return await this.collectionService.getUserCollections(id);

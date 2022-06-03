@@ -14,6 +14,11 @@ export class VocabController {
     //     return await this.vocabService.getVocabfromCollection(id);
     // }
 
+    @Get('all')
+    async getAllVocab(): Promise<Vocab.Get[]> {
+        return await this.vocabService.getAll();
+    }
+
     @Get('fromUser/:userID')
     async getVocabFromUser(@Param('userID') id: string): Promise<Vocab.Get[]> {
         return await this.vocabService.getVocabFromUser({id: id});

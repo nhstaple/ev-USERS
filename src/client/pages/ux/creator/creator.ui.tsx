@@ -1,7 +1,8 @@
 
 import { Dispatch, SetStateAction, useState } from 'react';
 import { Vocab, Collection } from '../../../../api/entities/';
-import CollectionView from '../../../components/creator/collection.view';
+import CollectionCreator from '../../../components/creator/collection.creator';
+import CollectionViewer from '../../../components/creator/collection.viewer';
 import VocabCreator from '../../../components/creator/vocab.creator';
 import VocabViewer from '../../../components/creator/vocab.viewer';
 import { IAppProps, IAppStateManager } from '../../_app';
@@ -287,11 +288,11 @@ const CreatorUI = ({stateManager, set}: IAppProps) => {
         }
 
         {CreatorManager.viewCollections.read && 
-            <CollectionView stateManager={stateManager} set={set} creatorManager={CreatorManager} setCreator={setCreator}/>
+            <CollectionViewer stateManager={stateManager} set={set} creatorManager={CreatorManager} setCreator={setCreator}/>
         }
 
         {CreatorManager.createCollection.read &&
-            'collection creator'
+            <CollectionCreator stateManager={stateManager} set={set} creatorManager={CreatorManager} setCreator={setCreator} />
         }
 
         {CreatorManager.editCollection.read &&

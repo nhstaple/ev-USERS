@@ -8,7 +8,7 @@
     text-align: center;
 }
 
-#VocabCreator, #VocabViewer, #CollectionViewer {
+#VocabCreator, #CollectionCreator, #VocabViewer, #CollectionViewer {
     display: flex;
     flex-direction: row;
     box-shadow: 0px 0px 10px back;
@@ -47,7 +47,7 @@
     }
 }
 
-#VocabMenu, #VocabMedia, #VocabList, #VocabDataView, #CollectionList, #CollectionDataView {
+#VocabMenu, #CollectionMenu, #VocabMedia, #VocabList, #VocabDataView, #CollectionList, #CollectionDataView {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -58,6 +58,14 @@
         animation-duration: .75s;
         animation-fill-mode: forwards;
         animation-delay: 0.75s;
+    }
+}
+
+#CollectionCreator {
+    flex-direction: column;
+    > div {
+        width: 90%;
+        align-self: center;
     }
 }
 
@@ -274,13 +282,64 @@ div#CollectionItemsView {
     }
 
     > div {
-        /* width: 33vw; */
-        padding-left: 10vw;
-        padding-right: 10vw;
-        /* display: flex; */
+        width: 33vw;
+        // padding-left: 10vw;
+        // padding-right: 10vw;
+        display: flex;
         background: rgba(128, 64, 192, 0.6);
         border-radius: 20px;
         margin: 1vh 1vh 1vh 1vh;
         box-shadow: 0px 0px 10px white;
+    }
+}
+
+#CollectionItemsSelection {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: row;
+    h1 {
+        margin-top: 0;
+        margin-bottom: 0;
+        width: 20%;
+    }
+
+    button {
+        display: flex;
+        border-radius: 20px;
+        background-color: lightcoral;
+        border: none;
+        width: 100%;
+        text-align: center;
+    }
+
+    > div {
+        display: flex;
+        flex-direction: row;
+        overflow-y: hidden;
+        overflow-x: scroll;
+        width: 80%;
+        > div {
+            display: flex;
+            flex-direction: column;
+            height: 6.66vh;
+            justify-content: space-between;
+            text-align: center;
+            padding-left: 2vw;
+            padding-right: 2vw;
+            > p {
+                background:rgba(0, 255, 60, 0.571);
+                box-shadow: 0 0 5px white;
+                margin-block-end: 0;
+                margin-block-start: 0;
+                height: 45%;
+                margin-left: 1vh;
+                margin-right: 1vh;
+                padding-left: 1vh;
+                padding-right: 1vh;
+                justify-self: center;
+                align-self: center;
+                width: 100%;
+            }
+        }
     }
 }
