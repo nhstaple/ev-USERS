@@ -2,14 +2,14 @@
   "compilerOptions": {
     "module": "commonjs",
     "declaration": true,
-    "removeComments": true,
+    "removeComments": false,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "target": "es2017",
     "sourceMap": true,
     "outDir": "./dist", 
-    "jsx": "preserve" 
+    "jsx": "preserve"
   },
   "include": ["src/server/**/*.ts", "src/api/**/*.ts", "src/client/**/*.tsx"],
 }

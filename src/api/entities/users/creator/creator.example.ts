@@ -1,7 +1,8 @@
 import { VocabService } from "../../../../server/db/vocab/vocab.service";
 import { ICollection } from "../../collection";
 import { IEntity } from "../../entity.interface";
-import { IVocab, TLanguage, TPartOfSpeech, TVocabSubject } from "../../vocab";
+import { IVocab } from "../../vocab";
+import { TLanguage, TPartOfSpeech, TVocabSubject } from '../../vocab/vocab.interface';
 import { ICreator } from "./creator.interface";
 
 const USER_ID = 'beta-creator';
@@ -72,11 +73,15 @@ export const CreatorExampleCollections: ICollection[] = [
     MakeCollection(3, 'los animales', Animals, 'No description.')
 ];
 
+export const ExampleVocabs: IVocab[] = Vegetables.concat(Fruits, Animals);
+
 export const CreatorExample: ICreator = {
     name: NAME,
     id: USER_ID,
     email: EMAIL,
-    collections: CreatorExampleCollections as IEntity[]
+    collections: CreatorExampleCollections as IEntity[],
+    grade: 'creator',
+    vocab: ExampleVocabs
 };
 
-export const ExampleVocabs: IVocab[] = Vegetables.concat(Fruits, Animals);
+

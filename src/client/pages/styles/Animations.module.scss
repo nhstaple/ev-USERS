@@ -1,0 +1,76 @@
+@keyframes appear {
+    0% {
+        width: 0;
+        height: 0;
+        display: none;
+    }
+    33% {
+        width: 50vw;
+        height: 16.5%;
+        display: flex;
+    }
+    100% {
+        width: 80vw;
+        height: 90%;
+        box-shadow: 0px 0px 10px black;
+    }
+}
+
+@keyframes LoginTypeButtonAppear {
+    0% {
+        width: 0;
+        display: flex;
+        font-size: 0em;
+    }
+    100% {
+        width: 22vw;
+        font-size: 1.25em;
+    }
+}
+
+@keyframes BackButtonAppear {
+    0% {
+        width: 0;
+        display: flex;
+        font-size: 1.25em;
+    }
+    100% {
+        width: 22vw;
+        font-size: 1.25em;
+    }
+}
+
+@keyframes InputFieldAppear {
+    0% {
+        width: 0;
+        display: flex;
+    }
+    100% {
+        width: 100%;
+    }
+}
+
+@keyframes InputImageAppear {
+    0% {
+        width: 0;
+        display: flex;
+        height: 0;
+    }
+    100% {
+        width: 66%;
+        height: fit-content;
+    }
+}
+
+@keyframes VocabViewAppear {
+    0% {
+        width: 0;
+        display: flex;
+        height: 0;
+    }
+    100% {
+        width: 30vw;
+        height: fit-content;
+    }
+}
+

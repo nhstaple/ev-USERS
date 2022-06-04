@@ -44,14 +44,15 @@ export const DBProvider = {
             await client.prepare(PREPARE_DBS);
             
             // insert the creator into users table
-            await client.insert(betaDeployment.dbName, 'users', CreatorExample as ICreator);
+            await client.insert(betaDeployment.dbName, 'users', [ CreatorExample ]);
 
-            // loop through each collection and insert it into the collection table
-            CreatorExampleCollections.forEach(async (collection: ICollection) => {
-                await client.insert(betaDeployment.dbName, 'collections', collection);
-            });
+            // insert collections
+            await client.insert(betaDeployment.dbName, 'collections', CreatorExampleCollections);
+
+            // insert vocabs
             console.log(`inserting ${ExampleVocabs.length} vocab seeds`);
             await client.insert(betaDeployment.dbName, 'vocab', ExampleVocabs);
+
         } catch(err) {
             console.log(`the was an error setting up the betaDb`);
         }

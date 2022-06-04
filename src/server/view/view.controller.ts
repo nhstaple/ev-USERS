@@ -1,4 +1,4 @@
-import { Controller, Get, Res, Req, Render } from '@nestjs/common';
+import { Controller, Get, Res, Req, Render, Redirect } from '@nestjs/common';
 import { Request, Response } from 'express';
 
 import { AppViewService } from './view.service';
@@ -7,8 +7,9 @@ import { AppViewService } from './view.service';
 export class AppViewController {
     constructor(private viewService: AppViewService) {}
 
-    @Get()
-    @Render('index')
+    @Get('/')
+    // @Redirect('/index')
+    @Render('')
     public index(@Res() res) {
         res.render('', {});
     }

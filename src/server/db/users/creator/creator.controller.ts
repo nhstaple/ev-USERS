@@ -1,13 +1,13 @@
 import { Controller, Post, Body, Get, Param } from '@nestjs/common';
 import { CreatorService } from './creator.service';
-import { CreatorGet } from './creator.get';
+import { Creator } from '../../../../api/entities/users';
 
 @Controller('api/db/creator')
 export class CreatorController {
     constructor(private readonly creatorService: CreatorService) {}
 
     @Get('/:creatorID')
-    async getBetaCreator(@Param('creatorID') userID): Promise<CreatorGet> {
+    async getBetaCreator(@Param('creatorID') userID): Promise<Creator.Get> {
         return await this.creatorService.getCreator({id: userID});
     }
 }

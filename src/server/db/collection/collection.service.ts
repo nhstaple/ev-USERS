@@ -1,13 +1,11 @@
 import { Injectable, Inject } from "@nestjs/common";
 import { IEntity } from "../../../api";
 import { ICollection } from "../../../api/entities/collection";
-import { IVocabMediaMulter } from "../../../api/entities/vocab";
+import { IVocabMedia } from "../../../api/entities/vocab";
 import { DBService } from "../device/db.service";
-import { VocabDelete } from "../vocab/vocab.delete";
-import { VocabPut } from "../vocab/vocab.put";
-import { CollectionGet } from "./collection.get";
-import { CollectionPut } from "./collection.put";
+import { Vocab, Collection, ICreator } from '../../../api/entities/'
 
+// TODO dotenv file
 const DB_NAME = 'betaDb';
 
 @Injectable()
@@ -18,44 +16,42 @@ export class CollectionService {
         this.dbService = service;
     }
 
-    async insertCollection(collection: CollectionPut) {
+    async insertCollection(collection: Collection.Put) {
         console.log(collection);
         
-        for(let i = 0; i < collection.items.length; i++) {
-            collection.items[i].creator = collection.creator;
-            collection.items[i].lang = collection.lang;
-            if(collection.items[i].media) {
-                delete collection.items[i].media;
-            }
-        }
-
         try {
             await this.dbService.insert(DB_NAME, 'collections', [ collection ]);
         } catch(err) {
             console.log(err);
         }
 
+    }
+
+    async updateCollection(collection: Collection.Post) {
+        console.log(collection);
+        
         try {
-            await this.dbService.insert(DB_NAME, 'vocab', collection.items);
+            await this.dbService.updateItems('collections', [ collection ], [ collection ]);
         } catch(err) {
             console.log(err);
         }
+
     }
 
-    async insertCollectionMedia(images: Express.Multer.File[], sounds: Express.Multer.File[]) {
-        let media: IVocabMediaMulter[] = [];
-        for(let i = 0; i < images.length; i++) {
-            let m: IVocabMediaMulter = {
-                image: images[i],
-                sound: sounds[i],
-                id: images[i].originalname
-            };
-            media.push(m);
-        }
-        await this.dbService.insert(DB_NAME, 's3', media);
-    }
+    // async insertCollectionMedia(images: Express.Multer.File[], sounds: Express.Multer.File[]) {
+    //     let media: IVocabMediaMulter[] = [];
+    //     for(let i = 0; i < images.length; i++) {
+    //         let m: IVocabMediaMulter = {
+    //             image: images[i],
+    //             sound: sounds[i],
+    //             id: images[i].originalname
+    //         };
+    //         media.push(m);
+    //     }
+    //     await this.dbService.insert(DB_NAME, 's3', media);
+    // }
     
-    async getUserCollections(id: string): Promise<CollectionGet[]> {
+    async getUserCollections(id: string): Promise<Collection.Get[]> {
         return this.dbService.getCollectionsFromUser(id);
     }
 
@@ -69,7 +65,7 @@ export class CollectionService {
         }
     }
 
-    async deleteItemsFromCollections(id: string, edits: VocabDelete[]): Promise<boolean> {
+    async deleteItemsFromCollections(id: string, edits: Vocab.Delete[]): Promise<boolean> {
         try {
             const collection = (await this.dbService.getCollection(id));
             let successes: number = 0;
@@ -106,23 +102,25 @@ export class CollectionService {
         }
     }
 
-    async updateCreatorCollections(userID: string, collectionID: string): Promise<boolean> {
+    async updateCreatorCollections(user: IEntity, collection: IEntity): Promise<boolean> {
         try {
-            const creator = await this.dbService.getCreator(DB_NAME, {id: userID});
+            const creator = await this.dbService.getCreator(DB_NAME, user);
             let updatedItems = creator.collections;
-            updatedItems.forEach((c, i) => {
-                if(c.id == collectionID) {
-                    updatedItems.splice(i, 1);
-                    return;
-                }
-            })
-            this.dbService.insert(DB_NAME, 'users', [{...creator, collections: updatedItems}]);
+            // update
+            if(updatedItems.find(c => { return c.id == collection.id})) {
+
+            }
+            // insert
+            else {
+                this.dbService.updateItems('users', [creator], [{collections: [...updatedItems, collection]}])
+            }
         } catch(e) {
+            console.log('ERROR TRYING TO UPDATE CREATOR COLLECTIONS');
             return false;
         }
     }
 
-    async updateVocabItems(ids: IEntity[], data: VocabPut[]): Promise<boolean> {
+    async updateVocabItems(ids: IEntity[], data: Vocab.Put[]): Promise<boolean> {
         try {
             return await this.dbService.updateItems('vocab', ids, data);
         } catch(e) {
@@ -130,7 +128,7 @@ export class CollectionService {
         }
     }
 
-    async getMedia(key: string): Promise<IVocabMediaMulter[]> {
+    async getMedia(key: string): Promise<IVocabMedia[]> {
         return this.dbService.getMedia(key);
     }
 

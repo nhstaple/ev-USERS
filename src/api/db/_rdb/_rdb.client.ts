@@ -1,26 +1,26 @@
 import { ICollection } from "../../entities/collection";
 import { IEntity } from "../../entities/entity.interface";
-import { IVocab, IVocabMediaMulter } from "../../entities/vocab/vocab.interface";
-import { IDatabaseDevice, IDatabaseCredentials, IDBMeta } from "../db.interface";
+import { IVocab, IVocabMedia } from "../../entities/vocab/vocab.interface";
+import { IDatabaseDevice, IDatabaseCredentials, IDBMeta, TDBData } from "../db.interface";
 import * as r from "rethinkdb"
 import { ICreator } from "../../entities/users/creator";
+import { throws } from "assert";
 
-// TODO make a dev .env var
 const LOG = false;
-const LOG_DELETE = false;
 
 export class RethinkdDb implements IDatabaseDevice {
-    // public members 
+    /** public variables */
     credentials!: IDatabaseCredentials;
-    conn: r.Connection | null;
+
+    /** private variables */
+    private conn: r.Connection | null;
 
     // constructor
     constructor(credentials: IDatabaseCredentials) {
         this.credentials = credentials;
     }
 
-    // private methods
-    // TODO
+    /** private methods */
     private _validateConnection(): boolean {
         if(this.conn == null) {
             throw new Error('Attempting to query with a unconnected db client');
@@ -30,7 +30,7 @@ export class RethinkdDb implements IDatabaseDevice {
         }
     }
 
-    // interface methods TODO
+    /** interface methods */
     closeConnection(wait: boolean) {
         this._validateConnection();
         this.conn.close( { noreplyWait: wait}, (err) => {
@@ -80,7 +80,7 @@ export class RethinkdDb implements IDatabaseDevice {
         return true;
     }
     
-    getConn(): object | r.Connection {
+    getConn(): object {
         return this.conn;
     }
 
@@ -95,116 +95,93 @@ export class RethinkdDb implements IDatabaseDevice {
         return databases;
     }
     
-    async createDb(dbName: string): Promise<boolean> {
+    async createDb(dbName: string): Promise<string> {
         this._validateConnection();
 
         const dbNames = await this.getDbNames();
+        let message: string = '';
         if(!dbNames.includes(dbName)) {
-            try {
-                r.dbCreate(dbName).run(this.conn, (err, res) => {
-                    if(LOG) console.log(res);
-                })
-            } catch(err) {
-                console.log(err);
-                throw err;
-            }
+            const p = r.dbCreate(dbName).run(this.conn);
+            p.then( (res) => {
+                message = `success created ${dbName}`;
+            }).catch( (err) => {
+                message = `error could not create ${dbName}`;
+                if(LOG) console.log(err);
+            });
         } else {
-            if(LOG) {
-                console.log(`db with name "${dbName}" exists!`);
-            }
+            message = `"${dbName}" exists`;
         }
 
-        return true;
-/*         const DISPLAY = true;
-        try {
-            const databases = await this.getDbNames();
-            if(!databases.includes(dbName)) {
-                if(DISPLAY) console.log(`createDB()\ndatabase does not "${dbName}" exist!`)
-                r.dbCreate(dbName).run(this.conn as r.Connection, (err, res) => {
-                    if(DISPLAY) console.log(res)
-                    if(err) { 
-                        console.log(err);
-                    } else { 
-                        // console.log(result);
-                        if(DISPLAY) console.log(`created DB "${dbName}"`);
-                    }
-                })
-            } else {
-                if(DISPLAY) console.log(`database "${dbName}" exists!`);
-                return false;
-            }
-            return true;
-        }
-        catch (err) {
-            if(DISPLAY) console.log('There was an error on db initialization')
-            console.log(err)
-            return false;
-        } */
+        if(LOG) console.log(message);
+
+        return message;
     }
 
     async getTableNames(dbName: string): Promise<string[]> {
-        const names = await r.db(dbName).tableList().run(this.conn as r.Connection)
+        const names = await r.db(dbName).tableList().run(this.conn)
             .then(function(results) {
-                if(LOG) { 
-                    console.log(results);
-                }
+                if(LOG) console.log(results);
                 return results;
             })
 
         return names;
     }
     
-    async deleteDb(dbName: string[]): Promise<boolean> {
+    async deleteDb(dbName: string[]): Promise<string> {
         this._validateConnection();
+
+        let message:string;
 
         const dbs = await this.getDbNames();
         for(let i = 0; i < dbs.length; i ++) {
             const name = dbName[i];
             if(dbs.includes(name)) {
                 r.dbDrop(name).run(this.conn, (err, res) => {
-                    if(LOG_DELETE) {
-                        console.log(`dropped db with name ${name}!\n${res}`);
-                    }
-                    return true;
+                    message = `dropped db with name ${name}!\n${res}`;
                 })
             } else {
-                if(LOG_DELETE) {
-                    console.log(`db with name "${name}" does not exist!`);
-                }
-                return true;
+                message = `db with name "${name}" does not exist!`;
             }
         }
+        
+        if(LOG) console.log(message);
 
-        return true;
+        return message;
     }
     
-    // TODO
-    async createTable(dbName: string, tableName: string): Promise<boolean> {
-        await r.db(dbName).tableCreate(tableName).run(this.conn as r.Connection, (err, res) => {
+    async createTable(dbName: string, tableNameName: string): Promise<string> {
+        this._validateConnection();
+
+        let message: string;
+
+        await r.db(dbName).tableCreate(tableNameName).run(this.conn, (err, res) => {
             if(err) { 
-                // console.log(err);
+                message = `error could not create tableName ${dbName}.${tableNameName}`;
+                if(LOG) console.log(err);
             }
             else { 
-                // console.log(res);
+                message = `success created tableName ${dbName}.${tableNameName}`;
             }
         });
-        return true
+
+        if(LOG) console.log(message);
+        return message;
     }
     
     async createUUID(key: string): Promise<string> {
         throw new Error("Method not implemented.");
     }
     
-    async query(dbName: string, table: string, filter: IEntity[]): Promise<IEntity[] | IVocab[] | ICollection[] | ICreator[] | IVocabMediaMulter[]> {
+    async query(dbName: string, tableName: string, filter: IEntity[]): Promise<TDBData> {
         this._validateConnection();
 
         if (filter.length > 0) {
-            const p = r.db(dbName).table(table).run(this.conn);
-            const data: IEntity[] | IVocab[] | ICollection[] | IVocabMediaMulter[] = await p.then( (value: r.Cursor) => {
+            const p = r.db(dbName).table(tableName).run(this.conn);
+            const data: IEntity[] | IVocab[] | ICollection[] | IVocabMedia[] = await p.then( (value: r.Cursor) => {
                 return value.toArray().then((results) => results);
             });
     
-            let filtered: IEntity[] | IVocab[] | ICollection[] | IVocabMediaMulter[] = [];
+            let filtered: IEntity[] | IVocab[] | ICollection[] | IVocabMedia[] = [];
             // console.log(filter);
             for(let i = 0; i < data.length; i++) {
                 // console.log(`? ${data[i].id}`);
@@ -218,8 +195,8 @@ export class RethinkdDb implements IDatabaseDevice {
 
             return filtered;
         } else {
-            const p = r.db(dbName).table(table).run(this.conn);
-            const data: IEntity[] | IVocab[] | ICollection[] | ICreator[] | IVocabMediaMulter[] = await p.then( (value: r.Cursor) => {
+            const p = r.db(dbName).table(tableName).run(this.conn);
+            const data: IEntity[] | IVocab[] | ICollection[] | ICreator[] | IVocabMedia[] = await p.then( (value: r.Cursor) => {
                 return value.toArray().then((results) => results);
             });
     
@@ -227,75 +204,67 @@ export class RethinkdDb implements IDatabaseDevice {
         }
     }
     
-    async getVocab(table: string, uuid: IEntity | IEntity[]): Promise<IVocab[]> {
+    async getVocab(tableName: string, uuid: IEntity[]): Promise<IVocab[]> {
         throw new Error("Method not implemented.");
     }
     
-    async getCollection(table: string, uuid: IEntity | IEntity[]): Promise<ICollection[]> {
+    async getCollection(tableName: string, uuid: IEntity[]): Promise<ICollection[]> {
         throw new Error("Method not implemented.");
     }
     
-    async insert(dbName: string, table: string, data: object | object[]): Promise<boolean> {
+    async insert(dbName: string, tableName: string, data: object[]): Promise<string> {
         this._validateConnection();
 
-        /*if((data as object)['id'] == '') {
-            data['id'] = r.uuid().run(this.conn, (err, res) => {});
-        } else {
-            for(let i = 0; i < (data as object[]).length; i ++) {
-                data[i] = r.uuid().run(this.conn, (err, res) => {});
-            }
-        }*/
+        let message: string;
 
-        r.db(dbName).table(table).insert(data).run(this.conn, (err, res) => {
-            if(LOG) console.log(`inserted ${data['id']} into ${dbName}.${table}!`);
+        r.db(dbName).table(tableName).insert(data).run(this.conn, (err, res) => {
+            if(err) {
+                message = `error could not insert into ${dbName}.${tableName}`;
+                console.log(err);
+            } else {
+                message = `inserted ${res.inserted} items into ${data['id']} into ${dbName}.${tableName}!`;
+            }
         })
         
-        return true;
+        if(LOG) console.log(message);
+
+        return message;
     }
     
-    async update(dbName:string, table: string, uuid: IEntity[], data: object[]): Promise<boolean> {
+    async update(dbName:string, tableName: string, uuid: IEntity[], data: object[]): Promise<string> {
         this._validateConnection();
         if(uuid.length != data.length) {
             console.log('input to update must be same length!');
             console.log(uuid);
             console.log(data);
             console.log('****');
-            return;
+            return `error update uuid array is len ${uuid.length} but the data array is len ${data.length}`;
         }
 
         for(let i = 0; i < uuid.length; i++) {
-            console.log(`-.-.-.-.`);
-            console.log(uuid[i].id);
-            console.log(data[i]);
-            await r.db(dbName).table(table).get(uuid[i].id).update(data[i]).run(this.conn, (err, res) => {
-                if(true) {
+            // console.log(`-.-.-.-.`);
+            // console.log(uuid[i].id);
+            // console.log(data[i]);
+            await r.db(dbName).table(tableName).get(uuid[i].id).update(data[i]).run(this.conn, (err, res) => {
+                if(LOG) {
                     console.log(res);
                 }
             })
         }    
-        return true;
+        return `success updated ${uuid.length} items int ${dbName}.${tableName}`;
     }
     
-    async deleteItem(dbName: string, table: string, uuid: IEntity[]): Promise<boolean> {
+    async deleteItem(dbName: string, tableName: string, uuid: IEntity[]): Promise<string> {
         this._validateConnection();
         let valid: boolean = null;
         if(uuid.length == 0) {
-            return;
+            return 'soft error uuid array is empty';
         }
-
-        // const p = r.db('betaDb').table('collections').filter(function (collection) {
-        //     return collection('creator').eq({id: id});
-        // }).run(this.conn);
-        
-        // const data: ICollection[] = await p.then( (value: r.Cursor) => {
-        //     return value.toArray().then((results) => results);
-        // });
-        // return data
 
         let ids: string[] = [];
         uuid.forEach((e) => {ids.push(e.id)});
 
-        await r.db(dbName).table(table).getAll(...ids).delete().run(this.conn, (err, res) => {
+        await r.db(dbName).table(tableName).getAll(...ids).delete().run(this.conn, (err, res) => {
             if(err) {
                 console.log(err);
                 valid = false;
@@ -305,19 +274,32 @@ export class RethinkdDb implements IDatabaseDevice {
             }
             valid = true;
         });
-        return valid;
+        
+        if(valid) {
+            return `sucess deleted ${ids.length} from ${dbName}.${tableName}`;
+        } else {
+            return `error deleting from ${dbName}.${tableName}`;
+        }
     }
 
-    async deleteTable(dbName: string, tableName: string): Promise<boolean> {
+    async deleteTable(dbName: string, tableName: string): Promise<string> {
+        this._validateConnection();
+
+        let message: string;
+
         await r.db(dbName).tableDrop(tableName).run(this.conn as r.Connection, (err, res) => {
             if(err) { 
-                // console.log(err);
+                message = `error deleting ${dbName}.${tableName}`
+                console.log(err);
             }
             else { 
-                // console.log(res);
+                message = `success deleted ${dbName}.${tableName}`;
             }
         });
-        return true
+
+        if(LOG) console.log(message);
+
+        return message;
     }
 
     async prepare(databases: IDBMeta[]): Promise<boolean> {
@@ -339,6 +321,19 @@ export class RethinkdDb implements IDatabaseDevice {
         });
         return data
     }
+
+    async getVocabsFromUser(id: string): Promise<IVocab[]> {
+        const p = r.db('betaDb').table('vocab').filter(function (collection) {
+            return collection('creator').eq({id: id});
+        }).run(this.conn);
+        
+        const data: IVocab[] = await p.then( (value: r.Cursor) => {
+            return value.toArray().then((results) => results);
+        });
+
+        return data;
+    }
+
 }
 
 var client: IDatabaseDevice;
@@ -351,22 +346,17 @@ export async function init_rethink(credentials: IDatabaseCredentials): Promise<I
     return client;
 }
 
-const LOG_P = false;
 
 export async function prepare_rethink(databases: IDBMeta[]) {
     if(client) {
-        if(LOG_P) { 
-            console.log("preparing\n", databases);
-        }
+        console.log("preparing\n", databases);
 
         for(let i = 0; i < databases.length; i++) {
             const meta = databases[i];
             const dbName = meta.dbName;
-            const tables = meta.tableNames;
+            const tableNames = meta.tableNames;
 
-            if(LOG_P) {
-                console.log("dbName: ", dbName);
-            }
+            console.log("dbName: ", dbName);
 
             // create the database
             try {
@@ -376,16 +366,16 @@ export async function prepare_rethink(databases: IDBMeta[]) {
                 if(LOG) console.log(`db already exists! ${dbName}`);
             }
 
-            // create the tables
-            console.log("tables: ", tables);
-            for(let j = 0; j < tables.length; j++) {
-                const table = tables[j];
+            // create the tableNames
+            console.log("tableNames: ", tableNames);
+            for(let j = 0; j < tableNames.length; j++) {
+                const tableName = tableNames[j];
                 try {
-                    await client.createTable(dbName, table);
-                    console.log(`created ${dbName}.${table}`);
+                    await client.createTable(dbName, tableName);
+                    console.log(`created ${dbName}.${tableName}`);
                 } catch(err) {
                     if(LOG) {
-                        console.log(`table already exists! ${dbName}.${table}`);
+                        console.log(`tableName already exists! ${dbName}.${tableName}`);
                     }
                 }
             }

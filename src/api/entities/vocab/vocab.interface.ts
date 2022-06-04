@@ -5,7 +5,10 @@ import { IEntity } from "../entity.interface"
 export enum ELanguage {
     english = 0,
     spanish = 1,
-    punjabi = 2
+    punjabi = 2,
+    arabic = 4,
+    german = 8,
+    japanese = 16
 }
 export type TLanguage = keyof typeof ELanguage;
 
@@ -34,14 +37,20 @@ export enum EVocabSubject {
 }
 export type TVocabSubject = keyof typeof EVocabSubject;
 
-export interface IVocabMedia extends IEntity {
+// front end
+export interface IVocabMediaFile extends IEntity {
     image: File;
     sound: File;
+    description: string;
 }
 
-export interface IVocabMediaMulter extends IEntity {
-    image: Express.Multer.File;
-    sound: Express.Multer.File;
+// back end
+export interface IVocabMedia extends IEntity {
+    image: Buffer; // Express.Multer.File;
+    sound: Buffer; // Express.Multer.File;
+    creator: IEntity;
+    description: string;
+    vocab: IEntity;
 }
 
 // "a vocab" contains all the information for one flashcard
@@ -58,19 +67,11 @@ export interface IVocab extends IEntity {
     storagekey: string;
     // the gedner of the word
     subject: TVocabSubject;
-
-    // the images, description, sounds, etc.
-    media?: IVocabMedia;
-    description?: string;
+    //
+    note: string;
+    example: string;
         
     // TODO
     // the person who made the vocav item
     creator: IEntity;
-
-    // @deprecated from the original codebase
-    idArbit?:string;
-    arbitId?:string;
-    idLegacy?:string;
-    unitType?:string;
-    wordType?:string;
 }
