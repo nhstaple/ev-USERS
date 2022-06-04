@@ -144,18 +144,13 @@ const CollectionEditor = ({stateManager, set, creatorManager, setCreator}: ICrea
 
     const submitCollectionPutRequest = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log('COLLECTION.PUT REQUEST BEGIN');
-        // retrieve put data
-        const creator: IEntity = {id: stateManager.user.read.id };
-        const lang = e.target['Lang'].value as TLanguage;
-        const name = e.target['Name'].value;
-        const note = collectionDescription;
+        console.log('COLLECTION.POST REQUEST BEGIN');
 
         // TODO validate data
-        if(name == '') {
+        if(targetCollection.name == '') {
             alert('collection name cannot be empty!');
             return;
-        } else if(note == '') {
+        } else if(targetCollection.description == '') {
             alert('collection description cannot be empty!');
             return;
         }
@@ -164,29 +159,27 @@ const CollectionEditor = ({stateManager, set, creatorManager, setCreator}: ICrea
         const collectionPayload: Collection.Post = targetCollection;
 
         // sanity check
-        console.log('COLLECTION.PUT REQUEST ON CLIENT\n', collectionPayload);
+        console.log('COLLECTION.POST REQUEST ON CLIENT\n', collectionPayload);
     
         // submit collection data
-        // try {
-        //     console.log('sending collection...');
-        //     const result = await Axios.post(`${END_POINT}/edit`, { body: collectionPayload });
-        //     console.log(result);
-        // } catch(err) {
-        //     alert('error! could not create vocab');
-        //     console.log(err);
-        // }
+        try {
+            console.log('sending collection...');
+            const result = await Axios.post(`${END_POINT}/edit`, { body: collectionPayload });
+            console.log(result);
+        } catch(err) {
+            alert('error! could not create vocab');
+            console.log(err);
+        }
 
         // update client state
-
+        await stateManager.creator.data.collections.refresh();
+        setTargetCollection(null);
+        setChanged(false);
         // reset the creator on success
-        setCreator({...creatorManager, createCollection: {read: false}});
-        set((prev) => {
-            prev.user.isActive = false;
+        set(prev => {
+            prev.user.isActive = true;
             return prev;
         });
-
-        await stateManager.creator.refresh();
-        await stateManager.creator.data.collections.refresh();
     }
 
     const processKeyboardInput = buffer => {
@@ -329,7 +322,7 @@ const CollectionEditor = ({stateManager, set, creatorManager, setCreator}: ICrea
 
                     {/* form submission */}
                     <div>
-                        <input type='Submit' value='Create Vocab'/>
+                        <input type='Submit' value='Edit Collection'/>
                     </div>
 
                     <div id={styles.LanguageFilterToggleWrapper}>

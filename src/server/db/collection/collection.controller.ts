@@ -30,6 +30,19 @@ export class CollectionController {
         return true;
     }
 
+    @Post('edit')
+    async updateCollection(@Body() data): Promise<boolean> {
+        console.log(data);
+        const payload: Collection.Post = data['body'];
+        try {
+            await this.collectionService.updateCollection(payload);
+            return true;
+        } catch(err) {
+            return false;
+        }
+        return true;
+    }
+
     // @Get('/:userID')
     // async getCollection(@Param('userID') id): Promise<Collection.Get[]> {
     //     return await this.collectionService.getUserCollections(id);

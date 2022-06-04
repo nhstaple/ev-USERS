@@ -27,6 +27,17 @@ export class CollectionService {
 
     }
 
+    async updateCollection(collection: Collection.Post) {
+        console.log(collection);
+        
+        try {
+            await this.dbService.updateItems('collections', [ collection ], [ collection ]);
+        } catch(err) {
+            console.log(err);
+        }
+
+    }
+
     // async insertCollectionMedia(images: Express.Multer.File[], sounds: Express.Multer.File[]) {
     //     let media: IVocabMediaMulter[] = [];
     //     for(let i = 0; i < images.length; i++) {
