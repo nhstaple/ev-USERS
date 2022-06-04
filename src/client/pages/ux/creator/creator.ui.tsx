@@ -8,6 +8,7 @@ import VocabViewer from '../../../components/creator/vocab.viewer';
 import VocabEditor from '../../../components/creator/vocab.editor';
 import { IAppProps, IAppStateManager } from '../../_app';
 import styles from './CreatorUI.module.scss';
+import CollectionEditor from '../../../components/creator/collection.editor';
 
 export interface ICreatorStateManager {
     // update the client data
@@ -281,7 +282,7 @@ const CreatorUI = ({stateManager, set}: IAppProps) => {
                     {/* for editing collections */}
                     <div className={styles.UnusableButtonWrapper}>
                         <button onClick={(e) => {
-                            // collectionEditInterface();
+                            collectionEditInterface();
                         }}>
                             Edit Collections
                         </button>
@@ -311,7 +312,7 @@ const CreatorUI = ({stateManager, set}: IAppProps) => {
         }
 
         {CreatorManager.editCollection.read &&
-            'collection editor'
+            <CollectionEditor stateManager={stateManager} set={set} creatorManager={CreatorManager} setCreator={setCreator} />
         }
 
         {stateManager.user.isActive &&
