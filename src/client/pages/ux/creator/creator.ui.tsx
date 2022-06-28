@@ -1,3 +1,4 @@
+// the page for the creator interface
 
 import { Dispatch, SetStateAction, useState } from 'react';
 import { Vocab, Collection } from '../../../../api/entities/';

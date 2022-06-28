@@ -1,13 +1,13 @@
 import { IUser } from "../users.interface";
-import { ICourse } from '../../course';
-import { IVocab } from "../../vocab";
+import { IEntity } from "../../entity.interface";
 
 // TODO p4 spacing algorithm
-export interface IHardWord extends IVocab {
+export interface IHardWord extends IEntity {
     numMissed: number;
+    vocab: IEntity;
 }
 
 export interface IStudent extends IUser {
-    courses: ICourse[];
+    courses: IEntity[];
     hardWords: IHardWord[];
 }

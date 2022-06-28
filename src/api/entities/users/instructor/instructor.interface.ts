@@ -1,7 +1,7 @@
 
+import { IEntity } from "../../entity.interface";
 import { IUser } from "../users.interface";
-import { ICourse } from '../../course';
 
 export interface IInstructor extends IUser {
-    courses: ICourse[];
+    courses: IEntity[];
 }

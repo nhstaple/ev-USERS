@@ -1,4 +1,6 @@
 
+// TODO front end encryption
+
 // export interface IEncryptedPassword {
 //     hash: string;
 //     method: string;

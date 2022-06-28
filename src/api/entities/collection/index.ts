@@ -7,6 +7,7 @@ import { ICollection } from './collection.interface';
 import { IEntity } from '../entity.interface';
 import { ICreator } from '../users/creator';
 
+// HTTP data transfer objects
 export class Get implements Partial<ICollection> {
     id: string;
     items: IEntity[];

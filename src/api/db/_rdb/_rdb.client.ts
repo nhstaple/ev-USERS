@@ -336,8 +336,12 @@ export class RethinkdDb implements IDatabaseDevice {
 
 }
 
+// an internal object that implements the database device interface
+// note: this should NOT be publicly exposed. it should be accessed through initiailization functions
 var client: IDatabaseDevice;
 
+// takes in the database credentials
+// returns a database client
 export async function init_rethink(credentials: IDatabaseCredentials): Promise<IDatabaseDevice> {
     const rethink = new RethinkdDb(credentials);
     if(LOG) console.log('using credientials:\t', credentials);
@@ -346,7 +350,8 @@ export async function init_rethink(credentials: IDatabaseCredentials): Promise<I
     return client;
 }
 
-
+// initializes the database with tables used for testing / debugging
+// the should not be used in production
 export async function prepare_rethink(databases: IDBMeta[]) {
     if(client) {
         console.log("preparing\n", databases);

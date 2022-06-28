@@ -41,6 +41,7 @@ export const DBProvider = {
         
         const client: IDatabaseDevice = await init_rethink(credentials);
         try {
+            // implemented on db device which is _rdb for p1 (creator interface)
             await client.prepare(PREPARE_DBS);
             
             // insert the creator into users table

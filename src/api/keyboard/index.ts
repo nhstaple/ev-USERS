@@ -1,4 +1,5 @@
 
+// TODO make this dynamic based off the language module that needs to be refractored out "vocab.interface.ts"
 export const SupportedLanguages = [
     'english',
     'spanish',
@@ -47,6 +48,7 @@ export const layout_span = {
 };
 
 // punjabi
+// leaning towards using phonetic kbd layout
 // https://www.fast-typing.com/keyboard.php?key=punjabi&ln=pa
 export const layout_punj = {
     default: [

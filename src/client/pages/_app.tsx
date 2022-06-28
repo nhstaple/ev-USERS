@@ -1,14 +1,14 @@
+// landing page shows the user login options
+
 import React, { useState, useEffect } from 'react'
 import { NextPage } from 'next'
 import styles from './Landing.module.scss'
 import { withRouter } from 'next/router'
-import Link from 'next/link';
 import { IUser } from '../../api/entities/users/users.interface';
 import Header from '../components/misc/Header';
 import Footer from '../components/misc/Footer';
 import LandingLoginMenu from './login/landing.login.menu';
 import { Creator, ICreator } from '../../api/entities/users';
-import { ICollection } from '../../api/entities/collection';
 import { Collection, Vocab } from '../../api';
 import CreatorUI from './ux/creator/creator.ui';
 
@@ -24,51 +24,16 @@ export function setBodyStyle() {
 }
 
 export interface IAppStateManager {
-   // pageTitle: {
-   //    set: React.Dispatch<React.SetStateAction<string>>
-   //    read: string;
-   // };
    pageTitle: {
       read: string;
    };
 
-   // user: {
-   //    set: React.Dispatch<React.SetStateAction<IUser>>
-   //    read: IUser;
-   //    logout: () => void;
-   //    isActive: {
-   //       set: React.Dispatch<React.SetStateAction<boolean>>
-   //       read: boolean
-   //    }
-   // };
    user: {
       read: IUser;
       isActive: boolean;
       logout: () => void;
    }
 
-   // creator: {
-   //    set: React.Dispatch<React.SetStateAction<Creator.Get>>
-   //    read: Creator.Get,
-   //    refresh: () => Promise<void>,
-   //    data: {
-   //       collections: {
-   //          set: React.Dispatch<React.SetStateAction<Collection.Get[]>>,
-   //          read: Collection.Get[],
-   //          refresh: () => Promise<void>
-   //       },
-   //       vocab: {
-   //          set: React.Dispatch<React.SetStateAction<Vocab.Get[]>>,
-   //          read: Vocab.Get[],
-   //          refresh: () => Promise<void>,
-   //          media: {
-   //             set: React.Dispatch<React.SetStateAction<Vocab.GetMedia[]>>
-   //             read: Vocab.GetMedia[],
-   //             refresh: () => Promise<void>
-   //          }
-   //       }
-   //    }
-   // }
    creator: {
       read: Creator.Get,
       refresh: () => Promise<void>,
@@ -103,17 +68,6 @@ const Landing: NextPage = () => {
    setBodyStyle();
    // UI information
    const INIT_TITLE = 'EyeVocab';
-   // const [pageTitle, setPageTitle] = useState<string>(INIT_TITLE);
-
-   // // user data
-   // const [user, setUser] = useState<IUser>(null);
-   // const [isActive, setIsActive] = useState<boolean>(false);
-
-   // // creator data
-   // const [creator, setCreator] = useState<Creator.Get>(null);
-   // const [creatorCollectionData, setCreatorCollectionData] = useState<Collection.Get[]>(null);
-   // const [creatorVocabData, setCreatorVocabData] = useState<Vocab.Get[]>(null);
-   // const [creatorVocabMedia, setCreatorVocabMedia] = useState<Vocab.GetMedia[]>(null);
 
    // gloabl state management
    // TODO edit to add more client state data
