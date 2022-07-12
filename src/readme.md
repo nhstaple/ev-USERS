@@ -4,8 +4,8 @@
 
 The is the root directory for the source of p1.
 
-* [`src/api`](./api/readme.md) - application programming interface for shared logic between the frontend and the backend: database entities, database client, etc.
-* [`src/client`](./client/readme.md) - all code for the frontend (ReactJS / NextJS)
+* [`src/api`](./api/) - application programming interface for shared logic between the frontend and the backend: database entities, database client, etc.
+* [`src/client`](./client/) - all code for the frontend (ReactJS / NextJS)
 * [`src/server`](./server/) - all code for the backend (ExpressJS / NestJS)
 
 ### NodeJS package requirements

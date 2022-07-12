@@ -8,6 +8,6 @@ The pages folder contains all main pages and interfaces that the user interacts 
 
 ##### Interfaces
 
-* [`ux/creator`](./ux/creator/readme.md) - the Creator Interface
+* [`ux/creator`](./ux/creator) - the Creator Interface
 * _TODO_ `ux/admin` - the Administrator Interface
 * _TODO_ `ux/instructor` - the Instructor Interface

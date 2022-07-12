@@ -6,7 +6,7 @@
 
 ##### User types
 
-* [`src/api/entities/users/creator`](./creator/readme.md)
+* [`src/api/entities/users/creator`](./creator)
   * [`ICreator`](./creator/creator.interface.ts)
   * [Creator Example](./creator/creator.example.ts)
 * **TODO** *src/api/entities/users/admin*
