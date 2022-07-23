@@ -1,3 +1,13 @@
+// collection.controller.ts
+// description: expressjs endpoint for accessing collection items
+// the front end code that interacts with this controller is found in the creator UX modules:
+//    src/client/components/creator/collection.creator.tsx
+//    src/client/components/creator/collection.editor.tsx
+//    src/client/components/creator/collection.viewer.tsx
+
+// Note: currently the collection controller does not handle the routing of image or sound files. This is handled by the vocab controller. But, to support collection meta images (backgrounds / themes / etc) then multer support will need to be added. See the vocab controller for an example of how multer routing works.
+// TODO document how to support multer on expressjs routes in nestjs
+
 import { Controller, Post, Body, Get, Param, Put, Delete, UseInterceptors, UploadedFiles } from '@nestjs/common';
 import { CollectionService } from './collection.service';
 import { Collection, Vocab } from '../../../api';

@@ -1,3 +1,10 @@
+// vocab.controller.ts
+// description: expressjs endpoint for accessing vocab items
+// the front end code that interacts with this controller is found in the creator UX modules:
+//    src/client/components/creator/vocab.creator.tsx
+//    src/client/components/creator/vocab.editor.tsx
+//    src/client/components/creator/vocab.viewer.tsx
+
 import { Controller, UseInterceptors, Put, Post, Body, Param, Get, UploadedFiles } from '@nestjs/common';
 import { VocabService } from './vocab.service';
 import { Vocab } from '../../../api/entities/';

@@ -1,3 +1,7 @@
+// vocab.viwer.tsx
+// this module allows the user to view vocab items in the database
+// this component does not make HTTP requests to the back end, instead it relies on data
+// that's stored in the creator UX's state manager (see ICreatorUIProps)
 
 import { useState } from 'react';
 import { ICreatorUIProps } from '../../pages/ux/creator/creator.ui';

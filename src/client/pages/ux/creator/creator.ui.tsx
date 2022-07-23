@@ -1,17 +1,22 @@
-// the page for the creator interface
-
-// TODO refractor the "stateManager" references to be the "appStateManager"
+// creator.ui.tsx
+// this is the root react page for the creator UX module
 
 import { Dispatch, SetStateAction, useState } from 'react';
 import { Vocab, Collection } from '../../../../api/entities/';
+
+// collection modules
 import CollectionCreator from '../../../components/creator/collection.creator';
 import CollectionViewer from '../../../components/creator/collection.viewer';
+import CollectionEditor from '../../../components/creator/collection.editor';
+
+// vocab modules
 import VocabCreator from '../../../components/creator/vocab.creator';
 import VocabViewer from '../../../components/creator/vocab.viewer';
 import VocabEditor from '../../../components/creator/vocab.editor';
+
+// main client application access
 import { IAppProps, IAppStateManager } from '../../_app';
 import styles from './CreatorUI.module.scss';
-import CollectionEditor from '../../../components/creator/collection.editor';
 
 // a creator user's state management
 export interface ICreatorStateManager {
@@ -66,6 +71,8 @@ export interface ICreatorUIProps {
     creatorManager: ICreatorStateManager;
     // the set state function for the creator UX
     setCreator: Dispatch<SetStateAction<ICreatorStateManager>>
+
+    // TODO refractor the "stateManager" references to be the "appStateManager"
     // the main application's state manager
     stateManager: IAppStateManager;
     // the main application's state setter

@@ -1,3 +1,7 @@
+// vocab.creator.tsx
+// this is the vocab creation module for the creator UX
+// this is where creator's create new vocab items to be inserted into the database with an image and sound
+// TODO: abstract support for the virtual keyboard into a tidy module
 
 import { FormEvent, useState, useRef } from 'react';
 import { ICreatorUIProps } from '../../pages/ux/creator/creator.ui';
@@ -11,6 +15,7 @@ import Keyboard, {SimpleKeyboard} from 'react-simple-keyboard';
 // TODO dot env file
 const HOST = 'http://localhost';
 const PORT = '3000';
+// src/server/db/vocab/vocab.controller.ts
 const END_POINT = `${HOST}:${PORT}/api/db/vocab`;
 
 import * as KeyboardSupport from '../../../api/keyboard';
@@ -147,6 +152,8 @@ const VocabCreator = ({stateManager, set, creatorManager, setCreator}: ICreatorU
         console.log('VOCAB.PUT REQUEST ON CLIENT\n', vocabPayload, formData);
     
         // submit vocab data
+        // all end points gets routed to:
+        //    src/server/db/vocab/vocab.controller.ts
         try {
             console.log('sending vocab...');
             const result = await Axios.put(`${END_POINT}/new`, { body: vocabPayload });
