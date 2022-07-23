@@ -1,5 +1,7 @@
 // the page for the creator interface
 
+// TODO refractor the "stateManager" references to be the "appStateManager"
+
 import { Dispatch, SetStateAction, useState } from 'react';
 import { Vocab, Collection } from '../../../../api/entities/';
 import CollectionCreator from '../../../components/creator/collection.creator';
@@ -11,6 +13,7 @@ import { IAppProps, IAppStateManager } from '../../_app';
 import styles from './CreatorUI.module.scss';
 import CollectionEditor from '../../../components/creator/collection.editor';
 
+// a creator user's state management
 export interface ICreatorStateManager {
     // update the client data
     refreshCreatorData: () => Promise<void>,
@@ -54,31 +57,31 @@ export interface ICreatorStateManager {
             read: Collection.Get
         }
     }
-
-    // helper functions
-    // reset: {
-    //     view: () => void,
-    //     create: () => void,
-    //     edit: () => void;
-    // }
 }
 
+// a prop wrapper for prop drilling. TODO react context
+// the main application state manager is wrapped together with the creator UX state manager
 export interface ICreatorUIProps {
+    // the creator UX state manager
     creatorManager: ICreatorStateManager;
+    // the set state function for the creator UX
     setCreator: Dispatch<SetStateAction<ICreatorStateManager>>
+    // the main application's state manager
     stateManager: IAppStateManager;
+    // the main application's state setter
     set: Dispatch<SetStateAction<IAppStateManager>>
 }
 
 const CreatorUI = ({stateManager, set}: IAppProps) => {
+    // pull backend refresh of the creator user's data
     const refreshCreatorData = async () => {
         await stateManager.creator.refresh();
         await stateManager.creator.data.vocab.refresh();
         await stateManager.creator.data.collections.refresh();
     }
 
-    // state manager 
-    const INITIAL_CREATOR_STATE: ICreatorStateManager = {
+    // creator state manager
+    const INITIAL_CREATOR_STATE: ICreatorStateManager = { // the initial state the front end sees
         refreshCreatorData: refreshCreatorData,
         viewVocab: {
             read: false,
@@ -113,20 +116,24 @@ const CreatorUI = ({stateManager, set}: IAppProps) => {
         }
     }
 
+    // define the creator's 
     const [CreatorManager, setCreator] = useState(INITIAL_CREATOR_STATE);
 
-    // helpers 
+    // helpers
+    // the creator UX is an active module (editing, creation, viewing) 
     const makeActive = () => {
         // stateManager.user.isActive.set(true);
         set({...stateManager, user: {...stateManager.user, isActive: true}});
     }
 
+    // reset's the creator UX to the user's home page
     const makeInactive = () => {
         // stateManager.user.isActive.set(false);
         set({...stateManager, user: {...stateManager.user, isActive: false}});
     }
 
     // creator manager state functions
+    // enables the vocab viewer
     const vocabViewInterface = () => {
         // stateManager.pageTitle.set('Vocab Viewer');
         set((prev) => {
@@ -137,6 +144,7 @@ const CreatorUI = ({stateManager, set}: IAppProps) => {
         makeActive();
     }
 
+    // enables the vocab creator
     const vocabCreateInterface = () => {
         // stateManager.pageTitle.set('Vocab Creator');
         set((prev) => {
@@ -147,6 +155,7 @@ const CreatorUI = ({stateManager, set}: IAppProps) => {
         makeActive();
     }
 
+    // enables the vocab editor
     const vocabEditInterface = () => {
         // stateManager.pageTitle.set('Vocab Editor');
         set((prev) => {
@@ -157,6 +166,7 @@ const CreatorUI = ({stateManager, set}: IAppProps) => {
         makeActive();
     }
 
+    // enables the collection viewer
     const collectionsViewInterface = () => {
         // stateManager.pageTitle.set('Collections Viewer');
         set((prev) => {
@@ -170,6 +180,7 @@ const CreatorUI = ({stateManager, set}: IAppProps) => {
         makeActive();
     }
 
+    // enables the collection editor
     const collectionCreateInterface = () => {
         // stateManager.pageTitle.set('Collection Creator');
         set((prev) => {
@@ -180,6 +191,7 @@ const CreatorUI = ({stateManager, set}: IAppProps) => {
         makeActive();
     }
 
+    // enables the collection editor
     const collectionEditInterface = () => {
         // stateManager.pageTitle.set('Collection Editor');
         set((prev) => {
@@ -190,6 +202,7 @@ const CreatorUI = ({stateManager, set}: IAppProps) => {
         makeActive();
     }
 
+    // clears all submodules that has a viewing module: vocab viewer, collection viewer
     const resetViewer = () => {
         setCreator((prev) => {
             prev.viewVocab = { read: false, target: {read: null, media: null} };
@@ -199,6 +212,7 @@ const CreatorUI = ({stateManager, set}: IAppProps) => {
         makeInactive();
     }
 
+    // clears all submodules that has a creation module: vocab creator, collection creator
     const resetCreator = () => {
         setCreator((prev) => {
             prev.createVocab = { read: false };
@@ -208,6 +222,7 @@ const CreatorUI = ({stateManager, set}: IAppProps) => {
         makeInactive();
     }
 
+    // clears all submodules that has a editing module: vocab editor, collection editor
     const resetEditor = () => {
         setCreator((prev) => {
             prev.editVocab = { read: false, target: null };
@@ -217,6 +232,7 @@ const CreatorUI = ({stateManager, set}: IAppProps) => {
         makeInactive();
     }
 
+    // resets all viewer, creation, and editor modules and the page title
     const resetUI = async () => {
         set((prev) => {
             prev.pageTitle.read = 'Creator Home'
@@ -227,17 +243,11 @@ const CreatorUI = ({stateManager, set}: IAppProps) => {
         resetEditor();
     }
 
-    // setCreator({...CreatorManager, reset: {
-    //     view: resetViewer,
-    //     create: resetCreator,
-    //     edit: resetEditor}
-    // });
-
     return (
     <div className={styles.UserInterface} >
         {/* the interactable menu to set the different interfaces */}
         {!stateManager.user.isActive && <div>
-            {/* vocab menu  */}
+            {/* vocab menu, displays avialable actions to perform with vocab items */}
             <div id={styles.HomeVocabMenu}>
                 <h1>Vocab Actions</h1>
                 {/* wraps all the buttons */}
@@ -263,7 +273,7 @@ const CreatorUI = ({stateManager, set}: IAppProps) => {
                 </div>
             </div>
 
-            {/* collection menu  */}
+            {/* collection menu, displays avialable actions to perform with collection items */}
             <div id={styles.HomeCollectionsMenu}>
                 <h1>Collections Actions</h1>
                 {/* wraps all the buttons */}
@@ -293,33 +303,39 @@ const CreatorUI = ({stateManager, set}: IAppProps) => {
         </div>}
 
         {CreatorManager.viewVocab.read && 
+            // filepath: ../../../components/creator/vocab.viewer
             <VocabViewer stateManager={stateManager} set={set} creatorManager={CreatorManager} setCreator={setCreator}/>
         }
 
         {CreatorManager.createVocab.read && stateManager.user.isActive &&
+            // filepath: ../../../components/creator/vocab.creator
             <VocabCreator stateManager={stateManager} set={set} creatorManager={CreatorManager} setCreator={setCreator} />
         }
 
         {CreatorManager.editVocab.read && 
+            // filepath: ../../../components/creator/vocab.editor
             <VocabEditor stateManager={stateManager} set={set} creatorManager={CreatorManager} setCreator={setCreator}/>
         }
 
         {CreatorManager.viewCollections.read && 
+            // filepath: ../../../components/creator/collection.viewer
             <CollectionViewer stateManager={stateManager} set={set} creatorManager={CreatorManager} setCreator={setCreator}/>
         }
 
         {CreatorManager.createCollection.read &&
+            // filepath: ../../../components/creator/collection.creator
             <CollectionCreator stateManager={stateManager} set={set} creatorManager={CreatorManager} setCreator={setCreator} />
         }
 
         {CreatorManager.editCollection.read &&
+            // filepath: ../../../components/creator/collection.editor
             <CollectionEditor stateManager={stateManager} set={set} creatorManager={CreatorManager} setCreator={setCreator} />
         }
 
         {stateManager.user.isActive &&
         <div id={styles.BackButton}>
             <div className={styles.UserButtonWrapper}>
-                <button onClick={async (e) => { await resetUI()}}>
+                <button onClick={async (e) => { await resetUI() }}>
                     Back
                 </button>
             </div>

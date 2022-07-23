@@ -53,7 +53,8 @@ const CreatorLogin = ({stateManager, set}: IAppProps) => {
 
                 set({...stateManager,
                     creator: {...stateManager.creator, read: userData},
-                    user: {...stateManager.user, read: userData}
+                    user: {...stateManager.user, read: userData},
+                    pageTitle: { read: "Creator Home" }
                 });
             } catch (err) {
                 console.log(`there was an getting ${CREATOR_ID}`);
