@@ -1,7 +1,13 @@
-import { Injectable, Inject } from "@nestjs/common";
-import { IDatabaseDevice, IDBMeta } from "../../../api/db/db.interface";
+// db.service.ts - a shared service to wrap database operations. 
+// see: src/server/db/vocab/vocab.service.ts
+//      src/server/db/collection/collection.service.ts
 
-import { prepare_rethink, IEntity } from "../../../api";
+// TODO refractor 
+
+import { Injectable, Inject } from "@nestjs/common";
+import { IDatabaseDevice } from "../../../api/db/db.interface";
+
+import { IEntity } from "../../../api";
 import { IVocab, IVocabMedia } from "../../../api/entities/vocab";
 
 import { Creator } from '../../../api/entities/users/';
@@ -9,8 +15,8 @@ import { ICreator } from "../../../api/entities/users/creator";
 import { ICollection } from "../../../api/entities/collection";
 import { Collection } from '../../../api/entities/';
 import { exit } from "process";
-import { Vocab } from '../../../api/entities/vocab';
 
+// TODO add to .env file
 const DB_NAME = 'betaDb';
 
 @Injectable()

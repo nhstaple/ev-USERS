@@ -1,7 +1,13 @@
+/* api/entities | vocab.interface
+ * This file defines all attributes of a vocab item that is stored in the database.
+ *
+ * TODO abstract the languages and linguistic features into it's own module.
+*/
 
 import { IEntity } from "../entity.interface"
 
 // the supported langauges
+// TOOD add new languages here!
 export enum ELanguage {
     english = 0,
     spanish = 1,

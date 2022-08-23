@@ -1,3 +1,5 @@
+// view.controller.ts - routes root requests to render react
+
 import { Controller, Get, Res, Req, Render, Redirect } from '@nestjs/common';
 import { Request, Response } from 'express';
 

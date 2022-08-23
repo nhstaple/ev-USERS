@@ -1,3 +1,7 @@
+// collection.editor.tsx
+// this is the collection creation module for the creator UX
+// this is where creator's create new collections to be posted into the database's collection table
+// TODO: abstract support for the virtual keyboard into a tidy module
 
 import { FormEvent, useState, useRef, useReducer } from 'react';
 import { ICreatorUIProps } from '../../pages/ux/creator/creator.ui';
@@ -11,6 +15,9 @@ import Keyboard, {SimpleKeyboard} from 'react-simple-keyboard';
 // TODO dot env file
 const HOST = 'http://localhost';
 const PORT = '3000';
+
+// all end points gets routed to:
+//    src/server/db/collection/collection.controller.ts
 const END_POINT = `${HOST}:${PORT}/api/db/collections`;
 
 import * as KeyboardSupport from '../../../api/keyboard';
@@ -169,6 +176,8 @@ const CollectionCreator = ({stateManager, set, creatorManager, setCreator}: ICre
         console.log('COLLECTION.PUT REQUEST ON CLIENT\n', collectionPayload);
     
         // submit collection data
+        // all end points gets routed to:
+        //    src/server/db/collection/collection.controller.ts
         try {
             console.log('sending collection...');
             const result = await Axios.put(`${END_POINT}/new`, { body: collectionPayload });

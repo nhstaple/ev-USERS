@@ -1,3 +1,7 @@
+// vocab.editor.tsx
+// this is the vocab editing module for the creator UX
+// this is where creator's edit existing vocab items to be posted into the database with an image and sound
+// TODO: abstract support for the virtual keyboard into a tidy module
 
 import { useState, useRef, FormEvent } from 'react';
 import { ICreatorUIProps } from '../../pages/ux/creator/creator.ui';
@@ -14,17 +18,22 @@ import { isUndefined } from 'util';
 import { isDefined } from 'class-validator';
 
 // TODO dot env file
-const HOST = 'http://localhost';
+const HOST = 'http://localhost'; // TODO change to Docker network configuration
 const PORT = '3000';
+// all end points gets routed to:
+//    src/server/db/vocab/vocab.controller.ts
 const END_POINT = `${HOST}:${PORT}/api/db/vocab`
 
 // https://www.iana.org/assignments/media-types/media-types.xhtml#image
+// TODO support other image file formats
 const SupportedImageTypes = 'image/png, image/jpeg, image/gif';
 
 // https://www.iana.org/assignments/media-types/media-types.xhtml#audio
+// TODO support other sound file formats
 const SupportedSoundTypes = 'audio/mpeg';
 
-// TEST
+// this section of code makes the virtual keyboard draggable
+// TODO replace with an off the shelf solution for stability
 // https:www.w3schools.com/howto/tryit.asp?filename=tryhow_js_draggable
 let boundCheckKeyboard: (x, y) => void;
 function dragElement(grabbable, grabHeader) {
@@ -212,6 +221,8 @@ const VocabEditor = ({stateManager, set, creatorManager, setCreator}: ICreatorUI
         console.log('VOCAB.POST REQUEST ON CLIENT\n', vocabPayload, formData);
     
         // submit vocab data
+        // all end points gets routed to:
+        //    src/server/db/vocab/vocab.controller.ts
         try {
             console.log('sending vocab...');
             const result = await Axios.post(`${END_POINT}/edit`, { body: vocabPayload });
@@ -235,6 +246,8 @@ const VocabEditor = ({stateManager, set, creatorManager, setCreator}: ICreatorUI
             }
         }
 
+        // after submitting the edits update the creator UX module's user data
+        // this will pull fresh data from the server's db
         await stateManager.creator.data.vocab.refresh();
         await stateManager.creator.data.vocab.media.refresh();
 

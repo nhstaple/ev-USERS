@@ -1,3 +1,5 @@
+// view.service.ts - creates a next server to wrap next and nest together
+
 import { Injectable, OnModuleInit } from '@nestjs/common';
 
 import next from 'next'

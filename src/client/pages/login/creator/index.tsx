@@ -43,7 +43,7 @@ const CreatorLogin = ({stateManager, set}: IAppProps) => {
         let vocabData: Vocab.Get[];
         let vocabMedia: Vocab.GetMedia[] = [];
 
-        // creator data
+        // creator data (from the users table)
         const refresh_creator = async () => {
             try {
                 const CALL = `${END_POINT}/creator/${CREATOR_ID}`;
@@ -53,7 +53,8 @@ const CreatorLogin = ({stateManager, set}: IAppProps) => {
 
                 set({...stateManager,
                     creator: {...stateManager.creator, read: userData},
-                    user: {...stateManager.user, read: userData}
+                    user: {...stateManager.user, read: userData},
+                    pageTitle: { read: "Creator Home" }
                 });
             } catch (err) {
                 console.log(`there was an getting ${CREATOR_ID}`);
@@ -65,7 +66,7 @@ const CreatorLogin = ({stateManager, set}: IAppProps) => {
         });
         await refresh_creator();
         
-        // vocab data
+        // vocab data (from the vocab table)
         const refresh_vocab_data = async () => {
             console.log('refreshing vocab data');
             const userID = userData.id;
@@ -87,7 +88,7 @@ const CreatorLogin = ({stateManager, set}: IAppProps) => {
         });
         await refresh_vocab_data();
 
-        // vocab media
+        // vocab media (from the s3 table)
         const refresh_vocab_media = async () => {
             await refresh_vocab_data();
             console.log('refreshing vocab media');
@@ -123,7 +124,7 @@ const CreatorLogin = ({stateManager, set}: IAppProps) => {
         });
         await refresh_vocab_media();
 
-        // collection data
+        // collection data (from the collections table)
         const refresh_collection_data = async () => {
             try {
                 collectionsData = (await Axios.get(`${END_POINT}/collections/fromUser/${userData.id}`)).data as Collection.Get[];
@@ -147,7 +148,7 @@ const CreatorLogin = ({stateManager, set}: IAppProps) => {
         set((prev) => {
             prev.pageTitle.read = 'Creator Home';
             return prev;
-        })
+        });
     }
     
     setBodyStyle();

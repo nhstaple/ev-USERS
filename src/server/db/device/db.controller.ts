@@ -1,6 +1,10 @@
+// db.controller.ts - allows the user to interface with the database service
+
 import { Controller, Post, Param, Get, Delete, Body } from '@nestjs/common';
 import { exit } from 'process';
 import { DBService } from './db.service';
+
+// TODO add user auth and permission levels
 
 @Controller('/api/db')
 export class DBController {

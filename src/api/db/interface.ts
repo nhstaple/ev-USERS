@@ -1,3 +1,5 @@
+// TODO delete this file
+
 import { IEntity } from "../entities/entity.interface";
 import { IVocab, IVocabMedia } from "../entities/vocab/vocab.interface";
 import { ICollection } from "../entities/collection/collection.interface";

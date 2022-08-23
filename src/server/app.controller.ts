@@ -1,3 +1,5 @@
+// app.controller.ts - main route for handling API related tasks, mostly adminstrative related
+
 import { Controller, Get, Res, Req, Render } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { AppService } from './app.service';
