@@ -1,3 +1,4 @@
+// db.examples - examples of database objects to seed the client for prototyping
 
 import { IDBMeta } from "../../../api/db/db.interface";
 

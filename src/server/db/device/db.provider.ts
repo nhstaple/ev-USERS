@@ -2,16 +2,12 @@
 
 import { init_rethink } from "../../../api"
 import { IDatabaseCredentials, IDatabaseDevice } from "../../../api/db/db.interface"
-import { prepare_rethink, IEntity } from "../../../api";
 import { IDBMeta } from "../../../api/db/db.interface";
-import { ICreator } from "../../../api/entities/users/creator";
-
 import { CreatorExample } from "../../../api/entities/users/creator/creator.example";
 import { CreatorExampleCollections } from "../../../api/entities/users/creator/creator.example";
 import { ExampleVocabs } from "../../../api/entities/users/creator/creator.example";
-import { ICollection } from "../../../api/entities/collection";
-import { IVocab } from "../../../api/entities/vocab";
 
+// TODO add to .env file
 const DB_HOST = 'localhost'; // 'DOCKER_DB_SERVICE' for docker
 const DB_PORT = 28015;
 
@@ -29,6 +25,7 @@ const PREPARE_DBS = [
     // ... 
 ]
 
+// injects the interface for the database service to be accessable for the whole application
 export const DBProvider = {
     provide: 'DBProvider',
     useFactory: async () => {

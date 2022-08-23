@@ -1,3 +1,6 @@
+// _rdb.client.ts - contains the underlying single database client for making requests to rethinkdb. this is designed to be modular and replaced with alternate database services
+
+
 import { ICollection } from "../../../../api/entities/collection";
 import { IEntity } from "../../../../api/entities/entity.interface";
 import { IVocab, IVocabMedia } from "../../../../api/entities/vocab/vocab.interface";
@@ -338,6 +341,7 @@ export class RethinkdDb implements IDatabaseDevice {
 
 var client: IDatabaseDevice;
 
+// initializes the rethink client
 export async function init_rethink(credentials: IDatabaseCredentials): Promise<IDatabaseDevice> {
     const rethink = new RethinkdDb(credentials);
     if(LOG) console.log('using credientials:\t', credentials);
@@ -346,7 +350,9 @@ export async function init_rethink(credentials: IDatabaseCredentials): Promise<I
     return client;
 }
 
-
+// after the client has been intiailized, it may be seeded
+// with databases and tables defined by an array of IDBMeta
+// JSON objects
 export async function prepare_rethink(databases: IDBMeta[]) {
     if(client) {
         console.log("preparing\n", databases);

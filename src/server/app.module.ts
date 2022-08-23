@@ -1,6 +1,7 @@
-// /app.module.ts
-// main module for the application
+// app.module.ts
+// main next module for the application
 // wraps together the creator, instructor, and student interfaces
+
 import { Module } from '@nestjs/common';
 import { RenderModule } from 'nest-next';
 import Next from 'next';
