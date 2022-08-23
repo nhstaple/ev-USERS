@@ -1,0 +1,66 @@
+
+@import '../../pages/styles/Buttons.module.scss';
+@import '../../pages/styles/Animations.module.scss';
+
+#KeyboardMenu {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 66vw;
+    border-radius: 20px;
+    background-color: rgba(255, 255, 255, 0.66);
+    height: min-content;
+    box-shadow: 0 0 10px white;
+    span {
+        color: black;
+        text-shadow: none;
+    }
+    z-index: 100;
+    .UserButtonWrapper {
+        font-size: 0.8em;
+        > a, button, input {
+            padding: 1vh 1vh 1vh 1vh;
+        }
+    
+        > a:hover, button:hover, input:hover {
+            padding: 1vh 1vh 1vh 1vh;
+        }
+    
+        > a:active, button:active, input:active {
+            padding: 1vh 1vh 1vh 1vh;
+        }
+    }
+}
+
+
+#KeyboardMoveGrabbableArea {
+    cursor: move;
+    z-index: 100;
+}
+
+#GrabbableHeader {
+    text-align: center;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    p {
+        display: flex;
+        height: fit-content;
+        margin: 0;
+    }
+}
+
+.ShiftActive {
+    background-color: lightseagreen !important;
+}
+
+.LockActive {
+    background-color: lightgoldenrodyellow !important;
+}
+
+.ActiveInput {
+    border-radius: 20px !important;
+    box-shadow: 0px 0px 32px pink !important;
+}

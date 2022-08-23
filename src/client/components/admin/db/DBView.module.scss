@@ -1,0 +1,100 @@
+#root {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 90vw;
+    height: 90vh;
+    margin-right: 5vw;
+    margin-left: 5vw;
+    margin-top: 5vh;
+    margin-bottom: 5vh;
+}
+
+div.database {
+    display: flex;
+    width: 25%;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    padding: 0vh 2vw 0vh 2vw;
+    margin: 0 1vw 0 1vw;
+    background-color: #CCCCCC;
+}
+
+div.dbName {
+    font-size: 1.20em;
+    font-weight: bold;
+    color: black;
+    text-align: center;
+    margin-bottom: 0.25vh;
+}
+
+div.tableNameContainer {
+    font-size: 1.05em;
+    display: flex;
+    padding: 0.25vh 0 0.25vh 0;
+    margin: 1vh 0 1vh 0;
+}
+
+div.tableName {
+    width: 50%;
+}
+
+div.deleteTableButtonContainer {
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+button.deleteTableButton {
+    background-color: white;
+    border-radius: 20%;
+    border-color: black;
+    border-width: 4px;
+    border-style: solid;
+    font-size: 0.9em;
+
+    width: fit-content;
+    height: fit-content;
+}
+
+div.deleteDbButtonContainer {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin: 0.25vh 0 0.25vh 0;
+    padding: 0.25vh 0 0.25vh 0;
+}
+
+button.deleteDbButton {
+    display: flex;
+    width: 100%;
+    color: white;
+    background-color: red;
+    border: none;
+    justify-content: center;
+}
+
+div.modal {
+    display: block;
+    z-index: 1;
+    background-color: rgba(0, 0, 0, 0.25);
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    left: 0%;
+    top: 0%;
+}
+
+div.modal_content {
+    background-color: white;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-top: -50px;
+    margin-left: -50px;
+    width: fit-content;
+}
+
+

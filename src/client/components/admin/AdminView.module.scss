@@ -1,0 +1,34 @@
+#root {
+    display: flex;
+    flex-direction: row;
+    width: 90vw;
+    height: 90vh;
+    padding: 5vh 5vw 5vh 5vw;
+}
+
+#root > div {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    padding: 2vh 2vw 2vh 2vw;
+    align-items: center;
+}
+
+#root > div > h1 {
+    font-size: 1.20em;
+    color: grey;
+    font-weight: bold;
+}
+
+#root > div > h2 {
+    font-size: 1.05em;
+    font-weight: normal;
+}
+
+#root > div > h2.good {
+    color: green;
+}
+
+#root > div > h2.bad {
+    color: red;
+}

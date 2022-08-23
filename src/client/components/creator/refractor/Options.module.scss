@@ -1,0 +1,48 @@
+#container {
+    display: flex;
+    flex-wrap: wrap;
+    // align-items: 
+    justify-content: space-around;
+    background-color: #33AAFF;
+    width: 80%;
+    max-width: 1000px;
+    padding: 40px;
+  
+    > a {
+      text-decoration: none;
+    }
+  }
+  
+  .box {
+    flex: 1 0 30%;
+    text-align: center;
+    background-color: #99D5FF;
+    color: black;
+    padding: 50px;
+    // overflow-y: scroll;
+    max-height: 300px;
+  
+    &:not(&:first-of-type) {
+      margin-left: 15px;
+    }
+  
+    > h2 {
+      font-size: 1.75rem;
+      margin: 15px 0;
+    }
+  
+    button {
+      background-color: white;
+      padding: 5px;
+      border: 3px solid lightgrey;
+      border-radius: 5px;
+      color: #0099FF;
+      font-size: 1.25rem;
+      width: 100%;
+      margin-bottom: 15px;
+  
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }

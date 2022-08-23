@@ -1,0 +1,115 @@
+.UserButtonWrapper, .UnusableButtonWrapper {
+    display: flex;
+    width: 22vw;
+    justify-content: space-around;
+    height: fit-content;
+
+    > a, button, input {
+        display: flex;
+        flex: 0 0 auto;
+        width: 100%;
+        margin: 1vh 1vh 1vh 1vh;
+        padding: 1vh 1vh 1vh 1vh;
+        transition: 0.75s;
+        justify-content: center;
+        text-decoration: none;
+        border-radius: 20px;
+        font-size: 1.10em;
+        transition: 0.75s;
+    }
+
+    > a:hover, button:hover, input:hover {
+        transition: 0.75s;
+        box-shadow: 0 0 10px black;
+    }
+
+    > a:active, button:active, input:active {
+        transition: 0.75s;
+        border-radius: 0;
+    }
+}
+
+.UserButtonWrapper {
+    > a, button, input {
+        background-color: rgb(149, 228, 255);
+        color: white;
+        border: 2px solid black;
+        text-shadow: 0 0 10px black;
+    }
+
+    > a:hover, button:hover, input:hover {
+        background-color: lightgreen;
+        color: white;
+        padding: 3vh 3vh 3vh 3vh;
+        text-shadow: 2px 2px 10px black;
+        border: 2px solid green;
+    }
+
+    > a:active, button:active, input:active {
+        background-color: darkgreen;
+        color: white;
+        border: 1px solid lightgreen;
+        border-radius: 0;
+        text-shadow: 2px 2px 10px white;
+    }
+}
+
+.UnusableButtonWrapper {
+    > a, button, input {
+        background-color: grey;
+        color: white;
+        border: 2px solid black;
+        font-family: 'Courier New', Courier, monospace;
+    }
+
+    > a:hover, button:hover, input:hover {
+        background-color: lightcoral;
+        color: black;
+        box-shadow: 0 0 10px white;
+        border: 2px dashed black;
+    }
+
+    > a:active, button:active, input:active {
+        background-color: red;
+        color: lightgray;
+        box-shadow: 10px 10px 20px lightcoral;
+    }
+}
+
+#BackButton, #CancelButton {
+    position: absolute;
+    top: -7.5vh;
+    left: 2vw;
+
+    > div.UserButtonWrapper {
+        > button {
+            width: 20vw;
+            margin: 0;
+            padding: 0;
+        }
+        > button:hover, button:active {
+            margin: 0 1vh 0 1vh;
+            padding: 0 1vh 0 1vh;
+        }
+        
+        > button:hover {
+            background-color: lightgoldenrodyellow;
+            color: grey;
+            text-shadow: 0 0 5px white;
+        }
+        
+        > button:active {
+            background-color: blanchedalmond;
+            color: black;
+        }
+    }
+}
+
+#BackButton {
+    z-index: 1;
+}
+
+#CancelButton {
+    z-index: 2;
+    top: 2.5vh;
+}
