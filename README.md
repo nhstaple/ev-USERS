@@ -1,21 +1,21 @@
 
 # ev-crud
 
-> EyeVocab - Create, Retrieve, Update, Delete
+> EyeVocab - Users, multi-user support and course creation
 > 
-> _Program 1 - Creator Interface_
+> _Program 2 - Instructor Interface_
 
 ## Description
 
-This is the **Creator Interface** for the beta phase of **EyeVocab**,  aimed to teach foriegn languages through **Modals**: typing, imagery recall, speech recognition, etc. This repo is to have a feasibly deployable web application (NestJS, NextJS, RethinkDB, and TypeScript.) 
+This is the **Instructor Interface** for the beta phase of **EyeVocab**,  aimed to teach foriegn languages. This repo is to have a feasibly deployable web application (NestJS, NextJS, RethinkDB, and TypeScript.) 
 
-_Program 1_ defines the **Creator Interface** allows **Creators** to create **Collections** that organize a series of **Vocabulary** cards. Planned for May 2022.
+_Program 1_ defines the **Creator Interface** allows **Creators** to create **Collections** that organize a series of **Vocabulary** cards.
 
-_Program 2_ defines the **Instructor Interface** that allows **Instructors** to organize groups of **Collections** into **Courses**. Planned for late May / early June 2022.
+_Program 2_ defines the **Instructor Interface** that allows **Instructors** to organize groups of **Collections** into **Courses**. Planned for late August / early September 2022.
 
-_Program 3_ defines the **Student Interface** which allows **Students** to enroll in an **Instructor's** **Course(s)** and freely practice through different **Modals**. The **Student Interface**  is planned for mobile platforms. Planned for Summer 2022.
+_Program 3_ defines the **Student Interface** which allows **Students** to enroll in an **Instructor's** **Course(s)** and freely practice through different **Modals**. Planned for 2022 / 2023.
 
-_Program 4_ defines the **Spacing Algorithm** which allows **Instructor's** to fine-tune material delivery to students. Planned for 2022.
+_Program 4_ defines the **Spacing Algorithm** which allows **Instructor's** to fine-tune material delivery to students. Planned for 2022 / 2023.
 
 ## Installation
 
