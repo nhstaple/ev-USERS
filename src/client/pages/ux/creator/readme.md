@@ -1,5 +1,5 @@
 # EyeVocab
-## p1 - Creator Interface
+## p2 - Instructor Interface
 ### `src/client/pages/ux/creator`
 
 The creator UX module handles all interactions between a Creator and the application.

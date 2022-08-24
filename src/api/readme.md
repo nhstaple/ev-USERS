@@ -1,5 +1,5 @@
 # EyeVocab
-## p1 - Creator Interface
+## p2 - Instructor Interface
 ### `src/api`
 
 This is the root of the EyeVocab API for code that is shared between the client and the server.

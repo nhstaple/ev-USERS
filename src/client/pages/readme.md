@@ -1,5 +1,5 @@
 # EyeVocab
-## p1 - Creator Interface
+## p2 - Instructor Interface
 ### `src/client/pages`
 
 The pages folder contains all main pages and interfaces that the user interacts with. Add new interfaces and functionality to the `src/client/pages/ux` folder. 

@@ -1,5 +1,5 @@
 # EyeVocab
-## p1 - Creator Interface
+## p2 - Instructor Interface
 ### `src/`
 
 The is the root directory for the source of p1.

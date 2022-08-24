@@ -1,5 +1,5 @@
 # EyeVocab
-## p1 - Creator Interface
+## p2 - Instructor Interface
 ### `src/api/entities`
 
 This module contains interfaces for all objects that exist in the database service.

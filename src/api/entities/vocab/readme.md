@@ -1,5 +1,5 @@
 # EyeVocab
-## p1 - Creator Interface
+## p2 - Instructor Interface
 ### `src/api/entities/vocab`
 
 * [`IVocab`](./vocab.interface.ts)

@@ -1,5 +1,5 @@
 # EyeVocab
-## p1 - Creator Interface
+## p2 - Instructor Interface
 ### `src/server`
 
 This is the root of all server-side code. `NextJS` is inspired by Angular by implementing `controllers`, `services`, and `modules`.

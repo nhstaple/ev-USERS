@@ -1,5 +1,5 @@
 # EyeVocab
-## p1 - Creator Interface
+## p2 - Instructor Interface
 ### `src/api/db`
 
 * [`IDatabaseDevice`](./db.interface.ts)

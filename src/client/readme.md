@@ -1,5 +1,5 @@
 # EyeVocab
-## p1 - Creator Interface
+## p2 - Instructor Interface
 ### `src/client`
 
 This is the root of the user interface for the EyeVocab application. The heirarchy follows expected ReactJS / NextJS design flow.

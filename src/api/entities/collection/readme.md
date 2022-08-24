@@ -1,5 +1,5 @@
 # EyeVocab
-## p1 - Creator Interface
+## p2 - Instructor Interface
 ### `src/api/entities/collection`
 
 This module contains all information for collections which are created by Creators ([`ICreator`](../users/creator/creator.interface.ts).)
